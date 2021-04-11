@@ -24,6 +24,7 @@ CProxy::~CProxy()
 
 void CProxy::slotDisconnected()
 {
+    qDebug() << "CProxy::slotDisconnected()";
     deleteLater();
 }
 
@@ -34,6 +35,7 @@ void CProxy::slotRead()
 
 void CProxy::slotClose()
 {
+    qDebug() << "CProxy::slotClose()";
     if(m_pSocket && m_pSocket->isOpen())
         m_pSocket->close();
 }

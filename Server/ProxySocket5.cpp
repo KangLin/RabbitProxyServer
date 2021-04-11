@@ -5,7 +5,8 @@
 CProxySocket5::CProxySocket5(QTcpSocket *pSocket, QObject *parent)
     : CProxy(pSocket, parent),
       m_Command(emCommand::Negotiate),
-      m_currentVersion(VERSION_SOCK5)
+      m_currentVersion(VERSION_SOCK5),
+      m_pPeerSocket(nullptr)
 {
     m_vAuthenticator << AUTHENTICATOR_UserPassword;// << AUTHENTICATOR_NO;
 }
@@ -17,7 +18,7 @@ CProxySocket5::~CProxySocket5()
 
 void CProxySocket5::slotRead()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotRead()");
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotRead():0x%X", m_Command);
     int nRet = 0;
     switch (m_Command) {
     case emCommand::Negotiate:
@@ -33,6 +34,14 @@ void CProxySocket5::slotRead()
         //nRet = processExecClientRequest();
         break;
     case emCommand::Forward:
+        if(m_pPeerSocket && m_pSocket)
+        {
+            QByteArray d = m_pPeerSocket->readAll();
+            if(!d.isEmpty())
+                m_pPeerSocket->write(d.data(), d.length());
+            else
+                LOG_MODEL_DEBUG("Socket5", "readAll fail");
+        }
         break;
     }
     
@@ -250,7 +259,7 @@ int CProxySocket5::processClientRequest()
     
     m_Client.pHead = pHead;
     switch (pHead->addressType) {
-    case 0x01:
+    case 0x01: //IPV4
     {
         m_Client.nLen = sizeof(strClientRequstHead) + 6;
         if(CheckBufferLength(m_Client.nLen))
@@ -262,7 +271,7 @@ int CProxySocket5::processClientRequest()
                         m_Client.nPort);
         return processExecClientRequest();
     }
-    case 0x03:
+    case 0x03: //Domain
     {
         m_Client.nLen = sizeof(strClientRequstHead);
         if(CheckBufferLength(m_Client.nLen + 2))
@@ -278,7 +287,7 @@ int CProxySocket5::processClientRequest()
         m_Command = emCommand::LookUp;
         break;
     }
-    case 0x04:
+    case 0x04: //IPV6
     {
         if(CheckBufferLength(sizeof(strClientRequstHead) + 18)) //16 + 2 
             return ERROR_CONTINUE_READ;
@@ -312,10 +321,66 @@ void CProxySocket5::slotLookup(QHostInfo info)
 
 int CProxySocket5::processClientReply(char rep)
 {
-    //TODO: 这里不对，BIN.ADDR 和 BIN.PORT 是服务器上绑定的服务器上的地址
-    m_Client.pHead->command = rep;
-    if(m_pSocket)
-        m_pSocket->write(m_cmdBuf.data(), m_Client.nLen);
+    strClientRequstReplyHead reply;
+    reply.version = m_cmdBuf.at(0);
+    reply.reply = rep;
+    reply.reserved = 0;
+    reply.addressType = 0x01;
+
+    qint16 nPort = 0;
+    int nLen = sizeof(strClientRequstReplyHead);
+    
+    QHostAddress add;
+    if(m_pPeerSocket)
+    {
+        add = m_pPeerSocket->localAddress();
+        nPort = m_pPeerSocket->localPort();
+    }
+    if(add != QHostAddress::Null)
+    {
+        bool ok = false;
+        add.toIPv4Address(&ok);
+        if(ok)
+        {
+            nLen += 6;
+            reply.addressType = 0x01; //IPV4
+        } else {
+            nLen += 18;
+            reply.addressType = 0x04; //IPV6
+        }
+    } else {
+        nLen += 6;
+        reply.addressType = 0x01; //IPV4
+        add.setAddress((quint32)0);
+    }
+
+    char* pBuf = new char[nLen];
+    if(m_pSocket && pBuf)
+    {
+        memcpy(pBuf, &reply, sizeof(strClientRequstReplyHead));
+        switch (reply.addressType) {
+        case 0x01:
+        {
+            LOG_MODEL_DEBUG("Socket5", "IP: %d:%d", add.toIPv4Address(), nPort);
+            qint32 d = qToBigEndian(add.toIPv4Address());
+            memcpy(pBuf + sizeof(strClientRequstReplyHead), &d, 4);
+            qint16 port = qToBigEndian(nPort);
+            memcpy(pBuf + sizeof(strClientRequstReplyHead) + 4, &port, 2);
+            break;
+        }
+        case 0x04:
+        {
+            Q_IPV6ADDR d = add.toIPv6Address();
+            memcpy(pBuf + sizeof(strClientRequstReplyHead), d.c, 16);
+            qint16 port = qToBigEndian(nPort);
+            memcpy(pBuf + sizeof(strClientRequstReplyHead) + 16, &port, 2);
+            break;
+        }
+        }
+        m_pSocket->write(pBuf, nLen);
+    }
+    delete []pBuf;
+
     if(REPLY_Succeeded != rep)
         slotClose();
     return 0;
@@ -325,6 +390,89 @@ int CProxySocket5::processExecClientRequest()
 {
     int nRet = 0;
     
+    switch (m_Client.pHead->command) {
+    case ClientRequstCommandConnect:
+    {
+        nRet = processConnect();
+        break;
+    }
+    case ClientRequstCommandBind:
+        //TODO:
+        break;
+    case ClientRequstCommandUdp:
+        //TODO:
+        break;
+    }
     //m_Command = emCommand::Forward;
     return nRet;
+}
+
+int CProxySocket5::processConnect()
+{
+    bool check = false;
+    if(m_Client.szHost.isEmpty())
+    {
+        return processClientReply(REPLY_HostUnreachable);
+    }
+
+    if(!m_pPeerSocket) 
+        m_pPeerSocket = new QTcpSocket();
+    foreach(auto add, m_Client.szHost)
+    {
+        m_pPeerSocket->connectToHost(add, m_Client.nPort);
+        check = connect(m_pPeerSocket, SIGNAL(connected()),
+                        this, SLOT(slotPeerConnected()));
+        Q_ASSERT(check);
+        check = connect(m_pPeerSocket, SIGNAL(disconnected()),
+                        this, SLOT(slotPeerDisconnectd()));
+        Q_ASSERT(check);
+        check = connect(m_pPeerSocket, SIGNAL(error(QAbstractSocket::SocketError)),
+                        this, SLOT(slotPeerError(QAbstractSocket::SocketError)));
+        Q_ASSERT(check);
+        check = connect(m_pPeerSocket, SIGNAL(readyRead()),
+                        this, SLOT(slotPeerRead()));
+        Q_ASSERT(check);
+        return 0;
+    }
+
+    return 0;
+}
+
+void CProxySocket5::slotPeerConnected()
+{
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerConnected()");
+    processClientReply(REPLY_Succeeded);
+    m_Command = emCommand::Forward;
+    CleanCommandBuffer(m_Client.nLen);
+    return;
+}
+
+void CProxySocket5::slotPeerDisconnectd()
+{
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerDisconnectd()");
+    slotClose();
+}
+
+void CProxySocket5::slotPeerError(QAbstractSocket::SocketError error)
+{
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerError():%d", error);
+    switch (error) {
+    case QAbstractSocket::ConnectionRefusedError:
+        processClientReply(REPLY_ConnectionRefused);
+        break;
+    default:
+        break;
+    }
+    slotClose();
+}
+
+void CProxySocket5::slotPeerRead()
+{
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerRead()");
+    if(m_pPeerSocket && m_pSocket
+        && m_pPeerSocket->isOpen() && m_pSocket->isOpen())
+    {
+        QByteArray d = m_pPeerSocket->readAll();
+        m_pSocket->write(d.data(), d.length());
+    }
 }

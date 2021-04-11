@@ -7,6 +7,7 @@
 #include <string>
 #include <QHostInfo>
 #include <QList>
+#include <QUdpSocket>
 
 class CProxySocket5 : public CProxy
 {
@@ -19,6 +20,10 @@ public:
 private slots:
     virtual void slotRead() override;
     virtual void slotLookup(QHostInfo info);
+    virtual void slotPeerConnected();
+    virtual void slotPeerDisconnectd();
+    virtual void slotPeerError(QAbstractSocket::SocketError error);
+    virtual void slotPeerRead();
     
 private:
     /**
@@ -38,6 +43,7 @@ private:
     int processClientRequest();
     int processClientReply(char rep);
     int processExecClientRequest();
+    int processConnect();
     
 private:
 
@@ -65,13 +71,19 @@ static const char REPLY_ConnectionRefused = 0x05; // 连接失败
 static const char REPLY_TtlExpired = 0x06; // 超时
 static const char REPLY_CommandNotSupported = 0x07;  // 命令不被支持
 static const char REPLY_AddressTypeNotSupported = 0x08; // 地址类型不受支持
-    
+static const char REPLY_Undefined = 0xFF;
+
+// Client requst command
+static const char ClientRequstCommandConnect = 0x01;
+static const char ClientRequstCommandBind = 0x02;
+static const char ClientRequstCommandUdp = 0x03;
+
     enum class emAddressType {
         Ipv4 = 0x01, // ipv4
         Doname = 0x03, // 域名
         Ipv6 = 0x04 // ipv6
     };
-    
+
     enum class emCommand {
         Negotiate,
         Authentication,
@@ -80,32 +92,39 @@ static const char REPLY_AddressTypeNotSupported = 0x08; // 地址类型不受支
         ExecClientRequest,
         Forward
     };
-    
+
     /**
      * 服务端回应客户端
     */
-    struct strNegotiate{
+    struct strNegotiate {
         char version; /** 协议版本 SOCK5,SOCK4*/
         char method; /** 认证方式 METHOD0 ~ METHOD5*/
     };
-    
-    struct strReplyAuthenticationUserPassword{
+
+    struct strReplyAuthenticationUserPassword {
         char version;
         char status; //0: success, other: failure
     };
-    
-    struct strClientRequstHead{
+
+    struct strClientRequstHead {
         char version;
         char command;
         char reserved;
         char addressType;
     };
 
-    struct strClientRequst{
+    struct strClientRequst {
         strClientRequstHead* pHead;
         QList<QHostAddress> szHost;
         qint32 nPort;
         int nLen; //整个请求的长度
+    };
+
+    struct strClientRequstReplyHead {
+        char version;
+        char reply;
+        char reserved;
+        char addressType;
     };
 
     enum emCommand m_Command;
@@ -115,6 +134,8 @@ static const char REPLY_AddressTypeNotSupported = 0x08; // 地址类型不受支
     char m_currentAuthenticator;
     QVector<char> m_vAuthenticator;
     strClientRequst m_Client;
+
+    QAbstractSocket* m_pPeerSocket;
 };
 
 #endif // CPROXYSOCKET5_H
