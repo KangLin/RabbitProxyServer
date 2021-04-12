@@ -38,7 +38,14 @@ void CProxySocket5::slotRead()
         {
             QByteArray d = m_pPeerSocket->readAll();
             if(!d.isEmpty())
-                m_pPeerSocket->write(d.data(), d.length());
+            {
+                int nWrite = m_pPeerSocket->write(d.data(), d.length());
+                if(-1 == nWrite)
+                    LOG_MODEL_ERROR("Socket5",
+                                    "Forword client to peer fail[%d]: %s",
+                                    m_pSocket->error(),
+                                    m_pSocket->errorString().toStdString().c_str());
+            }
             else
                 LOG_MODEL_DEBUG("Socket5", "readAll fail");
         }
@@ -259,7 +266,7 @@ int CProxySocket5::processClientRequest()
     
     m_Client.pHead = pHead;
     switch (pHead->addressType) {
-    case 0x01: //IPV4
+    case AddressTypeIpv4: //IPV4
     {
         m_Client.nLen = sizeof(strClientRequstHead) + 6;
         if(CheckBufferLength(m_Client.nLen))
@@ -271,7 +278,7 @@ int CProxySocket5::processClientRequest()
                         m_Client.nPort);
         return processExecClientRequest();
     }
-    case 0x03: //Domain
+    case AddressTypeDomain: //Domain
     {
         m_Client.nLen = sizeof(strClientRequstHead);
         if(CheckBufferLength(m_Client.nLen + 2))
@@ -287,7 +294,7 @@ int CProxySocket5::processClientRequest()
         m_Command = emCommand::LookUp;
         break;
     }
-    case 0x04: //IPV6
+    case AddressTypeIpv6: //IPV6
     {
         if(CheckBufferLength(sizeof(strClientRequstHead) + 18)) //16 + 2 
             return ERROR_CONTINUE_READ;
@@ -298,6 +305,8 @@ int CProxySocket5::processClientRequest()
                         m_Client.nPort);
         return processExecClientRequest();
     }
+    default:
+        return processClientReply(REPLY_AddressTypeNotSupported);
     }
 
     return nRet;
@@ -343,14 +352,14 @@ int CProxySocket5::processClientReply(char rep)
         if(ok)
         {
             nLen += 6;
-            reply.addressType = 0x01; //IPV4
+            reply.addressType = AddressTypeIpv4;
         } else {
             nLen += 18;
-            reply.addressType = 0x04; //IPV6
+            reply.addressType = AddressTypeIpv6;
         }
     } else {
         nLen += 6;
-        reply.addressType = 0x01; //IPV4
+        reply.addressType = AddressTypeIpv4;
         add.setAddress((quint32)0);
     }
 
@@ -359,7 +368,7 @@ int CProxySocket5::processClientReply(char rep)
     {
         memcpy(pBuf, &reply, sizeof(strClientRequstReplyHead));
         switch (reply.addressType) {
-        case 0x01:
+        case AddressTypeIpv4:
         {
             LOG_MODEL_DEBUG("Socket5", "IP: %d:%d", add.toIPv4Address(), nPort);
             qint32 d = qToBigEndian(add.toIPv4Address());
@@ -368,7 +377,7 @@ int CProxySocket5::processClientReply(char rep)
             memcpy(pBuf + sizeof(strClientRequstReplyHead) + 4, &port, 2);
             break;
         }
-        case 0x04:
+        case AddressTypeIpv6:
         {
             Q_IPV6ADDR d = add.toIPv6Address();
             memcpy(pBuf + sizeof(strClientRequstReplyHead), d.c, 16);
@@ -402,6 +411,8 @@ int CProxySocket5::processExecClientRequest()
     case ClientRequstCommandUdp:
         //TODO:
         break;
+    default:
+        processClientReply(REPLY_CommandNotSupported);
     }
     //m_Command = emCommand::Forward;
     return nRet;
@@ -415,7 +426,9 @@ int CProxySocket5::processConnect()
         return processClientReply(REPLY_HostUnreachable);
     }
 
-    if(!m_pPeerSocket) 
+    if(m_pPeerSocket)
+        Q_ASSERT(false);
+    else
         m_pPeerSocket = new QTcpSocket();
     foreach(auto add, m_Client.szHost)
     {
@@ -459,6 +472,21 @@ void CProxySocket5::slotPeerError(QAbstractSocket::SocketError error)
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
         processClientReply(REPLY_ConnectionRefused);
+        return;
+    case QAbstractSocket::HostNotFoundError:
+        processClientReply(REPLY_HostUnreachable);
+        return;
+    case QAbstractSocket::SocketResourceError:
+        break;
+    case QAbstractSocket::SocketAccessError:
+        processClientReply(REPLY_NotAllowdConnection);
+        return;
+    case QAbstractSocket::SocketTimeoutError:
+        if(m_pPeerSocket->state() != QAbstractSocket::ConnectedState)
+        {
+            processClientReply(REPLY_TtlExpired);
+            return;
+        }
         break;
     default:
         break;
@@ -469,10 +497,15 @@ void CProxySocket5::slotPeerError(QAbstractSocket::SocketError error)
 void CProxySocket5::slotPeerRead()
 {
     LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerRead()");
-    if(m_pPeerSocket && m_pSocket
-        && m_pPeerSocket->isOpen() && m_pSocket->isOpen())
+//    if(m_pPeerSocket && m_pSocket
+//        && m_pPeerSocket->state() == QAbstractSocket::ConnectedState
+//            && m_pSocket->state() == QAbstractSocket::ConnectedState)
     {
         QByteArray d = m_pPeerSocket->readAll();
-        m_pSocket->write(d.data(), d.length());
+        int nRet = m_pSocket->write(d.data(), d.length());
+        if(-1 == nRet)
+            LOG_MODEL_ERROR("Socket5", "Forword peer to client fail[%d]: %s",
+                            m_pSocket->error(),
+                            m_pSocket->errorString().toStdString().c_str());
     }
 }

@@ -78,18 +78,15 @@ static const char ClientRequstCommandConnect = 0x01;
 static const char ClientRequstCommandBind = 0x02;
 static const char ClientRequstCommandUdp = 0x03;
 
-    enum class emAddressType {
-        Ipv4 = 0x01, // ipv4
-        Doname = 0x03, // 域名
-        Ipv6 = 0x04 // ipv6
-    };
+static const char AddressTypeIpv4 = 0x01;
+static const char AddressTypeDomain = 0x03;
+static const char AddressTypeIpv6 = 0x04;
 
     enum class emCommand {
         Negotiate,
         Authentication,
         ClientRequest,
         LookUp,
-        ExecClientRequest,
         Forward
     };
 
