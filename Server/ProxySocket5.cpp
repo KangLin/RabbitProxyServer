@@ -406,7 +406,7 @@ int CProxySocket5::processExecClientRequest()
         break;
     }
     case ClientRequstCommandBind:
-        //TODO:
+        nRet = processBind();
         break;
     case ClientRequstCommandUdp:
         //TODO:
@@ -508,4 +508,54 @@ void CProxySocket5::slotPeerRead()
                             m_pSocket->error(),
                             m_pSocket->errorString().toStdString().c_str());
     }
+}
+
+int CProxySocket5::processBind()
+{
+    int nRet = 0;
+
+    if(m_pPeerSocket)
+        Q_ASSERT(false);
+    else
+        m_pPeerSocket = new QTcpSocket();
+    bool bBind = false;
+    foreach(auto add, m_Client.szHost)
+    {
+        bBind = m_pPeerSocket->bind(add, m_Client.nPort);
+        if(bBind) break;
+    }
+
+    if(!bBind)
+    {
+        if(m_Client.szHost.isEmpty())
+        {
+            bBind = m_pPeerSocket->bind(m_Client.nPort);
+        }
+        else{
+            bBind = m_pPeerSocket->bind();
+        }
+    }
+    
+    if(!bBind)
+    {
+        processClientReply(REPLY_GeneralServerFailure);
+        return nRet;
+    }
+    
+    bool check = connect(m_pPeerSocket, SIGNAL(connected()),
+            this, SLOT(slotPeerConnected()));
+    Q_ASSERT(check);
+    check = connect(m_pPeerSocket, SIGNAL(disconnected()),
+                    this, SLOT(slotPeerDisconnectd()));
+    Q_ASSERT(check);
+    check = connect(m_pPeerSocket, SIGNAL(error(QAbstractSocket::SocketError)),
+                    this, SLOT(slotPeerError(QAbstractSocket::SocketError)));
+    Q_ASSERT(check);
+    check = connect(m_pPeerSocket, SIGNAL(readyRead()),
+                    this, SLOT(slotPeerRead()));
+    Q_ASSERT(check);
+    
+    processClientReply(REPLY_Succeeded);
+    
+    return nRet;
 }

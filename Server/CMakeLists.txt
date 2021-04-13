@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 2.8.12)
 
-project(ProxyServer)
+project(RabbitProxyServer)
 
 SET(SOURCE_FILES
     main.cpp

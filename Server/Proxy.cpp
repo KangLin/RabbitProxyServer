@@ -36,6 +36,6 @@ void CProxy::slotRead()
 void CProxy::slotClose()
 {
     qDebug() << "CProxy::slotClose()";
-    if(m_pSocket && m_pSocket->isOpen())
+    if(m_pSocket)
         m_pSocket->close();
 }

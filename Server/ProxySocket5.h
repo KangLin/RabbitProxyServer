@@ -44,6 +44,7 @@ private:
     int processClientReply(char rep);
     int processExecClientRequest();
     int processConnect();
+    int processBind();
     
 private:
 
@@ -63,7 +64,7 @@ static const char AUTHENTICATOR_NoAcceptable = 0xFF; // 没有可接受的方法
 
 // Reply status
 static const char REPLY_Succeeded = 0x00; // 成功
-static const char REPLY_Failure = 0x01; // 失败
+static const char REPLY_GeneralServerFailure = 0x01; // 建立SOCKET服务器失败
 static const char REPLY_NotAllowdConnection = 0x02; // 不允许连接
 static const char REPLY_NetworkUnreachable = 0x03; // 网络无法访问
 static const char REPLY_HostUnreachable = 0x04; // 主机无法访问
@@ -113,7 +114,7 @@ static const char AddressTypeIpv6 = 0x04;
     struct strClientRequst {
         strClientRequstHead* pHead;
         QList<QHostAddress> szHost;
-        qint32 nPort;
+        qint16 nPort;
         int nLen; //整个请求的长度
     };
 
