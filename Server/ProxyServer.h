@@ -4,6 +4,7 @@
 #include <QObject>
 
 #include <QTcpServer>
+#include "Proxy.h"
 
 class CProxyServer : public QObject
 {
@@ -14,6 +15,9 @@ public:
     
     int Start(int nPort = 1080);
     int Stop();
+    
+protected:
+    virtual CProxy* newProxy(QTcpSocket* socket) = 0;
     
 Q_SIGNALS:
     void sigStop();

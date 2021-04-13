@@ -7,14 +7,16 @@ project(RabbitProxyServer)
 SET(SOURCE_FILES
     main.cpp
     Proxy.cpp
-    ProxySocket5.cpp
-    ProxyServer.cpp    
+    ProxySocket.cpp
+    ProxyServer.cpp   
+    ProxyServerSocket.cpp
     mainwindow.cpp)
 
 set(HEADER_FILES
     Proxy.h
-    ProxySocket5.h
+    ProxySocket.h
     ProxyServer.h
+    ProxyServerSocket.h
     mainwindow.h)
 
 set(SOURCE_UI_FILES

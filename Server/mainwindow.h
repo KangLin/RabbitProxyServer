@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "ProxyServer.h"
+#include "ProxyServerSocket.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -23,6 +23,6 @@ private slots:
     
 private:
     Ui::MainWindow *ui;
-    CProxyServer m_Server;
+    CProxyServerSocket m_Server;
 };
 #endif // MAINWINDOW_H

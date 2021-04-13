@@ -9,13 +9,13 @@
 #include <QList>
 #include <QUdpSocket>
 
-class CProxySocket5 : public CProxy
+class CProxySocket : public CProxy
 {
     Q_OBJECT
 
 public:
-    explicit CProxySocket5(QTcpSocket* pSocket, QObject *parent = nullptr);
-    virtual ~CProxySocket5();
+    explicit CProxySocket(QTcpSocket* pSocket, QObject *parent = nullptr);
+    virtual ~CProxySocket();
 
 private slots:
     virtual void slotClose() override;

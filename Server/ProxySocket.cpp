@@ -1,8 +1,8 @@
-#include "ProxySocket5.h"
+#include "ProxySocket.h"
 #include "RabbitCommonLog.h"
 #include <QtEndian>
 
-CProxySocket5::CProxySocket5(QTcpSocket *pSocket, QObject *parent)
+CProxySocket::CProxySocket(QTcpSocket *pSocket, QObject *parent)
     : CProxy(pSocket, parent),
       m_Command(emCommand::Negotiate),
       m_currentVersion(VERSION_SOCK5),
@@ -11,13 +11,13 @@ CProxySocket5::CProxySocket5(QTcpSocket *pSocket, QObject *parent)
     m_vAuthenticator << AUTHENTICATOR_UserPassword;// << AUTHENTICATOR_NO;
 }
 
-CProxySocket5::~CProxySocket5()
+CProxySocket::~CProxySocket()
 {
     qDebug() << "CProxySocket5::~CProxySocket5()";
 
 }
 
-void CProxySocket5::slotClose()
+void CProxySocket::slotClose()
 {
     if(m_pPeerSocket)
     {
@@ -29,7 +29,7 @@ void CProxySocket5::slotClose()
     CProxy::slotClose();
 }
 
-void CProxySocket5::slotRead()
+void CProxySocket::slotRead()
 {
     LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotRead():0x%X", m_Command);
     int nRet = 0;
@@ -72,7 +72,7 @@ void CProxySocket5::slotRead()
     //    slotClose();
 }
 
-int CProxySocket5::CheckBufferLength(int nLength)
+int CProxySocket::CheckBufferLength(int nLength)
 {
     int nRet = nLength - m_cmdBuf.size();
     if(nRet > 0)
@@ -84,7 +84,7 @@ int CProxySocket5::CheckBufferLength(int nLength)
     return 0;
 }
 
-int CProxySocket5::CleanCommandBuffer(int nLength)
+int CProxySocket::CleanCommandBuffer(int nLength)
 {
     if(m_cmdBuf.size() > nLength)
     {
@@ -96,7 +96,7 @@ int CProxySocket5::CleanCommandBuffer(int nLength)
     return 0;
 }
 
-int CProxySocket5::processNegotiate()
+int CProxySocket::processNegotiate()
 {
     int nRet = 0;
     int nLen = 0;
@@ -146,7 +146,7 @@ int CProxySocket5::processNegotiate()
     return nRet;
 }
 
-int CProxySocket5::processNegotiateReply(const QByteArray& data)
+int CProxySocket::processNegotiateReply(const QByteArray& data)
 {
     int nRet = 0;
     char method = AUTHENTICATOR_NoAcceptable;
@@ -174,7 +174,7 @@ int CProxySocket5::processNegotiateReply(const QByteArray& data)
     return nRet;
 }
 
-int CProxySocket5::processAuthenticator()
+int CProxySocket::processAuthenticator()
 {
     int nRet = 0;
     
@@ -230,7 +230,7 @@ int CProxySocket5::processAuthenticator()
     return nRet;
 }
 
-int CProxySocket5::replyAuthenticatorUserPassword(char nRet)
+int CProxySocket::replyAuthenticatorUserPassword(char nRet)
 {
     int n = 0;
     strReplyAuthenticationUserPassword repy{0x01, nRet};
@@ -249,7 +249,7 @@ int CProxySocket5::replyAuthenticatorUserPassword(char nRet)
  * @return 0: success
  *     other: fail
  */
-int CProxySocket5::processAuthenticatorUserPassword(
+int CProxySocket::processAuthenticatorUserPassword(
         std::string szUser, std::string szPassword)
 {
     int nRet = 0;
@@ -258,7 +258,7 @@ int CProxySocket5::processAuthenticatorUserPassword(
     return nRet;
 }
 
-int CProxySocket5::processClientRequest()
+int CProxySocket::processClientRequest()
 {
     int nRet = 0;
     LOG_MODEL_DEBUG("Socket5", "CProxySocket5::processClientRequest()");
@@ -325,7 +325,7 @@ int CProxySocket5::processClientRequest()
     return nRet;
 }
 
-void CProxySocket5::slotLookup(QHostInfo info)
+void CProxySocket::slotLookup(QHostInfo info)
 {
     if (info.error() != QHostInfo::NoError) {
         qDebug() << "Lookup failed:" << info.errorString();
@@ -341,7 +341,7 @@ void CProxySocket5::slotLookup(QHostInfo info)
     processExecClientRequest();
 }
 
-int CProxySocket5::processClientReply(char rep)
+int CProxySocket::processClientReply(char rep)
 {
     strClientRequstReplyHead reply;
     reply.version = m_cmdBuf.at(0);
@@ -408,7 +408,7 @@ int CProxySocket5::processClientReply(char rep)
     return 0;
 }
 
-int CProxySocket5::processExecClientRequest()
+int CProxySocket::processExecClientRequest()
 {
     int nRet = 0;
     
@@ -431,7 +431,7 @@ int CProxySocket5::processExecClientRequest()
     return nRet;
 }
 
-int CProxySocket5::processConnect()
+int CProxySocket::processConnect()
 {
     bool check = false;
     if(m_Client.szHost.isEmpty())
@@ -464,7 +464,7 @@ int CProxySocket5::processConnect()
     return 0;
 }
 
-void CProxySocket5::slotPeerConnected()
+void CProxySocket::slotPeerConnected()
 {
     LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerConnected()");
     processClientReply(REPLY_Succeeded);
@@ -473,13 +473,13 @@ void CProxySocket5::slotPeerConnected()
     return;
 }
 
-void CProxySocket5::slotPeerDisconnectd()
+void CProxySocket::slotPeerDisconnectd()
 {
     LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerDisconnectd()");
     slotClose();
 }
 
-void CProxySocket5::slotPeerError(QAbstractSocket::SocketError error)
+void CProxySocket::slotPeerError(QAbstractSocket::SocketError error)
 {
     LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerError():%d", error);
     switch (error) {
@@ -507,7 +507,7 @@ void CProxySocket5::slotPeerError(QAbstractSocket::SocketError error)
     slotClose();
 }
 
-void CProxySocket5::slotPeerRead()
+void CProxySocket::slotPeerRead()
 {
     LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerRead()");
 //    if(m_pPeerSocket && m_pSocket
@@ -524,7 +524,7 @@ void CProxySocket5::slotPeerRead()
 }
 
 //TODO: There are not tested!
-int CProxySocket5::processBind()
+int CProxySocket::processBind()
 {
     int nRet = 0;
 

@@ -1,6 +1,6 @@
 #include "ProxyServer.h"
 #include "RabbitCommonLog.h"
-#include "ProxySocket5.h"
+#include "ProxySocket.h"
 
 CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
     m_nPort(1080)
@@ -56,8 +56,8 @@ void CProxyServer::slotAccept()
                    tr("New connect from: %s:%d").toStdString().c_str(),
                    s->peerAddress().toString().toStdString().c_str(),
                    s->peerPort());
-    //TODO: modify proxy type
-    CProxy* proxy = new CProxySocket5(s);
+
+    CProxy* proxy = newProxy(s);
     if(!proxy) return;
     bool check = proxy->connect(s, SIGNAL(destroyed()),
                    proxy, SLOT(deleteLater()));
