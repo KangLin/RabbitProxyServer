@@ -1,6 +1,8 @@
 #ifndef CPROXYSOCKET5_H
 #define CPROXYSOCKET5_H
 
+#pragma once
+
 #include "Proxy.h"
 #include <QByteArray>
 #include <QVector>
@@ -14,14 +16,13 @@ class CProxySocket5 : public CProxy
     Q_OBJECT
 
 public:
-    explicit CProxySocket5(QTcpSocket* pSocket, QObject *parent = nullptr);
+    explicit CProxySocket5(QTcpSocket* pSocket, CProxyServer *server, QObject *parent = nullptr);
     virtual ~CProxySocket5();
 
 public Q_SLOTS:
     virtual void slotRead() override;
 private Q_SLOTS:
     virtual void slotClose() override;
-
     virtual void slotLookup(QHostInfo info);
     virtual void slotPeerConnected();
     virtual void slotPeerDisconnectd();
@@ -63,7 +64,7 @@ static const char AUTHENTICATOR_GSSAI = 0x01; // 通过安全服务程序
 static const char AUTHENTICATOR_UserPassword = 0x02; // 用户名/密码
 static const char AUTHENTICATOR_IANA = 0x03; // IANA 分配
 static const char AUTHENTICATOR_Reserved = 0x08; // 私人方法保留
-static const char AUTHENTICATOR_NoAcceptable = 0xFF; // 没有可接受的方法
+static const unsigned char AUTHENTICATOR_NoAcceptable = 0xFF; // 没有可接受的方法
 
 // Reply status
 static const char REPLY_Succeeded = 0x00; // 成功
@@ -75,7 +76,7 @@ static const char REPLY_ConnectionRefused = 0x05; // 连接失败
 static const char REPLY_TtlExpired = 0x06; // 超时
 static const char REPLY_CommandNotSupported = 0x07;  // 命令不被支持
 static const char REPLY_AddressTypeNotSupported = 0x08; // 地址类型不受支持
-static const char REPLY_Undefined = 0xFF;
+static const unsigned char REPLY_Undefined = 0xFF;
 
 // Client requst command
 static const char ClientRequstCommandConnect = 0x01;

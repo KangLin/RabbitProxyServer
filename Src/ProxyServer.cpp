@@ -1,5 +1,7 @@
 #include "ProxyServer.h"
 #include "RabbitCommonLog.h"
+#include <QHostAddress>
+#include <QTcpSocket>
 
 CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
     m_nPort(1080)
@@ -13,18 +15,18 @@ int CProxyServer::Start(int nPort)
     int nRet = 0;
     m_nPort = nPort;
     
-    if(m_tcpServer.isListening())
+    if(m_Acceptor.isListening())
         Stop();
     
     QHostAddress address = QHostAddress::Any;
-    bool bCheck = m_tcpServer.listen(address, m_nPort);
+    bool bCheck = m_Acceptor.listen(address, m_nPort);
     if(!bCheck)
     {
         LOG_MODEL_ERROR("Server",
                        tr("Server listen at: %s:%d: %s").toStdString().c_str(),
                        address.toString().toStdString().c_str(),
                        m_nPort,
-                       m_tcpServer.errorString().toStdString().c_str());
+                       m_Acceptor.errorString().toStdString().c_str());
         return -1;
     }
     else
@@ -32,7 +34,7 @@ int CProxyServer::Start(int nPort)
                        tr("Server listen at: %s:%d").toStdString().c_str(),
                        address.toString().toStdString().c_str(),
                        m_nPort);
-    bCheck = connect(&m_tcpServer, SIGNAL(newConnection()),
+    bCheck = connect(&m_Acceptor, SIGNAL(newConnection()),
                      this, SLOT(slotAccept()));
     Q_ASSERT(bCheck);
     return nRet;
@@ -42,23 +44,23 @@ int CProxyServer::Stop()
 {
     int nRet = 0;
     
-    m_tcpServer.close();
+    m_Acceptor.close();
     emit sigStop();
     return nRet;
 }
 
 void CProxyServer::slotAccept()
 {
-    QTcpSocket* s = m_tcpServer.nextPendingConnection();
+    QTcpSocket* s = m_Acceptor.nextPendingConnection();
     if(!s) return;
     LOG_MODEL_INFO("Server",
                    tr("New connect from: %s:%d").toStdString().c_str(),
                    s->peerAddress().toString().toStdString().c_str(),
                    s->peerPort());
+    onAccecpt(s);
+}
 
-    CProxy* proxy = newProxy(s);
-    if(!proxy) return;
-    bool check = connect(this, SIGNAL(sigStop()),
-                    proxy, SLOT(deleteLater()));
-    Q_ASSERT(check);
+void CProxyServer::onAccecpt(QTcpSocket* pSocket)
+{
+    Q_UNUSED(pSocket);
 }

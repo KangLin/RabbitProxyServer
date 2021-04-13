@@ -1,6 +1,8 @@
 #ifndef CPROXYSERVERSOCKET_H
 #define CPROXYSERVERSOCKET_H
 
+#pragma once
+
 #include "ProxyServer.h"
 
 class RABBITPROXY_EXPORT CProxyServerSocket : public CProxyServer
@@ -9,8 +11,9 @@ class RABBITPROXY_EXPORT CProxyServerSocket : public CProxyServer
 public:
     CProxyServerSocket(QObject *parent = nullptr);
     
-protected:
-    virtual CProxy* newProxy(QTcpSocket* socket);
+protected Q_SLOTS:
+    virtual void onAccecpt(QTcpSocket* pSocket);
+    virtual void slotRead();
 };
 
 #endif // CPROXYSERVERSOCKET_H

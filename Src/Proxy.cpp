@@ -1,6 +1,7 @@
 #include "Proxy.h"
 
-CProxy::CProxy(QTcpSocket* pSocket, QObject *parent) : QObject(parent),
+CProxy::CProxy(QTcpSocket* pSocket, CProxyServer *server, QObject *parent)
+    : QObject(parent),
     m_pSocket(pSocket)
 {
     bool check = false;
@@ -12,9 +13,12 @@ CProxy::CProxy(QTcpSocket* pSocket, QObject *parent) : QObject(parent),
         check = connect(m_pSocket, SIGNAL(disconnected()),
                         this, SLOT(slotDisconnected()));
         Q_ASSERT(check);
-        
         connect(m_pSocket, SIGNAL(destroyed()),
                        this, SLOT(deleteLater()));
+        Q_ASSERT(check);
+        
+        check = connect(server, SIGNAL(sigStop()),
+                        this, SLOT(deleteLater()));
         Q_ASSERT(check);
     }
 }

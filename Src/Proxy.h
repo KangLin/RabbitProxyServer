@@ -1,20 +1,23 @@
 #ifndef CPROXY_H
 #define CPROXY_H
 
+#pragma once
+
 #include <QObject>
 #include <QTcpSocket>
-#include <QHostAddress>
-#include "rabbitproxy_export.h"
+#include "ProxyServer.h"
 
 class CProxy : public QObject
 {
     Q_OBJECT
 public:
-    explicit CProxy(QTcpSocket* pSocket, QObject *parent = nullptr);
+    explicit CProxy(QTcpSocket* pSocket, CProxyServer *server, QObject* parent = nullptr);
     virtual ~CProxy();
     
-protected Q_SLOTS:
+public Q_SLOTS:
     virtual void slotRead();
+    
+protected Q_SLOTS:
     virtual void slotDisconnected();
     virtual void slotClose();
     

@@ -2,8 +2,8 @@
 #include "RabbitCommonLog.h"
 #include <QtEndian>
 
-CProxySocket5::CProxySocket5(QTcpSocket *pSocket, QObject *parent)
-    : CProxy(pSocket, parent),
+CProxySocket5::CProxySocket5(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
+    : CProxy(pSocket, server, parent),
       m_Command(emCommand::Negotiate),
       m_currentVersion(VERSION_SOCK5),
       m_pPeerSocket(nullptr)
@@ -109,27 +109,11 @@ int CProxySocket5::processNegotiate()
         return -1;
     }
 
-    /*
-     
-                   +----+----------+----------+
-                   |VER | NMETHODS | METHODS  |
-                   +----+----------+----------+
-                   | 1  |    1     | 1 to 255 |
-                   +----+----------+----------+
-                   
-     */
-    m_currentVersion = m_cmdBuf.at(0);
-    if(!(/*VERSION_SOCK4 == m_currentVersion
-         ||*/ VERSION_SOCK5 == m_currentVersion))
+    //NOTE: Removed version
+    if(m_cmdBuf.size() >= 1)
     {
-        LOG_MODEL_ERROR("Socket5", "Don't support version: 0x%X", m_currentVersion);
-        return -2;
-    }
-    
-    if(m_cmdBuf.size() >= 2)
-    {
-        nLen = 2 + m_cmdBuf.at(1);
-        LOG_MODEL_DEBUG("Socket5", "support %d methos", nLen);
+        nLen = 1 + m_cmdBuf.at(0);
+        LOG_MODEL_DEBUG("Socket5", "support %d methos", nLen - 1);
         if(CheckBufferLength(nLen))
         {
             LOG_MODEL_DEBUG("Socket5", "Be continuing read from socket: %s:%d",
@@ -151,9 +135,9 @@ int CProxySocket5::processNegotiateReply(const QByteArray& data)
 {
     int nRet = 0;
     char method = AUTHENTICATOR_NoAcceptable;
-    for(unsigned char i = 0; i < data.at(1); i++)
+    for(unsigned char i = 0; i < data.at(0); i++)
     {
-        char c = data.at(i + 2);
+        char c = data.at(i + 1);
         if(m_vAuthenticator.contains(c))
         {
             method = c;

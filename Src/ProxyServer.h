@@ -1,10 +1,12 @@
 #ifndef CPROXYSERVER_H
 #define CPROXYSERVER_H
 
-#include <QObject>
+#pragma once
 
+#include <QObject>
 #include <QTcpServer>
-#include "Proxy.h"
+
+#include "rabbitproxy_export.h"
 
 class RABBITPROXY_EXPORT CProxyServer : public QObject
 {
@@ -16,18 +18,16 @@ public:
     int Start(int nPort = 1080);
     int Stop();
     
-protected:
-    virtual CProxy* newProxy(QTcpSocket* socket) = 0;
-    
 Q_SIGNALS:
     void sigStop();
     
-private Q_SLOTS:
-    void slotAccept();
+protected Q_SLOTS:
+    virtual void slotAccept();
+    virtual void onAccecpt(QTcpSocket* pSocket);
     
-private:
+protected:
     int m_nPort;
-    QTcpServer m_tcpServer;
+    QTcpServer m_Acceptor;
 };
 
 #endif // CPROXYSERVER_H
