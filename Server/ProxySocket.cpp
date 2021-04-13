@@ -13,12 +13,13 @@ CProxySocket::CProxySocket(QTcpSocket *pSocket, QObject *parent)
 
 CProxySocket::~CProxySocket()
 {
-    qDebug() << "CProxySocket5::~CProxySocket5()";
+    qDebug() << "CProxySocket::~CProxySocket()";
 
 }
 
 void CProxySocket::slotClose()
 {
+    qDebug() << "CProxySocket::slotClose()";
     if(m_pPeerSocket)
     {
         m_pPeerSocket->close();
@@ -31,7 +32,7 @@ void CProxySocket::slotClose()
 
 void CProxySocket::slotRead()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotRead():0x%X", m_Command);
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotRead():0x%X", m_Command);
     int nRet = 0;
     switch (m_Command) {
     case emCommand::Negotiate:
@@ -101,7 +102,7 @@ int CProxySocket::processNegotiate()
     int nRet = 0;
     int nLen = 0;
     m_cmdBuf += m_pSocket->readAll();
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::processNegotiate()");
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket::processNegotiate()");
     if(m_cmdBuf.isEmpty())
     {
         LOG_MODEL_ERROR("Socket5", "m_pSocket->readAll() fail");
@@ -243,7 +244,7 @@ int CProxySocket::replyAuthenticatorUserPassword(char nRet)
 }
 
 /**
- * @brief CProxySocket5::processAuthenticatorUserPassword
+ * @brief CProxySocket::processAuthenticatorUserPassword
  * @param szUser
  * @param szPassword
  * @return 0: success
@@ -261,7 +262,7 @@ int CProxySocket::processAuthenticatorUserPassword(
 int CProxySocket::processClientRequest()
 {
     int nRet = 0;
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::processClientRequest()");
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket::processClientRequest()");
     m_cmdBuf += m_pSocket->readAll();
     if(CheckBufferLength(4))
     {
@@ -383,7 +384,8 @@ int CProxySocket::processClientReply(char rep)
         switch (reply.addressType) {
         case AddressTypeIpv4:
         {
-            LOG_MODEL_DEBUG("Socket5", "IP: %d:%d", add.toIPv4Address(), nPort);
+            LOG_MODEL_DEBUG("Socket5", "IP: %s:%d",
+                            add.toString().toStdString().c_str(), nPort);
             qint32 d = qToBigEndian(add.toIPv4Address());
             memcpy(pBuf + sizeof(strClientRequstReplyHead), &d, 4);
             qint16 port = qToBigEndian(nPort);
@@ -466,7 +468,7 @@ int CProxySocket::processConnect()
 
 void CProxySocket::slotPeerConnected()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerConnected()");
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerConnected()");
     processClientReply(REPLY_Succeeded);
     m_Command = emCommand::Forward;
     CleanCommandBuffer(m_Client.nLen);
@@ -475,13 +477,13 @@ void CProxySocket::slotPeerConnected()
 
 void CProxySocket::slotPeerDisconnectd()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerDisconnectd()");
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerDisconnectd()");
     slotClose();
 }
 
 void CProxySocket::slotPeerError(QAbstractSocket::SocketError error)
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerError():%d", error);
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerError():%d", error);
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
         processClientReply(REPLY_ConnectionRefused);
@@ -509,12 +511,17 @@ void CProxySocket::slotPeerError(QAbstractSocket::SocketError error)
 
 void CProxySocket::slotPeerRead()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket5::slotPeerRead()");
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerRead()");
 //    if(m_pPeerSocket && m_pSocket
 //        && m_pPeerSocket->state() == QAbstractSocket::ConnectedState
 //            && m_pSocket->state() == QAbstractSocket::ConnectedState)
     {
         QByteArray d = m_pPeerSocket->readAll();
+        if(d.isEmpty())
+        {
+            return;
+        }
+        
         int nRet = m_pSocket->write(d.data(), d.length());
         if(-1 == nRet)
             LOG_MODEL_ERROR("Socket5", "Forword peer to client fail[%d]: %s",
