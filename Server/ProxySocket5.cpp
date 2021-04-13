@@ -422,7 +422,7 @@ int CProxySocket5::processExecClientRequest()
         nRet = processBind();
         break;
     case ClientRequstCommandUdp:
-        //TODO:
+        //TODO: process udp
         break;
     default:
         processClientReply(REPLY_CommandNotSupported);
