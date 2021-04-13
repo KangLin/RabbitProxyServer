@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QHostAddress>
+#include "rabbitproxy_export.h"
 
 class CProxy : public QObject
 {

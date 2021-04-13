@@ -3,7 +3,7 @@
 
 #include "ProxyServer.h"
 
-class CProxyServerSocket : public CProxyServer
+class RABBITPROXY_EXPORT CProxyServerSocket : public CProxyServer
 {
     Q_OBJECT
 public:

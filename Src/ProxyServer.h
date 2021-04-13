@@ -6,7 +6,7 @@
 #include <QTcpServer>
 #include "Proxy.h"
 
-class CProxyServer : public QObject
+class RABBITPROXY_EXPORT CProxyServer : public QObject
 {
     Q_OBJECT
 public:

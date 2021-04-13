@@ -168,6 +168,7 @@ else()
     message(FATAL_ERROR "       cmake -DRabbitCommon_DIR= ")
 endif()
 
+add_subdirectory(Src)
 add_subdirectory(Server)
 
 # Create install runtime target

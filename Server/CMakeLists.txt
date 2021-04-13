@@ -6,17 +6,9 @@ project(RabbitProxyServer)
 
 SET(SOURCE_FILES
     main.cpp
-    Proxy.cpp
-    ProxySocket.cpp
-    ProxyServer.cpp   
-    ProxyServerSocket.cpp
     mainwindow.cpp)
 
 set(HEADER_FILES
-    Proxy.h
-    ProxySocket.h
-    ProxyServer.h
-    ProxyServerSocket.h
     mainwindow.h)
 
 set(SOURCE_UI_FILES
@@ -55,7 +47,7 @@ ADD_TARGET(NAME ${PROJECT_NAME}
     VERSION ${BUILD_VERSION}
     PRIVATE_DEFINITIONS BUILD_VERSION="${BUILD_VERSION}"
     SOURCE_FILES ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} ${RCC_FILES}
-    PRIVATE_LIBS RabbitCommon ${QT_LIBRARIES})
+    PRIVATE_LIBS RabbitProxy ${QT_LIBRARIES})
 
 #if(WIN32)
 #    install(FILES Resource/Image/App.ico
