@@ -118,8 +118,8 @@ int CProxySocket::processNegotiate()
                    
      */
     m_currentVersion = m_cmdBuf.at(0);
-    if(!(VERSION_SOCK4 == m_currentVersion
-         || VERSION_SOCK5 == m_currentVersion))
+    if(!(/*VERSION_SOCK4 == m_currentVersion
+         ||*/ VERSION_SOCK5 == m_currentVersion))
     {
         LOG_MODEL_ERROR("Socket5", "Don't support version: 0x%X", m_currentVersion);
         return -2;
@@ -411,7 +411,7 @@ int CProxySocket::processClientReply(char rep)
 int CProxySocket::processExecClientRequest()
 {
     int nRet = 0;
-    
+    LOG_MODEL_DEBUG("Socket5", "processExecClientRequest: 0x%X", m_Client.pHead->command);
     switch (m_Client.pHead->command) {
     case ClientRequstCommandConnect:
     {
