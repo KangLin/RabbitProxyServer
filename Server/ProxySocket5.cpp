@@ -14,6 +14,19 @@ CProxySocket5::CProxySocket5(QTcpSocket *pSocket, QObject *parent)
 CProxySocket5::~CProxySocket5()
 {
     qDebug() << "CProxySocket5::~CProxySocket5()";
+
+}
+
+void CProxySocket5::slotClose()
+{
+    if(m_pPeerSocket)
+    {
+        m_pPeerSocket->close();
+        m_pPeerSocket->deleteLater();
+        m_pPeerSocket = nullptr;
+    }
+    
+    CProxy::slotClose();
 }
 
 void CProxySocket5::slotRead()
@@ -510,6 +523,7 @@ void CProxySocket5::slotPeerRead()
     }
 }
 
+//TODO: There are not tested!
 int CProxySocket5::processBind()
 {
     int nRet = 0;

@@ -18,6 +18,7 @@ public:
     virtual ~CProxySocket5();
 
 private slots:
+    virtual void slotClose() override;
     virtual void slotRead() override;
     virtual void slotLookup(QHostInfo info);
     virtual void slotPeerConnected();
