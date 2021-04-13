@@ -5,7 +5,7 @@ set(INSTALL_HEAD_FILES
     ProxyServer.h
     ProxyServerSocket.h
     Proxy.h
-    ProxySocket.h
+    ProxySocket5.h
     )
 set(HEADER_FILES
     ${INSTALL_HEAD_FILES}
@@ -16,7 +16,7 @@ set(SOURCE_FILES
     ProxyServer.cpp
     ProxyServerSocket.cpp
     Proxy.cpp
-    ProxySocket.cpp
+    ProxySocket5.cpp
     )
 
 #翻译

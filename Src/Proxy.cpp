@@ -12,6 +12,10 @@ CProxy::CProxy(QTcpSocket* pSocket, QObject *parent) : QObject(parent),
         check = connect(m_pSocket, SIGNAL(disconnected()),
                         this, SLOT(slotDisconnected()));
         Q_ASSERT(check);
+        
+        connect(m_pSocket, SIGNAL(destroyed()),
+                       this, SLOT(deleteLater()));
+        Q_ASSERT(check);
     }
 }
 

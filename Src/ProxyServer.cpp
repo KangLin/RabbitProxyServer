@@ -1,6 +1,5 @@
 #include "ProxyServer.h"
 #include "RabbitCommonLog.h"
-#include "ProxySocket.h"
 
 CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
     m_nPort(1080)
@@ -59,10 +58,7 @@ void CProxyServer::slotAccept()
 
     CProxy* proxy = newProxy(s);
     if(!proxy) return;
-    bool check = proxy->connect(s, SIGNAL(destroyed()),
-                   proxy, SLOT(deleteLater()));
-    Q_ASSERT(check);
-    check = connect(this, SIGNAL(sigStop()),
+    bool check = connect(this, SIGNAL(sigStop()),
                     proxy, SLOT(deleteLater()));
     Q_ASSERT(check);
 }
