@@ -168,6 +168,7 @@ int CProxySocket5::processAuthenticator()
         slotRead();
         return nRet;
     case AUTHENTICATOR_UserPassword:
+    {
         if(CheckBufferLength(2))
             return ERROR_CONTINUE_READ;
         if(m_cmdBuf.at(0) != 0x01)
@@ -202,8 +203,12 @@ int CProxySocket5::processAuthenticator()
         int nLen = 3 + nUser + nPassword;
 
         m_Command = emCommand::ClientRequest;
-        
+
         CleanCommandBuffer(nLen);
+        break;
+    }
+    default:
+        slotClose();
         break;
     }
 

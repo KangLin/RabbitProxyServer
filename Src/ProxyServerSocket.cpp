@@ -31,16 +31,16 @@ void CProxyServerSocket::slotRead()
     
     LOG_MODEL_INFO("Server socket", "Version is 0x%X", d.at(0));
     switch (d.at(0)) {
-    case 0x04:
-        break;
     case 0x05:
     {
         CProxySocket5 *p = new CProxySocket5(pSocket, this);
         p->slotRead();
         break;
     }
+    case 0x04:
     default:
         LOG_MODEL_WARNING("Server socket", "Isn't support version: 0x%X", d.at(0));
+        pSocket->close();
         break;
     }
     
