@@ -1,6 +1,7 @@
 #include "ProxySocket5.h"
 #include "RabbitCommonLog.h"
 #include <QtEndian>
+#include <memory>
 
 CProxySocket5::CProxySocket5(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
     : CProxy(pSocket, server, parent),
@@ -65,12 +66,6 @@ void CProxySocket5::slotRead()
         }
         break;
     }
-    
-    //TODO: nRet < 0: error
-    //           > 0: continue read from socket
-    //           = 0: success
-    //if(nRet < 0)
-    //    slotClose();
 }
 
 int CProxySocket5::CheckBufferLength(int nLength)
@@ -361,33 +356,32 @@ int CProxySocket5::processClientReply(char rep)
         add.setAddress((quint32)0);
     }
 
-    char* pBuf = new char[nLen];
-    if(m_pSocket && pBuf)
+    std::unique_ptr<char> buf(new char[nLen]);
+    if(m_pSocket && buf)
     {
-        memcpy(pBuf, &reply, sizeof(strClientRequstReplyHead));
+        memcpy(buf.get(), &reply, sizeof(strClientRequstReplyHead));
         switch (reply.addressType) {
         case AddressTypeIpv4:
         {
             LOG_MODEL_DEBUG("Socket5", "IP: %s:%d",
                             add.toString().toStdString().c_str(), nPort);
             qint32 d = qToBigEndian(add.toIPv4Address());
-            memcpy(pBuf + sizeof(strClientRequstReplyHead), &d, 4);
+            memcpy(buf.get() + sizeof(strClientRequstReplyHead), &d, 4);
             qint16 port = qToBigEndian(nPort);
-            memcpy(pBuf + sizeof(strClientRequstReplyHead) + 4, &port, 2);
+            memcpy(buf.get() + sizeof(strClientRequstReplyHead) + 4, &port, 2);
             break;
         }
         case AddressTypeIpv6:
         {
             Q_IPV6ADDR d = add.toIPv6Address();
-            memcpy(pBuf + sizeof(strClientRequstReplyHead), d.c, 16);
+            memcpy(buf.get() + sizeof(strClientRequstReplyHead), d.c, 16);
             qint16 port = qToBigEndian(nPort);
-            memcpy(pBuf + sizeof(strClientRequstReplyHead) + 16, &port, 2);
+            memcpy(buf.get() + sizeof(strClientRequstReplyHead) + 16, &port, 2);
             break;
         }
         }
-        m_pSocket->write(pBuf, nLen);
+        m_pSocket->write(buf.get(), nLen);
     }
-    delete []pBuf;
 
     if(REPLY_Succeeded != rep)
         slotClose();
