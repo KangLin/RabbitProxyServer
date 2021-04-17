@@ -10,7 +10,13 @@
 #include <QHostInfo>
 #include <QList>
 #include <QUdpSocket>
+#include "PeerConnecter.h"
 
+/**
+ * @brief The CProxySocket5 class
+ *        Implement SOCKET5(RFC1928)：http://www.ietf.org/rfc/rfc1928.txt
+ * @note  The first version is processed in CProxyServerSocket::slotRead()
+ */
 class CProxySocket5 : public CProxy
 {
     Q_OBJECT
@@ -26,7 +32,7 @@ private Q_SLOTS:
     virtual void slotLookup(QHostInfo info);
     virtual void slotPeerConnected();
     virtual void slotPeerDisconnectd();
-    virtual void slotPeerError(QAbstractSocket::SocketError error);
+    virtual void slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr);
     virtual void slotPeerRead();
     
 private:
@@ -47,7 +53,7 @@ private:
     int processClientRequest();
     int processClientReply(char rep);
     int processExecClientRequest();
-    int processConnect();
+    virtual int processConnect();
     int processBind();
     
 private:
@@ -137,7 +143,7 @@ static const char AddressTypeIpv6 = 0x04;
     QVector<char> m_vAuthenticator;
     strClientRequst m_Client;
 
-    QAbstractSocket* m_pPeerSocket;
+    CPeerConnecter* m_pPeer;
 };
 
 #endif // CPROXYSOCKET5_H

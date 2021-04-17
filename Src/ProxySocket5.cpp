@@ -7,7 +7,7 @@ CProxySocket5::CProxySocket5(QTcpSocket *pSocket, CProxyServer *server, QObject 
     : CProxy(pSocket, server, parent),
       m_Command(emCommand::Negotiate),
       m_currentVersion(VERSION_SOCK5),
-      m_pPeerSocket(nullptr)
+      m_pPeer(nullptr)
 {
     m_vAuthenticator << AUTHENTICATOR_UserPassword << AUTHENTICATOR_NO;
 }
@@ -21,11 +21,11 @@ CProxySocket5::~CProxySocket5()
 void CProxySocket5::slotClose()
 {
     qDebug() << "CProxySocket::slotClose()";
-    if(m_pPeerSocket)
+    if(m_pPeer)
     {
-        m_pPeerSocket->close();
-        m_pPeerSocket->deleteLater();
-        m_pPeerSocket = nullptr;
+        m_pPeer->Close();
+        m_pPeer->deleteLater();
+        m_pPeer = nullptr;
     }
     
     CProxy::slotClose();
@@ -46,23 +46,22 @@ void CProxySocket5::slotRead()
         nRet = processClientRequest();
         break;
     case emCommand::LookUp:
-        //nRet = processExecClientRequest();
         break;
     case emCommand::Forward:
-        if(m_pPeerSocket && m_pSocket)
+        if(m_pPeer && m_pSocket)
         {
-            QByteArray d = m_pPeerSocket->readAll();
+            QByteArray d = m_pSocket->readAll();
             if(!d.isEmpty())
             {
-                int nWrite = m_pPeerSocket->write(d.data(), d.length());
+                int nWrite = m_pPeer->Write(d.data(), d.length());
                 if(-1 == nWrite)
                     LOG_MODEL_ERROR("Socket5",
                                     "Forword client to peer fail[%d]: %s",
-                                    m_pSocket->error(),
-                                    m_pSocket->errorString().toStdString().c_str());
+                                    m_pPeer->Error(),
+                                    m_pPeer->ErrorString().toStdString().c_str());
             }
             else
-                LOG_MODEL_DEBUG("Socket5", "readAll fail");
+                LOG_MODEL_DEBUG("Socket5", "From client readAll is empty");
         }
         break;
     }
@@ -105,6 +104,7 @@ int CProxySocket5::processNegotiate()
     }
 
     //NOTE: Removed version
+    //See   CProxyServerSocket::slotRead()
     if(m_cmdBuf.size() >= 1)
     {
         nLen = 1 + m_cmdBuf.at(0);
@@ -338,10 +338,10 @@ int CProxySocket5::processClientReply(char rep)
     int nLen = sizeof(strClientRequstReplyHead);
     
     QHostAddress add;
-    if(m_pPeerSocket)
+    if(m_pPeer)
     {
-        add = m_pPeerSocket->localAddress();
-        nPort = m_pPeerSocket->localPort();
+        add = m_pPeer->LocalAddress();
+        nPort = m_pPeer->LocalPort();
     }
     if(add != QHostAddress::Null)
     {
@@ -424,25 +424,27 @@ int CProxySocket5::processConnect()
         return processClientReply(REPLY_HostUnreachable);
     }
 
-    if(m_pPeerSocket)
+    if(m_pPeer)
         Q_ASSERT(false);
     else
-        m_pPeerSocket = new QTcpSocket();
+        m_pPeer = new CPeerConnecter(this);
     foreach(auto add, m_Client.szHost)
     {
-        m_pPeerSocket->connectToHost(add, m_Client.nPort);
-        check = connect(m_pPeerSocket, SIGNAL(connected()),
+        check = connect(m_pPeer, SIGNAL(sigConnected()),
                         this, SLOT(slotPeerConnected()));
         Q_ASSERT(check);
-        check = connect(m_pPeerSocket, SIGNAL(disconnected()),
+        check = connect(m_pPeer, SIGNAL(sigDisconnected()),
                         this, SLOT(slotPeerDisconnectd()));
         Q_ASSERT(check);
-        check = connect(m_pPeerSocket, SIGNAL(error(QAbstractSocket::SocketError)),
-                        this, SLOT(slotPeerError(QAbstractSocket::SocketError)));
+        check = connect(m_pPeer, SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
+                        this, SLOT(slotPeerError(const CPeerConnecter:: emERROR&, const QString&)));
         Q_ASSERT(check);
-        check = connect(m_pPeerSocket, SIGNAL(readyRead()),
+        check = connect(m_pPeer, SIGNAL(sigReadyRead()),
                         this, SLOT(slotPeerRead()));
         Q_ASSERT(check);
+
+        m_pPeer->Connect(add, m_Client.nPort);
+
         return 0;
     }
 
@@ -464,28 +466,19 @@ void CProxySocket5::slotPeerDisconnectd()
     slotClose();
 }
 
-void CProxySocket5::slotPeerError(QAbstractSocket::SocketError error)
+void CProxySocket5::slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr)
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerError():%d", error);
-    switch (error) {
-    case QAbstractSocket::ConnectionRefusedError:
+    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerError():%d %s", err, szErr.toStdString().c_str());
+    switch (err) {
+    case CPeerConnecter::emERROR::ConnectionRefused:
         processClientReply(REPLY_ConnectionRefused);
         return;
-    case QAbstractSocket::HostNotFoundError:
+    case CPeerConnecter::emERROR::HostNotFound:
         processClientReply(REPLY_HostUnreachable);
         return;
-    case QAbstractSocket::SocketResourceError:
-        break;
-    case QAbstractSocket::SocketAccessError:
+    case CPeerConnecter::emERROR::NotAllowdConnection:
         processClientReply(REPLY_NotAllowdConnection);
         return;
-    case QAbstractSocket::SocketTimeoutError:
-        if(m_pPeerSocket->state() != QAbstractSocket::ConnectedState)
-        {
-            processClientReply(REPLY_TtlExpired);
-            return;
-        }
-        break;
     default:
         break;
     }
@@ -495,13 +488,12 @@ void CProxySocket5::slotPeerError(QAbstractSocket::SocketError error)
 void CProxySocket5::slotPeerRead()
 {
     LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerRead()");
-//    if(m_pPeerSocket && m_pSocket
-//        && m_pPeerSocket->state() == QAbstractSocket::ConnectedState
-//            && m_pSocket->state() == QAbstractSocket::ConnectedState)
+    if(m_pPeer)
     {
-        QByteArray d = m_pPeerSocket->readAll();
+        QByteArray d = m_pPeer->ReadAll();
         if(d.isEmpty())
         {
+            LOG_MODEL_DEBUG("Socket5", "Peer read all is empty");
             return;
         }
         
@@ -518,14 +510,17 @@ int CProxySocket5::processBind()
 {
     int nRet = 0;
 
-    if(m_pPeerSocket)
+    if(m_pPeer)
         Q_ASSERT(false);
     else
-        m_pPeerSocket = new QTcpSocket();
+    {
+        //TODO: add implement peer connecter
+        m_pPeer = new CPeerConnecter(this);
+    }
     bool bBind = false;
     foreach(auto add, m_Client.szHost)
     {
-        bBind = m_pPeerSocket->bind(add, m_Client.nPort);
+        bBind = m_pPeer->Bind(add, m_Client.nPort);
         if(bBind) break;
     }
 
@@ -533,10 +528,10 @@ int CProxySocket5::processBind()
     {
         if(m_Client.szHost.isEmpty())
         {
-            bBind = m_pPeerSocket->bind(m_Client.nPort);
+            bBind = m_pPeer->Bind(m_Client.nPort);
         }
         else{
-            bBind = m_pPeerSocket->bind();
+            bBind = m_pPeer->Bind();
         }
     }
     
@@ -546,16 +541,16 @@ int CProxySocket5::processBind()
         return nRet;
     }
     
-    bool check = connect(m_pPeerSocket, SIGNAL(connected()),
-            this, SLOT(slotPeerConnected()));
+    bool check = connect(m_pPeer, SIGNAL(sigConnected()),
+                    this, SLOT(slotPeerConnected()));
     Q_ASSERT(check);
-    check = connect(m_pPeerSocket, SIGNAL(disconnected()),
+    check = connect(m_pPeer, SIGNAL(sigDisconnected()),
                     this, SLOT(slotPeerDisconnectd()));
     Q_ASSERT(check);
-    check = connect(m_pPeerSocket, SIGNAL(error(QAbstractSocket::SocketError)),
-                    this, SLOT(slotPeerError(QAbstractSocket::SocketError)));
+    check = connect(m_pPeer, SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
+                    this, SLOT(slotPeerError(const CPeerConnecter::emERROR&, const QString&)));
     Q_ASSERT(check);
-    check = connect(m_pPeerSocket, SIGNAL(readyRead()),
+    check = connect(m_pPeer, SIGNAL(sigReadyRead()),
                     this, SLOT(slotPeerRead()));
     Q_ASSERT(check);
     

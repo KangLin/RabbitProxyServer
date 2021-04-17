@@ -38,6 +38,7 @@ void CProxyServerSocket::slotRead()
         break;
     }
     case 0x04:
+        //TODO: add socket4 support
     default:
         LOG_MODEL_WARNING("Server socket", "Isn't support version: 0x%X", d.at(0));
         pSocket->close();
