@@ -28,7 +28,7 @@ public:
     virtual int Bind(qint16 nPort = 0);
     virtual int Read(char* buf, int nLen);
     virtual QByteArray ReadAll();
-    virtual int Write(char* buf, int nLen);
+    virtual int Write(const char* buf, int nLen);
     virtual int Close();
     virtual int Error();
     virtual QString ErrorString();
@@ -41,7 +41,7 @@ Q_SIGNALS:
     void sigError(const CPeerConnecter::emERROR &eNo, const QString& szError);
     void sigReadyRead();
     
-protected Q_SLOTS:
+private Q_SLOTS:
     virtual void slotError(QAbstractSocket::SocketError error);
     
 private:

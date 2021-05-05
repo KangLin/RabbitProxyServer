@@ -63,7 +63,7 @@ QByteArray CPeerConnecter::ReadAll()
     return m_Socket.readAll();
 }
 
-int CPeerConnecter::Write(char *buf, int nLen)
+int CPeerConnecter::Write(const char *buf, int nLen)
 {
     return m_Socket.write(buf, nLen);
 }

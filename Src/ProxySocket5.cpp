@@ -2,6 +2,7 @@
 #include "RabbitCommonLog.h"
 #include <QtEndian>
 #include <memory>
+#include "PeerConnecterIce.h"
 
 CProxySocket5::CProxySocket5(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
     : CProxy(pSocket, server, parent),
@@ -427,7 +428,8 @@ int CProxySocket5::processConnect()
     if(m_pPeer)
         Q_ASSERT(false);
     else
-        m_pPeer = new CPeerConnecter(this);
+        //TODO: add implement peer connecter
+        m_pPeer = new CPeerConnecterIce(this);//new CPeerConnecter(this);
     foreach(auto add, m_Client.szHost)
     {
         check = connect(m_pPeer, SIGNAL(sigConnected()),
