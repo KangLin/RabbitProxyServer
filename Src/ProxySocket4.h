@@ -41,6 +41,7 @@ private:
         Forward
     };
     enum emCommand m_Command;
+    
     enum class emErrorCode {
         // request granted
         Ok = 90,

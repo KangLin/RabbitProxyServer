@@ -28,11 +28,11 @@ public Q_SLOTS:
     virtual void slotRead() override;
 private Q_SLOTS:
     virtual void slotClose() override;
-    virtual void slotLookup(QHostInfo info);
-    virtual void slotPeerConnected();
-    virtual void slotPeerDisconnectd();
-    virtual void slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr);
-    virtual void slotPeerRead();
+    virtual void slotLookup(QHostInfo info) override;
+    virtual void slotPeerConnected() override;
+    virtual void slotPeerDisconnectd() override;
+    virtual void slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr) override;
+    virtual void slotPeerRead() override;
     
 private:
     int processNegotiate();
@@ -43,8 +43,8 @@ private:
     int processClientRequest();
     int processClientReply(char rep);
     int processExecClientRequest();
-    virtual int processConnect();
-    int processBind();
+    virtual int processConnect() override;
+    virtual int processBind() override;
     
 private:
     
@@ -87,7 +87,9 @@ static const char AddressTypeIpv6 = 0x04;
         LookUp,
         Forward
     };
-
+    
+#pragma pack(push) 
+#pragma pack(1)
     /**
      * 服务端回应客户端
     */
@@ -121,7 +123,8 @@ static const char AddressTypeIpv6 = 0x04;
         char reserved;
         char addressType;
     };
-
+#pragma pack(pop)
+    
     enum emCommand m_Command;
 
     char m_currentVersion;
