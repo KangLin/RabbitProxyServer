@@ -15,9 +15,7 @@ public:
     virtual bool IsOpen() override;
     virtual int Write(const char* buf, int nLen) override;
     virtual int Read(char* buf, int nLen) override;
-    
-signals:
-    
+
 private:
     std::shared_ptr<rtc::WebSocket> m_webSocket;
     std::string m_szUrl;

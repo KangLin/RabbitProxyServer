@@ -1,11 +1,12 @@
 #include "PeerConnecterIce.h"
+#include "SignalWebSocket.h"
 #include "RabbitCommonLog.h"
 #include <QJsonDocument>
 #include <QtEndian>
 
 CPeerConnecterIce::CPeerConnecterIce(QObject *parent) : CPeerConnecter(parent)
 {
-    m_Signal = std::make_shared<CSignal>(this);
+    m_Signal = std::make_shared<CSignalWebSocket>(this);
     m_peerPort = 0;
     m_bindPort = 0;
     m_bConnectSide = false;
@@ -16,8 +17,9 @@ int CPeerConnecterIce::CreateDataChannel()
 {
     rtc::Configuration config;
     //TODO: modify configure
-    config.iceServers.emplace_back("192.168.137.147");
-    
+    config.iceServers.push_back(rtc::IceServer("35.232.4.97", 3478));
+    config.iceServers.push_back(rtc::IceServer("35.232.4.97", 3478, "a", "a"));
+
     m_peerConnection = std::make_shared<rtc::PeerConnection>(config);
     if(!m_peerConnection) return -1;
     m_peerConnection->onStateChange([](rtc::PeerConnection::State state) {
@@ -31,22 +33,26 @@ int CPeerConnecterIce::CreateDataChannel()
                 [this](rtc::Description description) {
         LOG_MODEL_DEBUG("PeerConnecterIce", "onLocalDescription: %s",
                         std::string(description).c_str());
+        //TODO: Send to the peer through the signal channel
     });
     m_peerConnection->onLocalCandidate(
                 [this](rtc::Candidate candidate){
         LOG_MODEL_DEBUG("PeerConnecterIce", "onLocalCandidate: %s, mid: %s",
                         std::string(candidate).c_str(),
                         candidate.mid().c_str());
+        //TODO: Send to the peer through the signal channel
     });
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
         LOG_MODEL_DEBUG("PeerConnecterIce", "onDataChannel: DataCannel label: %s",
                         dc->label().c_str());
-        dc->onOpen([]() {
-            LOG_MODEL_DEBUG("PeerConnecterIce", "Open data channel from remote");
+        dc->onOpen([dc]() {
+            LOG_MODEL_DEBUG("PeerConnecterIce", "Open data channel from remote: %s",
+                            dc->label().c_str());
         });
         
-        dc->onClosed([this]() {
-            LOG_MODEL_DEBUG("PeerConnecterIce", "Close data channel from remote");
+        dc->onClosed([this, dc]() {
+            LOG_MODEL_DEBUG("PeerConnecterIce", "Close data channel from remote: %s",
+                            dc->label().c_str());
             emit this->sigDisconnected();
         });
         

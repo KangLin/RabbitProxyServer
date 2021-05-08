@@ -20,7 +20,6 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-
 void MainWindow::on_actionStart_triggered()
 {
     on_actionStop_triggered();

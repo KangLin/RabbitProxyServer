@@ -5,10 +5,10 @@ set(INSTALL_HEAD_FILES
     ProxyServer.h
     ProxyServerSocket.h
     Proxy.h
+    ProxySocket4.h
     ProxySocket5.h
     PeerConnecter.h
     Signal.h
-    SignalWebSocket.h
     Parameter.h
     )
 set(HEADER_FILES
@@ -19,10 +19,10 @@ set(SOURCE_FILES
     ProxyServer.cpp
     ProxyServerSocket.cpp
     Proxy.cpp
+    ProxySocket4.cpp
     ProxySocket5.cpp
     PeerConnecter.cpp
     Signal.cpp
-    SignalWebSocket.cpp
     Parameter.cpp
     )
 set(SOURCE_UI_FILES
@@ -57,11 +57,14 @@ if(LibDataChannel_FOUND)
     set(INSTALL_HEAD_FILES
         ${INSTALL_HEAD_FILES}
         PeerConnecterIce.h
+        SignalWebSocket.h
         )
     set(SOURCE_FILES
         ${SOURCE_FILES}
         PeerConnecterIce.cpp
+        SignalWebSocket.cpp
         )
+    list(APPEND PROXY_PRIVATE_DEFINITIONS HAVE_ICE)
 endif()
 
 #翻译

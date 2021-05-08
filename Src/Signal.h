@@ -17,10 +17,11 @@ public:
     virtual int Write(const char* buf, int nLen) = 0;
     virtual int Read(char* buf, int nLen) = 0;
 
-signals:
+Q_SIGNALS:
     void sigConnected();
     void sigDisconnected();
     void sigReadyRead();
+    void sigError(int nError, const QString& szError);
 };
 
 #endif // CSIGNAL_H

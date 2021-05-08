@@ -1,14 +1,18 @@
 #include "ProxySocket5.h"
+
+#ifdef HAVE_ICE
+    #include "PeerConnecterIce.h"
+#endif
+
 #include "RabbitCommonLog.h"
+
 #include <QtEndian>
 #include <memory>
-#include "PeerConnecterIce.h"
 
 CProxySocket5::CProxySocket5(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
-    : CProxy(pSocket, server, parent),
+    : CProxySocket4(pSocket, server, parent),
       m_Command(emCommand::Negotiate),
-      m_currentVersion(VERSION_SOCK5),
-      m_pPeer(nullptr)
+      m_currentVersion(VERSION_SOCK5)
 {
     m_vAuthenticator << AUTHENTICATOR_UserPassword << AUTHENTICATOR_NO;
 }
@@ -22,19 +26,13 @@ CProxySocket5::~CProxySocket5()
 void CProxySocket5::slotClose()
 {
     qDebug() << "CProxySocket::slotClose()";
-    if(m_pPeer)
-    {
-        m_pPeer->Close();
-        m_pPeer->deleteLater();
-        m_pPeer = nullptr;
-    }
-    
+
     CProxy::slotClose();
 }
 
 void CProxySocket5::slotRead()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotRead():0x%X", m_Command);
+    //LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotRead() command:0x%X", m_Command);
     int nRet = 0;
     switch (m_Command) {
     case emCommand::Negotiate:
@@ -68,30 +66,6 @@ void CProxySocket5::slotRead()
     }
 }
 
-int CProxySocket5::CheckBufferLength(int nLength)
-{
-    int nRet = nLength - m_cmdBuf.size();
-    if(nRet > 0)
-    {
-        LOG_MODEL_DEBUG("Socket5", "Be continuing read [%d] bytes from socket: %s:%d",
-                 nRet, m_pSocket->peerAddress().toString().toStdString().c_str());        
-        return nRet;
-    }
-    return 0;
-}
-
-int CProxySocket5::CleanCommandBuffer(int nLength)
-{
-    if(m_cmdBuf.size() > nLength)
-    {
-        m_cmdBuf = m_cmdBuf.right(m_cmdBuf.size() - nLength);
-        slotRead();
-    } else {
-        m_cmdBuf.clear();
-    }
-    return 0;
-}
-
 int CProxySocket5::processNegotiate()
 {
     int nRet = 0;
@@ -122,7 +96,7 @@ int CProxySocket5::processNegotiate()
     
     m_Command = emCommand::Authentication;
     
-    CleanCommandBuffer(nLen);
+    RemoveCommandBuffer(nLen);
     
     return nRet;
 }
@@ -205,7 +179,7 @@ int CProxySocket5::processAuthenticator()
 
         m_Command = emCommand::ClientRequest;
 
-        CleanCommandBuffer(nLen);
+        RemoveCommandBuffer(nLen);
         break;
     }
     default:
@@ -270,9 +244,9 @@ int CProxySocket5::processClientRequest()
         m_Client.nLen = sizeof(strClientRequstHead) + 6;
         if(CheckBufferLength(m_Client.nLen))
             return ERROR_CONTINUE_READ;
-        QHostAddress add(qFromBigEndian<qint32>(m_cmdBuf.data() + 4));
+        QHostAddress add(qFromBigEndian<quint32>(m_cmdBuf.data() + 4));
         m_Client.szHost.push_back(add);
-        m_Client.nPort = qFromBigEndian<qint16>(m_cmdBuf.data() + 8);
+        m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 8);
         LOG_MODEL_DEBUG("Socket5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
                         m_Client.nPort);
         return processExecClientRequest();
@@ -299,7 +273,7 @@ int CProxySocket5::processClientRequest()
             return ERROR_CONTINUE_READ;
         QHostAddress add((quint8*)(m_cmdBuf.data() + 4));
         m_Client.szHost.push_back(add);
-        m_Client.nPort = qFromBigEndian<qint16>(m_cmdBuf.data() + 20);
+        m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 20);
         LOG_MODEL_DEBUG("Socket5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
                         m_Client.nPort);
         return processExecClientRequest();
@@ -335,7 +309,7 @@ int CProxySocket5::processClientReply(char rep)
     reply.reserved = 0;
     reply.addressType = 0x01;
 
-    qint16 nPort = 0;
+    quint16 nPort = 0;
     int nLen = sizeof(strClientRequstReplyHead);
     
     QHostAddress add;
@@ -371,9 +345,9 @@ int CProxySocket5::processClientReply(char rep)
         {
             LOG_MODEL_DEBUG("Socket5", "IP: %s:%d",
                             add.toString().toStdString().c_str(), nPort);
-            qint32 d = qToBigEndian(add.toIPv4Address());
+            quint32 d = qToBigEndian(add.toIPv4Address());
             memcpy(buf.get() + sizeof(strClientRequstReplyHead), &d, 4);
-            qint16 port = qToBigEndian(nPort);
+            quint16 port = qToBigEndian(nPort);
             memcpy(buf.get() + sizeof(strClientRequstReplyHead) + 4, &port, 2);
             break;
         }
@@ -381,7 +355,7 @@ int CProxySocket5::processClientReply(char rep)
         {
             Q_IPV6ADDR d = add.toIPv6Address();
             memcpy(buf.get() + sizeof(strClientRequstReplyHead), d.c, 16);
-            qint16 port = qToBigEndian(nPort);
+            quint16 port = qToBigEndian(nPort);
             memcpy(buf.get() + sizeof(strClientRequstReplyHead) + 16, &port, 2);
             break;
         }
@@ -429,19 +403,22 @@ int CProxySocket5::processConnect()
         Q_ASSERT(false);
     else
         //TODO: add implement peer connecter
-        m_pPeer = new CPeerConnecterIce(this);//new CPeerConnecter(this);
+#ifdef HAVE_ICE
+        //m_pPeer = std::make_shared<CPeerConnecterIce>(this);
+#endif
+        m_pPeer = std::make_shared<CPeerConnecter>(this);
     foreach(auto add, m_Client.szHost)
     {
-        check = connect(m_pPeer, SIGNAL(sigConnected()),
+        check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
                         this, SLOT(slotPeerConnected()));
         Q_ASSERT(check);
-        check = connect(m_pPeer, SIGNAL(sigDisconnected()),
+        check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
                         this, SLOT(slotPeerDisconnectd()));
         Q_ASSERT(check);
-        check = connect(m_pPeer, SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
+        check = connect(m_pPeer.get(), SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
                         this, SLOT(slotPeerError(const CPeerConnecter:: emERROR&, const QString&)));
         Q_ASSERT(check);
-        check = connect(m_pPeer, SIGNAL(sigReadyRead()),
+        check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
                         this, SLOT(slotPeerRead()));
         Q_ASSERT(check);
 
@@ -458,7 +435,7 @@ void CProxySocket5::slotPeerConnected()
     LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerConnected()");
     processClientReply(REPLY_Succeeded);
     m_Command = emCommand::Forward;
-    CleanCommandBuffer(m_Client.nLen);
+    RemoveCommandBuffer(m_Client.nLen);
     return;
 }
 
@@ -489,7 +466,7 @@ void CProxySocket5::slotPeerError(const CPeerConnecter::emERROR &err, const QStr
 
 void CProxySocket5::slotPeerRead()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerRead()");
+    //LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerRead()");
     if(m_pPeer)
     {
         QByteArray d = m_pPeer->ReadAll();
@@ -517,7 +494,10 @@ int CProxySocket5::processBind()
     else
     {
         //TODO: add implement peer connecter
-        m_pPeer = new CPeerConnecter(this);
+#ifdef HAVE_ICE
+        //m_pPeer = std::make_shared<CPeerConnecterIce>(this);
+#endif
+        m_pPeer = std::make_shared<CPeerConnecter>(this);
     }
     bool bBind = false;
     foreach(auto add, m_Client.szHost)
@@ -543,16 +523,18 @@ int CProxySocket5::processBind()
         return nRet;
     }
     
-    bool check = connect(m_pPeer, SIGNAL(sigConnected()),
+    bool check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
                     this, SLOT(slotPeerConnected()));
     Q_ASSERT(check);
-    check = connect(m_pPeer, SIGNAL(sigDisconnected()),
+    check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
                     this, SLOT(slotPeerDisconnectd()));
     Q_ASSERT(check);
-    check = connect(m_pPeer, SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
-                    this, SLOT(slotPeerError(const CPeerConnecter::emERROR&, const QString&)));
+    check = connect(m_pPeer.get(),
+           SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
+           this,
+           SLOT(slotPeerError(const CPeerConnecter::emERROR&, const QString&)));
     Q_ASSERT(check);
-    check = connect(m_pPeer, SIGNAL(sigReadyRead()),
+    check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
                     this, SLOT(slotPeerRead()));
     Q_ASSERT(check);
     

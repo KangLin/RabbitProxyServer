@@ -22,6 +22,17 @@ protected Q_SLOTS:
     virtual void slotClose();
     
 protected:
+    /**
+     * @brief CheckBufferLength
+     * @param nLength
+     * @return:
+     *     0: If has nLength
+     *   > 0:
+     */
+    int CheckBufferLength(int nLength);
+    int RemoveCommandBuffer(int nLength = -1);
+
+    QByteArray m_cmdBuf;
     QTcpSocket* m_pSocket;
 };
 

@@ -3,21 +3,20 @@
 
 #pragma once
 
-#include "Proxy.h"
+#include "ProxySocket4.h"
 #include <QByteArray>
 #include <QVector>
 #include <string>
 #include <QHostInfo>
 #include <QList>
 #include <QUdpSocket>
-#include "PeerConnecter.h"
 
 /**
  * @brief The CProxySocket5 class
  *        Implement SOCKET5(RFC1928)：http://www.ietf.org/rfc/rfc1928.txt
  * @note  The first version is processed in CProxyServerSocket::slotRead()
  */
-class CProxySocket5 : public CProxy
+class CProxySocket5 : public CProxySocket4
 {
     Q_OBJECT
 
@@ -36,15 +35,6 @@ private Q_SLOTS:
     virtual void slotPeerRead();
     
 private:
-    /**
-     * @brief CheckBufferLength
-     * @param nLength
-     * @return: 
-     *     0: If has nLength
-     *   > 0: 
-     */
-    int CheckBufferLength(int nLength);
-    int CleanCommandBuffer(int nLength);
     int processNegotiate();
     int processNegotiateReply(const QByteArray &data);
     int processAuthenticator();
@@ -57,20 +47,17 @@ private:
     int processBind();
     
 private:
-
-#define ERROR_CONTINUE_READ 1
     
 // Version
 #define VERSION_SOCK5 0x05 // socket5
-#define VERSION_SOCK4 0x04 // socket4
 
 // Authenticator
-static const char AUTHENTICATOR_NO = 0x00; // 无需认证
-static const char AUTHENTICATOR_GSSAI = 0x01; // 通过安全服务程序
-static const char AUTHENTICATOR_UserPassword = 0x02; // 用户名/密码
-static const char AUTHENTICATOR_IANA = 0x03; // IANA 分配
-static const char AUTHENTICATOR_Reserved = 0x08; // 私人方法保留
-static const unsigned char AUTHENTICATOR_NoAcceptable = 0xFF; // 没有可接受的方法
+#define AUTHENTICATOR_NO 0x00 // 无需认证
+#define AUTHENTICATOR_GSSAI 0x01 // 通过安全服务程序
+#define AUTHENTICATOR_UserPassword 0x02 // 用户名/密码
+#define AUTHENTICATOR_IANA 0x03 // IANA 分配
+#define AUTHENTICATOR_Reserved 0x08 // 私人方法保留
+#define AUTHENTICATOR_NoAcceptable 0xFF // 没有可接受的方法
 
 // Reply status
 static const char REPLY_Succeeded = 0x00; // 成功
@@ -124,7 +111,7 @@ static const char AddressTypeIpv6 = 0x04;
     struct strClientRequst {
         strClientRequstHead* pHead;
         QList<QHostAddress> szHost;
-        qint16 nPort;
+        quint16 nPort;
         int nLen; //整个请求的长度
     };
 
@@ -136,14 +123,12 @@ static const char AddressTypeIpv6 = 0x04;
     };
 
     enum emCommand m_Command;
-    QByteArray m_cmdBuf;
 
     char m_currentVersion;
     char m_currentAuthenticator;
-    QVector<char> m_vAuthenticator;
+    QVector<unsigned char> m_vAuthenticator;
     strClientRequst m_Client;
 
-    CPeerConnecter* m_pPeer;
 };
 
 #endif // CPROXYSOCKET5_H

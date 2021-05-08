@@ -33,12 +33,18 @@ void CProxyServerSocket::slotRead()
     switch (d.at(0)) {
     case 0x05:
     {
+        // The pointer is deleted by connect signal in CProxy::CProxy
         CProxySocket5 *p = new CProxySocket5(pSocket, this);
         p->slotRead();
         break;
     }
     case 0x04:
-        //TODO: add socket4 support
+    {
+        // The pointer is deleted by connect signal in CProxy::CProxy
+        CProxySocket4 *p = new CProxySocket4(pSocket, this);
+        p->slotRead();
+        break;
+    }
     default:
         LOG_MODEL_WARNING("Server socket", "Isn't support version: 0x%X", d.at(0));
         pSocket->close();

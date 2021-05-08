@@ -8,6 +8,7 @@ CPeerConnecter::CPeerConnecter(QObject *parent) : QObject(parent)
 
 CPeerConnecter::~CPeerConnecter()
 {
+    Close();
 }
 
 int CPeerConnecter::InitSignals()

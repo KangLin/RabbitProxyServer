@@ -1,4 +1,5 @@
 #include "Proxy.h"
+#include "RabbitCommonLog.h"
 
 CProxy::CProxy(QTcpSocket* pSocket, CProxyServer *server, QObject *parent)
     : QObject(parent),
@@ -27,7 +28,6 @@ CProxy::~CProxy()
 {
     qDebug() << "CProxy::~CProxy()";
     slotClose();
-
 }
 
 void CProxy::slotDisconnected()
@@ -46,4 +46,36 @@ void CProxy::slotClose()
     qDebug() << "CProxy::slotClose()";
     if(m_pSocket)
         m_pSocket->close();
+}
+
+int CProxy::CheckBufferLength(int nLength)
+{
+    int nRet = nLength - m_cmdBuf.size();
+    if(nRet > 0)
+    {
+        LOG_MODEL_DEBUG("CProxy",
+            "Be continuing read [%d] bytes from socket: %s:%d",
+            nRet,
+            m_pSocket->peerAddress().toString().toStdString().c_str());
+        return nRet;
+    }
+    return 0;
+}
+
+int CProxy::RemoveCommandBuffer(int nLength)
+{
+    if(nLength < 0)
+    {
+        m_cmdBuf.clear();
+        return 0;
+    }
+
+    if(m_cmdBuf.size() > nLength)
+    {
+        m_cmdBuf = m_cmdBuf.right(m_cmdBuf.size() - nLength);
+        slotRead();
+    } else {
+        m_cmdBuf.clear();
+    }
+    return 0;
 }
