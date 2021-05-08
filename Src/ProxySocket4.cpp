@@ -61,9 +61,9 @@ int CProxySocket4::processClientRequest()
     }
 
     strRequest *pReq = reinterpret_cast<strRequest*>(m_cmdBuf.data());
-    quint32 add = qFromBigEndian<quint32>(pReq->dstIp);
-    m_nPort = qFromBigEndian<quint16>(pReq->dstPort);
-    m_szUser = pReq->user;
+    quint32 add = qFromBigEndian<quint32>(m_cmdBuf.data() + 3);// qFromBigEndian<quint32>(pReq->dstIp);
+    m_nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 1); // qFromBigEndian<quint16>(pReq->dstPort);
+    m_szUser = m_cmdBuf.data() + 7;
 
     LOG_MODEL_DEBUG("Socket4",
                     "Client request: command:%d; ip:%s; port:%d; user: %s",
