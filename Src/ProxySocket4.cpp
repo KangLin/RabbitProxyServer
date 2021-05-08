@@ -11,7 +11,7 @@ CProxySocket4::CProxySocket4(QTcpSocket *pSocket, CProxyServer *server, QObject 
 
 void CProxySocket4::slotRead()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotRead() command:0x%X", m_Command);
+    LOG_MODEL_DEBUG("Socket4", "CProxySocket::slotRead() command:0x%X", m_Command);
     int nRet = 0;
     switch (m_Command) {
     case emCommand::ClientRequest:
@@ -25,13 +25,13 @@ void CProxySocket4::slotRead()
             {
                 int nWrite = m_pPeer->Write(d.data(), d.length());
                 if(-1 == nWrite)
-                    LOG_MODEL_ERROR("Socket5",
+                    LOG_MODEL_ERROR("Socket4",
                                     "Forword client to peer fail[%d]: %s",
                                     m_pPeer->Error(),
                                     m_pPeer->ErrorString().toStdString().c_str());
             }
             else
-                LOG_MODEL_DEBUG("Socket5", "From client readAll is empty");
+                LOG_MODEL_DEBUG("Socket4", "From client readAll is empty");
         }
         break;
     }
@@ -61,9 +61,9 @@ int CProxySocket4::processClientRequest()
     }
 
     strRequest *pReq = reinterpret_cast<strRequest*>(m_cmdBuf.data());
-    quint32 add = qFromBigEndian<quint32>(m_cmdBuf.data() + 3);// qFromBigEndian<quint32>(pReq->dstIp);
-    m_nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 1); // qFromBigEndian<quint16>(pReq->dstPort);
-    m_szUser = m_cmdBuf.data() + 7;
+    quint32 add = qFromBigEndian<quint32>(pReq->dstIp);
+    m_nPort = qFromBigEndian<quint16>(pReq->dstPort);
+    m_szUser = pReq->user;
 
     LOG_MODEL_DEBUG("Socket4",
                     "Client request: command:%d; ip:%s; port:%d; user: %s",

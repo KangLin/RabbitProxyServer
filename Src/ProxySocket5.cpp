@@ -104,7 +104,7 @@ int CProxySocket5::processNegotiate()
 int CProxySocket5::processNegotiateReply(const QByteArray& data)
 {
     int nRet = 0;
-    char method = AUTHENTICATOR_NoAcceptable;
+    unsigned char method = AUTHENTICATOR_NoAcceptable;
     for(unsigned char i = 0; i < data.at(0); i++)
     {
         char c = data.at(i + 1);

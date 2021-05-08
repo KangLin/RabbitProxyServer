@@ -41,14 +41,17 @@ private:
         Forward
     };
     enum emCommand m_Command;
-
+    
+#pragma pack(push) 
+#pragma pack(1)
     struct strRequest {
         char cmd;
         quint16 dstPort;
         quint32 dstIp;
-        char user[0];
+        char user[1];
     };
-
+#pragma pack(pop)
+    
     enum class emErrorCode {
         // request granted
         Ok = 90,

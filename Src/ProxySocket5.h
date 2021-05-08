@@ -93,7 +93,7 @@ static const char AddressTypeIpv6 = 0x04;
     */
     struct strNegotiate {
         char version; /** 协议版本 SOCK5,SOCK4*/
-        char method; /** 认证方式 METHOD0 ~ METHOD5*/
+        unsigned char method; /** 认证方式 METHOD0 ~ METHOD5*/
     };
 
     struct strReplyAuthenticationUserPassword {
