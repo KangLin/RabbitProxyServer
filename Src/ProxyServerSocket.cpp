@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #include "ProxyServerSocket.h"
 #include "ProxySocket5.h"
 #include "RabbitCommonLog.h"

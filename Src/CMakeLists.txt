@@ -1,3 +1,5 @@
+#Author: Kang Lin(kl222@126.com)
+
 project(RabbitProxy)
 
 set(INSTALL_HEAD_FILES

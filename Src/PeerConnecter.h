@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #ifndef CPEERCONNECTER_H
 #define CPEERCONNECTER_H
 

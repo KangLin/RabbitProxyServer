@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #ifndef PARAMETER_H
 #define PARAMETER_H
 

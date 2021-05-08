@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #ifndef CPROXY_H
 #define CPROXY_H
 

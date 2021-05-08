@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #include "Parameter.h"
 #include "ui_Parameter.h"
 

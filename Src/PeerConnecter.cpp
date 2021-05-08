@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #include "PeerConnecter.h"
 #include "RabbitCommonLog.h"
 

@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #include "ProxySocket5.h"
 
 #ifdef HAVE_ICE

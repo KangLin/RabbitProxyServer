@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #ifndef CICESIGNAL_H
 #define CICESIGNAL_H
 

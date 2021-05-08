@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 

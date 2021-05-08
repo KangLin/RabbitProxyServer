@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #include "PeerConnecterIce.h"
 #include "SignalWebSocket.h"
 #include "RabbitCommonLog.h"

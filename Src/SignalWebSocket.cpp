@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #include "SignalWebSocket.h"
 #include "RabbitCommonLog.h"
 

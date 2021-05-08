@@ -1,3 +1,5 @@
+//! @author Kang Lin(kl222@126.com)
+
 #ifndef CPROXYSOCKET4_H
 #define CPROXYSOCKET4_H
 
