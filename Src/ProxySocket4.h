@@ -41,17 +41,6 @@ private:
         Forward
     };
     enum emCommand m_Command;
-    
-#pragma pack(push) 
-#pragma pack(1)
-    struct strRequest {
-        char cmd;
-        quint16 dstPort;
-        quint32 dstIp;
-        char user[1];
-    };
-#pragma pack(pop)
-    
     enum class emErrorCode {
         // request granted
         Ok = 90,
@@ -64,17 +53,26 @@ private:
         // report different user-ids
         NotUser = 93
     };
-
+    
+#pragma pack(push) 
+#pragma pack(1)
+    struct strRequest {
+        char cmd;
+        quint16 dstPort;
+        quint32 dstIp;
+        char user[1];
+    };
+    
     struct strReply {
         char version;
-        emErrorCode err;
+        unsigned char err;
         quint16 nPort;
         quint32 dwIp;
     };
-
+#pragma pack(pop)
+    
     QList<QHostAddress> m_HostAddress;
-    QHostAddress m_BindAddress;
-    quint16 m_nPort, m_nBindPort;
+    quint16 m_nPort;
     QString m_szUser;
 
     int processClientRequest();

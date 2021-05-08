@@ -5,7 +5,8 @@
 
 CProxySocket4::CProxySocket4(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
     : CProxy(pSocket, server, parent),
-      m_Command(emCommand::ClientRequest)
+      m_Command(emCommand::ClientRequest),
+      m_nPort(0)
 {
 }
 
@@ -40,10 +41,15 @@ void CProxySocket4::slotRead()
 int CProxySocket4::reply(emErrorCode code)
 {
     int nRet = 0;
-    quint32 ip = m_BindAddress.toIPv4Address();
-    strReply r{4, code, qToBigEndian(m_nBindPort), qToBigEndian(ip)};
+    strReply r{0, (unsigned char)code, 0, 0};
+    if(emErrorCode::Ok == code)
+    {
+        r.nPort = qToBigEndian(m_pPeer->LocalPort());
+        r.dwIp = qToBigEndian(m_pPeer->LocalAddress().toIPv4Address());
+    }
+    
     if(m_pSocket)
-        m_pSocket->write((char*)&r, sizeof(strReply));
+        m_pSocket->write(reinterpret_cast<char*>(&r), sizeof(strReply));
     return nRet;
 }
 
@@ -197,7 +203,6 @@ int CProxySocket4::processBind()
         bBind = m_pPeer->Bind(add, m_nPort);
         if(bBind)
         {
-            m_BindAddress = add;
             break;
         }
     }
@@ -218,8 +223,6 @@ int CProxySocket4::processBind()
         reply(emErrorCode::Rejected);
         return nRet;
     }
-
-    m_nBindPort = m_nPort;
 
     bool check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
                     this, SLOT(slotPeerConnected()));
@@ -250,9 +253,6 @@ void CProxySocket4::slotPeerConnected()
     LOG_MODEL_DEBUG("Socket4", "slotPeerConnected()");
     if(emCommand::ClientRequest != m_Command)
         return;
-
-    m_BindAddress = m_pPeer->LocalAddress();
-    m_nBindPort = m_pPeer->LocalPort();
 
     reply(emErrorCode::Ok);
     m_Command = emCommand::Forward;
