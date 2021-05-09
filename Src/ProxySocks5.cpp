@@ -407,7 +407,7 @@ int CProxySocks5::processConnect()
     else
     {
 #ifdef HAVE_ICE
-        CParameterSocket* pPara = dynamic_cast<CParameterSocket*>(m_pParameter);
+        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pParameter);
         if(pPara->GetIce())
         {
             
@@ -504,7 +504,7 @@ int CProxySocks5::processBind()
     else
     {
 #ifdef HAVE_ICE
-        CParameterSocket* pPara = dynamic_cast<CParameterSocket*>(m_pParameter);
+        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pParameter);
         if(pPara->GetIce())
         {
             
