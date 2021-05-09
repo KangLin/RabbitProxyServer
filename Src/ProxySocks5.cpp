@@ -17,7 +17,6 @@ CProxySocks5::CProxySocks5(QTcpSocket *pSocket, CProxyServer *server, QObject *p
       m_Status(emStatus::Negotiate),
       m_currentVersion(VERSION_SOCK5)
 {
-    m_vAuthenticator << AUTHENTICATOR_UserPassword << AUTHENTICATOR_NO;
 }
 
 CProxySocks5::~CProxySocks5()
@@ -107,11 +106,12 @@ int CProxySocks5::processNegotiate()
 int CProxySocks5::processNegotiateReply(const QByteArray& data)
 {
     int nRet = 0;
-    unsigned char method = AUTHENTICATOR_NoAcceptable;
+    unsigned char method = CParameterSocks::AUTHENTICATOR_NoAcceptable;
     for(unsigned char i = 0; i < data.at(0); i++)
     {
         char c = data.at(i + 1);
-        if(m_vAuthenticator.contains(c))
+        CParameterSocks* pPara = qobject_cast<CParameterSocks*>(Getparameter());
+        if(pPara->GetV5Method().contains(c))
         {
             method = c;
             LOG_MODEL_INFO("Socks5", tr("Select authenticator: 0x%x").toStdString().c_str(), c);
@@ -141,11 +141,11 @@ int CProxySocks5::processAuthenticator()
     LOG_MODEL_DEBUG("Socks5", "m_currentAuthenticator:%d", m_currentAuthenticator);
     switch(m_currentAuthenticator)
     {
-    case AUTHENTICATOR_NO:
+    case CParameterSocks::AUTHENTICATOR_NO:
         m_Status = emStatus::ClientRequest;
         slotRead();
         return nRet;
-    case AUTHENTICATOR_UserPassword:
+    case CParameterSocks::AUTHENTICATOR_UserPassword:
     {
         if(CheckBufferLength(2))
             return ERROR_CONTINUE_READ;
@@ -175,7 +175,8 @@ int CProxySocks5::processAuthenticator()
         qDebug() << m_cmdBuf;
         LOG_MODEL_DEBUG("Socks5", "User[%d]: %s; Password[%d]: %s",
                         nUser, szUser.c_str(), nPassword, szPassword.c_str());
-        nRet = processAuthenticatorUserPassword(szUser, szPassword);
+        nRet = processAuthenticatorUserPassword(QString(szUser.c_str()),
+                                                QString(szPassword.c_str()));
         replyAuthenticatorUserPassword(nRet);
         
         int nLen = 3 + nUser + nPassword;
@@ -211,14 +212,15 @@ int CProxySocks5::replyAuthenticatorUserPassword(char nRet)
  * @param szPassword
  * @return 0: success
  *     other: fail
+ * @see https://www.ietf.org/rfc/rfc1929.txt
  */
-int CProxySocks5::processAuthenticatorUserPassword(
-        std::string szUser, std::string szPassword)
+int CProxySocks5::processAuthenticatorUserPassword(QString szUser, QString szPassword)
 {
-    int nRet = 0;
-    //TODO: authentication user/password
+    CParameterSocks* pPara = qobject_cast<CParameterSocks*>(Getparameter());
+    if(pPara->GetUser() == szUser && pPara->GetPassword() == szPassword)
+        return 0;
     
-    return nRet;
+    return -1;
 }
 
 int CProxySocks5::processClientRequest()

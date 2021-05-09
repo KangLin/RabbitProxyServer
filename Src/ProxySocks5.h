@@ -40,7 +40,7 @@ private:
     int processNegotiate();
     int processNegotiateReply(const QByteArray &data);
     int processAuthenticator();
-    int processAuthenticatorUserPassword(std::string szUser, std::string szPassword);
+    int processAuthenticatorUserPassword(QString szUser, QString szPassword);
     int replyAuthenticatorUserPassword(char nRet);
     int processClientRequest();
     int processClientReply(char rep);
@@ -53,15 +53,6 @@ private:
 // Version
 #define VERSION_SOCK5 0x05 // socket5
 
-    // Authenticator
-    enum emAuthenticator {
-        AUTHENTICATOR_NO = 0x00, // 无需认证
-        AUTHENTICATOR_GSSAI = 0x01, // 通过安全服务程序
-        AUTHENTICATOR_UserPassword = 0x02, // 用户名/密码
-        AUTHENTICATOR_IANA = 0x03, // IANA 分配
-        AUTHENTICATOR_Reserved = 0x08, // 私人方法保留
-        AUTHENTICATOR_NoAcceptable = 0xFF // 没有可接受的方法
-    };
     // Reply status
     enum emReplyStatus{
         REPLY_Succeeded = 0x00, // 成功
@@ -135,7 +126,6 @@ private:
 
     char m_currentVersion;
     char m_currentAuthenticator;
-    QVector<unsigned char> m_vAuthenticator;
     strClientRequst m_Client;
 
 };
