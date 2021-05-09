@@ -4,12 +4,16 @@ Author: Kang Lin (kl222@126.com)
 
 ### Introduction
 
+This software implements proxy service function
+
+- [ :cn: Chinese](README_zh_CN.md)
+
 ### Supported protocols
 
 - [x] socks4: 
   + socks4:
-    - https://github.com/tsaooo/Socks4-proxy-server/blob/master/NP_Project4_Spec.pdf
     - https://www.openssh.com/txt/socks4.protocol
+    - https://github.com/tsaooo/Socks4-proxy-server/blob/master/NP_Project4_Spec.pdf    
     - https://en.wikipedia.org/wiki/SOCKS#SOCKS4
   + [x] socks4a:
     - https://www.openssh.com/txt/socks4a.protocol

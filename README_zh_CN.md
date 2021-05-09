@@ -5,12 +5,14 @@
 
 本软件实现代理服务功能
 
+- [ :us: 英语](README.md)
+  
 ### 支持的协议
 
 - [x] socks4: 
   + socks4:
-    - https://github.com/tsaooo/Socks4-proxy-server/blob/master/NP_Project4_Spec.pdf
     - https://www.openssh.com/txt/socks4.protocol
+    - https://github.com/tsaooo/Socks4-proxy-server/blob/master/NP_Project4_Spec.pdf
     - https://en.wikipedia.org/wiki/SOCKS#SOCKS4
   + [x] socks4a:
     - https://www.openssh.com/txt/socks4a.protocol
