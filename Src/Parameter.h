@@ -1,28 +1,36 @@
-//! @author Kang Lin(kl222@126.com)
+/** @brief Parameter
+ *  @author Kang Lin (kl222@126.com)
+ */
 
-#ifndef PARAMETER_H
-#define PARAMETER_H
+#ifndef CPARAMETER_H
+#define CPARAMETER_H
 
-#include <QWidget>
+#include <QObject>
+#include <QDataStream>
 #include "rabbitproxy_export.h"
 
-namespace Ui {
-class CParameter;
-}
-
-class RABBITPROXY_EXPORT CParameter : public QWidget
+/**
+ * @brief The CParameter class
+ */
+class RABBITPROXY_EXPORT CParameter : public QObject
 {
     Q_OBJECT
-    
+    Q_PROPERTY(quint16 Port READ GetPort WRITE SetPort)
+
 public:
-    explicit CParameter(QWidget *parent = nullptr);
-    virtual ~CParameter();
+    explicit CParameter(QObject *parent = nullptr);
+
+    virtual QDataStream& Save(QDataStream &d);
+    virtual QDataStream& Load(QDataStream &d);
+    
+    quint16 GetPort();
+    void SetPort(quint16 port);
     
 Q_SIGNALS:
     void sigUpdate();
-    
+
 private:
-    Ui::CParameter *ui;
+    quint16 m_nPort;    
 };
 
-#endif // PARAMETER_H
+#endif // CPARAMETER_H

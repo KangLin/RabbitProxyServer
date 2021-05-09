@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QTcpServer>
 
-#include "rabbitproxy_export.h"
+#include "Parameter.h"
 
 class RABBITPROXY_EXPORT CProxyServer : public QObject
 {
@@ -16,20 +16,21 @@ class RABBITPROXY_EXPORT CProxyServer : public QObject
 public:
     explicit CProxyServer(QObject *parent = nullptr);
     virtual ~CProxyServer();
-    
-    int Start(int nPort = 1080);
+
+    virtual CParameter* Getparameter();
+    int Start();
     int Stop();
-    
+
 Q_SIGNALS:
     void sigStop();
-    
+
 protected Q_SLOTS:
     virtual void slotAccept();
     virtual void onAccecpt(QTcpSocket* pSocket);
-    
+
 protected:
-    int m_nPort;
     QTcpServer m_Acceptor;
+    std::unique_ptr<CParameter> m_pParameter;
 };
 
 #endif // CPROXYSERVER_H

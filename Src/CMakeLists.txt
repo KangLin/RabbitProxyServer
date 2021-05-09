@@ -12,6 +12,7 @@ set(INSTALL_HEAD_FILES
     PeerConnecter.h
     Signal.h
     Parameter.h
+    ParameterSocket.h
     )
 set(HEADER_FILES
     ${INSTALL_HEAD_FILES}
@@ -26,9 +27,10 @@ set(SOURCE_FILES
     PeerConnecter.cpp
     Signal.cpp
     Parameter.cpp
+    ParameterSocket.cpp
     )
 set(SOURCE_UI_FILES
-    Parameter.ui)
+    )
 
 set(_LibDataChannel_LIBS RabbitCommon ${QT_LIBRARIES})
 set(_LibDataChannel_DIR ${LibDataChannel_DIR})

@@ -6,28 +6,40 @@
 #include <QTcpSocket>
 
 CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
-    m_nPort(1080)
-{}
+    m_pParameter(nullptr)
+{
+    m_pParameter = std::make_unique<CParameter>(this);
+}
 
 CProxyServer::~CProxyServer()
-{}
+{
+}
 
-int CProxyServer::Start(int nPort)
+CParameter* CProxyServer::Getparameter()
+{
+    return m_pParameter.get();
+}
+
+int CProxyServer::Start()
 {
     int nRet = 0;
-    m_nPort = nPort;
+    if(!m_pParameter)
+    {
+        LOG_MODEL_ERROR("ProxyServer", "Parameter pointer is null");
+        return -1;
+    }
     
     if(m_Acceptor.isListening())
         Stop();
     
     QHostAddress address = QHostAddress::Any;
-    bool bCheck = m_Acceptor.listen(address, m_nPort);
+    bool bCheck = m_Acceptor.listen(address, m_pParameter->GetPort());
     if(!bCheck)
     {
         LOG_MODEL_ERROR("Server",
                        tr("Server listen at: %s:%d: %s").toStdString().c_str(),
                        address.toString().toStdString().c_str(),
-                       m_nPort,
+                       m_pParameter->GetPort(),
                        m_Acceptor.errorString().toStdString().c_str());
         return -1;
     }
@@ -35,7 +47,7 @@ int CProxyServer::Start(int nPort)
         LOG_MODEL_INFO("Server",
                        tr("Server listen at: %s:%d").toStdString().c_str(),
                        address.toString().toStdString().c_str(),
-                       m_nPort);
+                       m_pParameter->GetPort());
     bCheck = connect(&m_Acceptor, SIGNAL(newConnection()),
                      this, SLOT(slotAccept()));
     Q_ASSERT(bCheck);

@@ -2,10 +2,12 @@
 
 #include "ProxyServerSocket.h"
 #include "ProxySocket5.h"
+#include "ParameterSocket.h"
 #include "RabbitCommonLog.h"
 
 CProxyServerSocket::CProxyServerSocket(QObject *parent) : CProxyServer(parent)
-{    
+{
+    m_pParameter.reset(new CParameterSocket(this));
 }
 
 void CProxyServerSocket::onAccecpt(QTcpSocket* pSocket)

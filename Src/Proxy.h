@@ -16,6 +16,8 @@ public:
     explicit CProxy(QTcpSocket* pSocket, CProxyServer *server, QObject* parent = nullptr);
     virtual ~CProxy();
     
+    virtual CParameter* Getparameter();
+    
 public Q_SLOTS:
     virtual void slotRead();
     
@@ -36,6 +38,7 @@ protected:
 
     QByteArray m_cmdBuf;
     QTcpSocket* m_pSocket;
+    CParameter* m_pParameter;
 };
 
 #endif // CPROXY_H

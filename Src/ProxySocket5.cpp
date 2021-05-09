@@ -1,6 +1,7 @@
 //! @author Kang Lin(kl222@126.com)
 
 #include "ProxySocket5.h"
+#include "ParameterSocket.h"
 
 #ifdef HAVE_ICE
     #include "PeerConnecterIce.h"
@@ -404,11 +405,18 @@ int CProxySocket5::processConnect()
     if(m_pPeer)
         Q_ASSERT(false);
     else
-        //TODO: add implement peer connecter
+    {
 #ifdef HAVE_ICE
-        //m_pPeer = std::make_shared<CPeerConnecterIce>(this);
+        CParameterSocket* pPara = dynamic_cast<CParameterSocket*>(m_pParameter);
+        if(pPara->GetIce())
+        {
+            
+            m_pPeer = std::make_shared<CPeerConnecterIce>(this);
+            
+        } else 
 #endif
-        m_pPeer = std::make_shared<CPeerConnecter>(this);
+            m_pPeer = std::make_shared<CPeerConnecter>(this);
+    }
     foreach(auto add, m_Client.szHost)
     {
         check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
@@ -495,11 +503,16 @@ int CProxySocket5::processBind()
         Q_ASSERT(false);
     else
     {
-        //TODO: add implement peer connecter
 #ifdef HAVE_ICE
-        //m_pPeer = std::make_shared<CPeerConnecterIce>(this);
+        CParameterSocket* pPara = dynamic_cast<CParameterSocket*>(m_pParameter);
+        if(pPara->GetIce())
+        {
+            
+            m_pPeer = std::make_shared<CPeerConnecterIce>(this);
+            
+        } else 
 #endif
-        m_pPeer = std::make_shared<CPeerConnecter>(this);
+            m_pPeer = std::make_shared<CPeerConnecter>(this);
     }
     bool bBind = false;
     foreach(auto add, m_Client.szHost)
