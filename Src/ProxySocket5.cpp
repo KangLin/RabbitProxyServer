@@ -13,7 +13,7 @@
 
 CProxySocket5::CProxySocket5(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
     : CProxySocket4(pSocket, server, parent),
-      m_Command(emCommand::Negotiate),
+      m_Status(emStatus::Negotiate),
       m_currentVersion(VERSION_SOCK5)
 {
     m_vAuthenticator << AUTHENTICATOR_UserPassword << AUTHENTICATOR_NO;
@@ -36,19 +36,19 @@ void CProxySocket5::slotRead()
 {
     //LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotRead() command:0x%X", m_Command);
     int nRet = 0;
-    switch (m_Command) {
-    case emCommand::Negotiate:
+    switch (m_Status) {
+    case emStatus::Negotiate:
         nRet = processNegotiate();
         break;
-    case emCommand::Authentication:
+    case emStatus::Authentication:
         nRet = processAuthenticator();
         break;
-    case emCommand::ClientRequest:
+    case emStatus::ClientRequest:
         nRet = processClientRequest();
         break;
-    case emCommand::LookUp:
+    case emStatus::LookUp:
         break;
-    case emCommand::Forward:
+    case emStatus::Forward:
         if(m_pPeer && m_pSocket)
         {
             QByteArray d = m_pSocket->readAll();
@@ -96,7 +96,7 @@ int CProxySocket5::processNegotiate()
     
     nRet = processNegotiateReply(m_cmdBuf);
     
-    m_Command = emCommand::Authentication;
+    m_Status = emStatus::Authentication;
     
     RemoveCommandBuffer(nLen);
     
@@ -141,7 +141,7 @@ int CProxySocket5::processAuthenticator()
     switch(m_currentAuthenticator)
     {
     case AUTHENTICATOR_NO:
-        m_Command = emCommand::ClientRequest;
+        m_Status = emStatus::ClientRequest;
         slotRead();
         return nRet;
     case AUTHENTICATOR_UserPassword:
@@ -179,7 +179,7 @@ int CProxySocket5::processAuthenticator()
         
         int nLen = 3 + nUser + nPassword;
 
-        m_Command = emCommand::ClientRequest;
+        m_Status = emStatus::ClientRequest;
 
         RemoveCommandBuffer(nLen);
         break;
@@ -266,7 +266,7 @@ int CProxySocket5::processClientRequest()
         std::string szAddress(pAdd, nLen);
         LOG_MODEL_DEBUG("Socket5", "Look up domain: %s", szAddress.c_str());
         QHostInfo::lookupHost(szAddress.c_str(), this, SLOT(slotLookup(QHostInfo)));
-        m_Command = emCommand::LookUp;
+        m_Status = emStatus::LookUp;
         break;
     }
     case AddressTypeIpv6: //IPV6
@@ -436,7 +436,7 @@ void CProxySocket5::slotPeerConnected()
 {
     LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerConnected()");
     processClientReply(REPLY_Succeeded);
-    m_Command = emCommand::Forward;
+    m_Status = emStatus::Forward;
     RemoveCommandBuffer(m_Client.nLen);
     return;
 }

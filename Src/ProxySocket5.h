@@ -53,36 +53,40 @@ private:
 // Version
 #define VERSION_SOCK5 0x05 // socket5
 
-// Authenticator
-#define AUTHENTICATOR_NO 0x00 // 无需认证
-#define AUTHENTICATOR_GSSAI 0x01 // 通过安全服务程序
-#define AUTHENTICATOR_UserPassword 0x02 // 用户名/密码
-#define AUTHENTICATOR_IANA 0x03 // IANA 分配
-#define AUTHENTICATOR_Reserved 0x08 // 私人方法保留
-#define AUTHENTICATOR_NoAcceptable 0xFF // 没有可接受的方法
-
-// Reply status
-static const char REPLY_Succeeded = 0x00; // 成功
-static const char REPLY_GeneralServerFailure = 0x01; // 建立SOCKET服务器失败
-static const char REPLY_NotAllowdConnection = 0x02; // 不允许连接
-static const char REPLY_NetworkUnreachable = 0x03; // 网络无法访问
-static const char REPLY_HostUnreachable = 0x04; // 主机无法访问
-static const char REPLY_ConnectionRefused = 0x05; // 连接失败
-static const char REPLY_TtlExpired = 0x06; // 超时
-static const char REPLY_CommandNotSupported = 0x07;  // 命令不被支持
-static const char REPLY_AddressTypeNotSupported = 0x08; // 地址类型不受支持
-static const unsigned char REPLY_Undefined = 0xFF;
-
-// Client requst command
-static const char ClientRequstCommandConnect = 0x01;
-static const char ClientRequstCommandBind = 0x02;
-static const char ClientRequstCommandUdp = 0x03;
-
-static const char AddressTypeIpv4 = 0x01;
-static const char AddressTypeDomain = 0x03;
-static const char AddressTypeIpv6 = 0x04;
-
-    enum class emCommand {
+    // Authenticator
+    enum emAuthenticator {
+        AUTHENTICATOR_NO = 0x00, // 无需认证
+        AUTHENTICATOR_GSSAI = 0x01, // 通过安全服务程序
+        AUTHENTICATOR_UserPassword = 0x02, // 用户名/密码
+        AUTHENTICATOR_IANA = 0x03, // IANA 分配
+        AUTHENTICATOR_Reserved = 0x08, // 私人方法保留
+        AUTHENTICATOR_NoAcceptable = 0xFF // 没有可接受的方法
+    };
+    // Reply status
+    enum emReplyStatus{
+        REPLY_Succeeded = 0x00, // 成功
+        REPLY_GeneralServerFailure = 0x01, // 建立SOCKET服务器失败
+        REPLY_NotAllowdConnection = 0x02, // 不允许连接
+        REPLY_NetworkUnreachable = 0x03, // 网络无法访问
+        REPLY_HostUnreachable = 0x04, // 主机无法访问
+        REPLY_ConnectionRefused = 0x05, // 连接失败
+        REPLY_TtlExpired = 0x06, // 超时
+        REPLY_CommandNotSupported = 0x07,  // 命令不被支持
+        REPLY_AddressTypeNotSupported = 0x08, // 地址类型不受支持
+        REPLY_Undefined = 0xFF
+    };
+    // Client requst command
+    enum emCommand {
+        ClientRequstCommandConnect = 0x01,
+        ClientRequstCommandBind = 0x02,
+        ClientRequstCommandUdp = 0x03
+    };
+    enum emAddressType {
+        AddressTypeIpv4 = 0x01,
+        AddressTypeDomain = 0x03,
+        AddressTypeIpv6 = 0x04
+    };
+    enum class emStatus {
         Negotiate,
         Authentication,
         ClientRequest,
@@ -97,7 +101,7 @@ static const char AddressTypeIpv6 = 0x04;
     */
     struct strNegotiate {
         char version; /** 协议版本 SOCK5,SOCK4*/
-        unsigned char method; /** 认证方式 METHOD0 ~ METHOD5*/
+        unsigned char method; /** enum emAuthenticator 认证方式 METHOD0 ~ METHOD5*/
     };
 
     struct strReplyAuthenticationUserPassword {
@@ -107,9 +111,9 @@ static const char AddressTypeIpv6 = 0x04;
 
     struct strClientRequstHead {
         char version;
-        char command;
+        char command;     // enum emCommand
         char reserved;
-        char addressType;
+        char addressType; // enum emAddressType
     };
 
     struct strClientRequst {
@@ -123,11 +127,11 @@ static const char AddressTypeIpv6 = 0x04;
         char version;
         char reply;
         char reserved;
-        char addressType;
+        char addressType; // enum emAddressType
     };
 #pragma pack(pop)
     
-    enum emCommand m_Command;
+    enum emStatus m_Status;
 
     char m_currentVersion;
     char m_currentAuthenticator;
