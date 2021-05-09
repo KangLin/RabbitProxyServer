@@ -4,7 +4,7 @@ Author: Kang Lin (kl222@126.com)
 
 ### Introduction
 
-This software implements proxy service function
+This software implements multiple protocol proxy service functions
 
 - [ :cn: Chinese](README_zh_CN.md)
 
