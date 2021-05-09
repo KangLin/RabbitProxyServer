@@ -30,17 +30,10 @@
        </property>
       </widget>
      </item>
-     <item>
-      <widget class="QCheckBox" name="cbIce">
-       <property name="text">
-        <string>Enable ice</string>
-       </property>
-      </widget>
-     </item>
     </layout>
    </item>
    <item row="1" column="0">
-    <widget class="QTabWidget" name="twVersion">
+    <widget class="QTabWidget" name="twSocks">
      <property name="currentIndex">
       <number>0</number>
      </property>
@@ -89,6 +82,24 @@
        </property>
        <property name="text">
         <string>Enable</string>
+       </property>
+      </widget>
+     </widget>
+     <widget class="QWidget" name="Ice">
+      <attribute name="title">
+       <string>Ice</string>
+      </attribute>
+      <widget class="QCheckBox" name="cbIce">
+       <property name="geometry">
+        <rect>
+         <x>10</x>
+         <y>10</y>
+         <width>123</width>
+         <height>18</height>
+        </rect>
+       </property>
+       <property name="text">
+        <string>Enable ice</string>
        </property>
       </widget>
      </widget>
