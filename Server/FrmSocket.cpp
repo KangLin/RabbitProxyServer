@@ -29,9 +29,12 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
     ui->cbIANA->hide();
     ui->cbGSSAI->setChecked(method.contains(CParameterSocks::AUTHENTICATOR_GSSAI));
     ui->cbIANA->setChecked(method.contains(CParameterSocks::AUTHENTICATOR_IANA));
-    
-    ui->leUser->setText(m_pPara->GetUser());
-    ui->lePasswrod->setText(m_pPara->GetPassword());
+    if(!ui->cbUserPassword->isChecked())
+    {
+        on_cbUserPassword_clicked(false);
+    }
+    ui->leAuthentUser->setText(m_pPara->GetAuthentUser());
+    ui->leAuthentPasswrod->setText(m_pPara->GetAuthentPassword());
     
     ui->leSignalServer->setText(m_pPara->GetSignalServer());
     ui->spSignalPort->setValue(m_pPara->GetSignalPort());
@@ -71,8 +74,8 @@ void CFrmSocket::slotAccept()
     if(method.isEmpty())
         method << CParameterSocks::AUTHENTICATOR_NoAcceptable;
     m_pPara->SetV5Method(method);
-    m_pPara->SetUser(ui->leUser->text());
-    m_pPara->SetPassword(ui->lePasswrod->text());
+    m_pPara->SetAuthentUser(ui->leAuthentUser->text());
+    m_pPara->SetAuthentPassword(ui->leAuthentPasswrod->text());
     
     m_pPara->SetSignalServer(ui->leSignalServer->text());
     m_pPara->SetSignalPort(ui->spSignalPort->value());
@@ -86,4 +89,12 @@ void CFrmSocket::slotAccept()
     m_pPara->SetTurnPassword(ui->leTurnPassword->text());
     
     emit m_pPara->sigUpdate();
+}
+
+void CFrmSocket::on_cbUserPassword_clicked(bool checked)
+{
+    ui->leAuthentPasswrod->setVisible(checked);
+    ui->leAuthentUser->setVisible(checked);
+    ui->lbAuthentPassword->setVisible(checked);
+    ui->lbAuthentUser->setVisible(checked);
 }

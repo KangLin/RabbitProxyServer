@@ -11,8 +11,8 @@ class RABBITPROXY_EXPORT CParameterSocks : public CParameter
     Q_PROPERTY(bool V4 READ GetV4 WRITE SetV4)
     Q_PROPERTY(bool V5 READ GetV5 WRITE SetV5)
     Q_PROPERTY(QVector<unsigned char> V5Method READ GetV5Method WRITE SetV5Method)
-    Q_PROPERTY(QString User READ GetUser WRITE SetUser)
-    Q_PROPERTY(QString Password READ GetPassword WRITE SetPassword)
+    Q_PROPERTY(QString AuthentUser READ GetAuthentUser WRITE SetAuthentUser)
+    Q_PROPERTY(QString AuthentPassword READ GetAuthentPassword WRITE SetAuthentPassword)
     Q_PROPERTY(QString SignalServer READ GetSignalServer WRITE SetSignalServer)
     Q_PROPERTY(quint16 SignalPort READ GetSignalPort WRITE SetSignalPort)
     Q_PROPERTY(QString StunServer READ GetStunServer WRITE SetStunServer)
@@ -50,10 +50,10 @@ public:
     };
     QVector<unsigned char> GetV5Method();
     void SetV5Method(const QVector<unsigned char> &m);
-    QString GetUser();
-    void SetUser(const QString &user);
-    QString GetPassword();
-    void SetPassword(const QString &password);
+    QString GetAuthentUser();
+    void SetAuthentUser(const QString &user);
+    QString GetAuthentPassword();
+    void SetAuthentPassword(const QString &password);
     
     QString GetSignalServer();
     void SetSignalServer(const QString &szServer);
@@ -86,8 +86,8 @@ private:
     // V5
     bool m_bV5;
     QVector<unsigned char> m_V5AuthenticatorMethod;
-    QString m_szUser;
-    QString m_szPassword;
+    QString m_szAuthentUser;
+    QString m_szAuthentPassword;
     
     // ICE
     QString m_szSignalServer;

@@ -217,7 +217,7 @@ int CProxySocks5::replyAuthenticatorUserPassword(char nRet)
 int CProxySocks5::processAuthenticatorUserPassword(QString szUser, QString szPassword)
 {
     CParameterSocks* pPara = qobject_cast<CParameterSocks*>(Getparameter());
-    if(pPara->GetUser() == szUser && pPara->GetPassword() == szPassword)
+    if(pPara->GetAuthentUser() == szUser && pPara->GetAuthentPassword() == szPassword)
         return 0;
     
     return -1;

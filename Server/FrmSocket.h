@@ -19,6 +19,9 @@ public:
 public Q_SLOTS:
     void slotAccept();
     
+private slots:
+    void on_cbUserPassword_clicked(bool checked);
+    
 private:
     Ui::CFrmSocket *ui;
     CParameterSocks* m_pPara;
