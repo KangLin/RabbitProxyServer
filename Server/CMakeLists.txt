@@ -4,6 +4,22 @@ cmake_minimum_required(VERSION 2.8.12)
 
 project(RabbitProxyServer)
 
+SET(QT_COMPONENTS Gui Widgets)
+if(ANDROID)
+    SET(QT_COMPONENTS ${QT_COMPONENTS} AndroidExtras)
+endif()
+find_package(QT NAMES Qt6 Qt5 COMPONENTS Core)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS ${QT_COMPONENTS})
+message("QT_VERSION:${Qt${QT_VERSION_MAJOR}_VERSION}")
+if(Qt${QT_VERSION_MAJOR}_VERSION VERSION_LESS 5.10.0 AND ANDROID)
+    message(FATAL_ERROR "Qt must great 5.10.0")
+endif()
+if(Qt${QT_VERSION_MAJOR}_FOUND)
+    FOREACH(_COMPONENT ${QT_COMPONENTS})
+        SET(QT_LIBRARIES ${QT_LIBRARIES} Qt${QT_VERSION_MAJOR}::${_COMPONENT})
+    ENDFOREACH()
+endif()
+
 SET(SOURCE_FILES
     main.cpp
     mainwindow.cpp
