@@ -6,13 +6,16 @@ project(RabbitProxyServer)
 
 SET(SOURCE_FILES
     main.cpp
-    mainwindow.cpp)
+    mainwindow.cpp
+    FrmSocket.cpp)
 
 set(HEADER_FILES
-    mainwindow.h)
+    mainwindow.h
+    FrmSocket.h)
 
 set(SOURCE_UI_FILES
     mainwindow.ui
+    FrmSocket.ui
     )
 
 #翻译

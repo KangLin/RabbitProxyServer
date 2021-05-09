@@ -17,9 +17,11 @@ public:
     explicit CProxyServer(QObject *parent = nullptr);
     virtual ~CProxyServer();
 
+    virtual int Start();
+    virtual int Stop();
     virtual CParameter* Getparameter();
-    int Start();
-    int Stop();
+    virtual int Load(QDataStream& d);
+    virtual int Save(QDataStream& d);
 
 Q_SIGNALS:
     void sigStop();

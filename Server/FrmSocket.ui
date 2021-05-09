@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>CFrmSocket</class>
+ <widget class="QWidget" name="CFrmSocket">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>Port:</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QSpinBox" name="spPort">
+       <property name="maximum">
+        <number>65536</number>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="cbIce">
+       <property name="text">
+        <string>Enable ice</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="1" column="0">
+    <widget class="QTabWidget" name="twVersion">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <widget class="QWidget" name="v4">
+      <attribute name="title">
+       <string>V4/V4a</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>V4/V4a</string>
+      </attribute>
+      <attribute name="whatsThis">
+       <string>V4/V4a</string>
+      </attribute>
+     </widget>
+     <widget class="QWidget" name="V5">
+      <attribute name="title">
+       <string>V5</string>
+      </attribute>
+      <attribute name="toolTip">
+       <string>V5</string>
+      </attribute>
+      <attribute name="whatsThis">
+       <string>V5</string>
+      </attribute>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
