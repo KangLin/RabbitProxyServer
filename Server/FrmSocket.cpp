@@ -16,6 +16,8 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
 #else
     ui->cbIce->setVisible(false);
 #endif
+    ui->cbEnableV4->setChecked(m_pPara->GetV4());
+    ui->cbEnableV5->setChecked(m_pPara->GetV5());
 }
 
 CFrmSocket::~CFrmSocket()
@@ -29,5 +31,8 @@ void CFrmSocket::slotAccept()
 #ifdef HAVE_ICE
     m_pPara->SetIce(ui->cbIce->isChecked());
 #endif
+    m_pPara->SetV4(ui->cbEnableV4->isChecked());
+    m_pPara->SetV5(ui->cbEnableV5->isChecked());
+    
     emit m_pPara->sigUpdate();
 }
