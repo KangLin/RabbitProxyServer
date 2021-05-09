@@ -24,6 +24,9 @@ public:
     bool GetV5();
     void SetV5(bool v);
     
+protected:
+    virtual QString Name();
+    
 private:
     bool m_bIce;
     bool m_bV4;

@@ -28,6 +28,9 @@ public:
     
 Q_SIGNALS:
     void sigUpdate();
+    
+protected:
+    virtual QString Name();
 
 private:
     quint16 m_nPort;    

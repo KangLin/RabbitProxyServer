@@ -11,19 +11,24 @@ CParameterSocket::CParameterSocket(QObject *parent) : CParameter(parent),
 int CParameterSocket::Save(QSettings &set)
 {
     CParameter::Save(set);
-    set.setValue("Socket/Ice", m_bIce);
-    set.setValue("Socket/V4", m_bV4);
-    set.setValue("Socket/V5", m_bV5);
+    set.setValue(Name() + "Ice", m_bIce);
+    set.setValue(Name() + "V4", m_bV4);
+    set.setValue(Name() + "V5", m_bV5);
     return 0;
 }
 
 int CParameterSocket::Load(QSettings &set)
 {
     CParameter::Load(set);
-    m_bIce = set.value("Socket/Ice", m_bIce).toBool();
-    m_bV4 = set.value("Socket/V4", m_bV4).toBool();
-    m_bV5 = set.value("Socket/V5", m_bV5).toBool();
+    m_bIce = set.value(Name() + "Ice", m_bIce).toBool();
+    m_bV4 = set.value(Name() + "V4", m_bV4).toBool();
+    m_bV5 = set.value(Name() + "V5", m_bV5).toBool();
     return 0;
+}
+
+QString CParameterSocket::Name()
+{
+    return "Socks/";
 }
 
 bool CParameterSocket::GetIce()

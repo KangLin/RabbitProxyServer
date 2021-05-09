@@ -21,12 +21,17 @@ void CParameter::SetPort(quint16 port)
 
 int CParameter::Save(QSettings &set)
 {
-    set.setValue("Port", m_nPort);
+    set.setValue(Name() + "Port", m_nPort);
     return 0;
 }
 
 int CParameter::Load(QSettings &set)
 {
-    m_nPort = set.value("Port", m_nPort).toUInt();
+    m_nPort = set.value(Name() + "Port", m_nPort).toUInt();
     return 0;
+}
+
+QString CParameter::Name()
+{
+    return "";
 }
