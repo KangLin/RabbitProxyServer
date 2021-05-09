@@ -166,7 +166,11 @@ else()
 endif()
 
 add_subdirectory(Src)
-add_subdirectory(Server)
+
+option(BUILD_SERVER "Build server" ON)
+if(BUILD_SERVER)
+    add_subdirectory(Server)
+endif()
 
 # Create install runtime target
 add_custom_target(install-runtime
