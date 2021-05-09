@@ -7,7 +7,7 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
 {
     ui->setupUi(this);
     
-    m_pPara = dynamic_cast<CParameterSocket*>(pPara);
+    m_pPara = dynamic_cast<CParameterSocks*>(pPara);
     if(!m_pPara) return;
     
     ui->spPort->setValue(m_pPara->GetPort());

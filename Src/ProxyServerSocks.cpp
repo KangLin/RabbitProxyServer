@@ -1,48 +1,48 @@
 //! @author Kang Lin(kl222@126.com)
 
-#include "ProxyServerSocket.h"
-#include "ProxySocket5.h"
-#include "ParameterSocket.h"
+#include "ProxyServerSocks.h"
+#include "ProxySocks5.h"
+#include "ParameterSocks.h"
 #include "RabbitCommonLog.h"
 
-CProxyServerSocket::CProxyServerSocket(QObject *parent) : CProxyServer(parent)
+CProxyServerSocks::CProxyServerSocks(QObject *parent) : CProxyServer(parent)
 {
-    m_pParameter.reset(new CParameterSocket(this));
+    m_pParameter.reset(new CParameterSocks(this));
 }
 
-void CProxyServerSocket::onAccecpt(QTcpSocket* pSocket)
+void CProxyServerSocks::onAccecpt(QTcpSocket* pSocket)
 {
     bool check = connect(pSocket, SIGNAL(readyRead()),
                     this, SLOT(slotRead()));
     Q_ASSERT(check);
 }
 
-void CProxyServerSocket::slotRead()
+void CProxyServerSocks::slotRead()
 {
     QTcpSocket* pSocket = qobject_cast<QTcpSocket*>(sender());
     if(!pSocket)
     {
-        LOG_MODEL_ERROR("Server socket", "CProxyServerSocket::slotRead(): socket is null");
+        LOG_MODEL_ERROR("ServerSocks", "CProxyServerSocket::slotRead(): socket is null");
         return;
     }
     
     QByteArray d = pSocket->read(1);
     if(d.isEmpty())
     {
-        LOG_MODEL_DEBUG("Socket5", "readAll fail");
+        LOG_MODEL_DEBUG("ServerSocks", "readAll fail");
         return;
     }
     
-    CParameterSocket* pPara = qobject_cast<CParameterSocket*>(Getparameter());
+    CParameterSocks* pPara = qobject_cast<CParameterSocks*>(Getparameter());
     
-    LOG_MODEL_INFO("Server socket", "Version is 0x%X", d.at(0));
+    LOG_MODEL_INFO("ServerSocks", "Version is 0x%X", d.at(0));
     switch (d.at(0)) {
     case 0x05:
     {
         if(pPara->GetV5())
         {
             // The pointer is deleted by connect signal in CProxy::CProxy
-            CProxySocket5 *p = new CProxySocket5(pSocket, this);
+            CProxySocks5 *p = new CProxySocks5(pSocket, this);
             p->slotRead();
         }
         break;
@@ -52,13 +52,13 @@ void CProxyServerSocket::slotRead()
         if(pPara->GetV4())
         {
             // The pointer is deleted by connect signal in CProxy::CProxy
-            CProxySocket4 *p = new CProxySocket4(pSocket, this);
+            CProxySocks4 *p = new CProxySocks4(pSocket, this);
             p->slotRead();
         }
         break;
     }
     default:
-        LOG_MODEL_WARNING("Server socket", "Isn't support version: 0x%X", d.at(0));
+        LOG_MODEL_WARNING("ServerSocks", "Isn't support version: 0x%X", d.at(0));
         pSocket->close();
         break;
     }

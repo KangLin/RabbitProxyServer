@@ -3,7 +3,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "ProxyServerSocket.h"
+#include "ProxyServerSocks.h"
 #include "FrmSocket.h"
 #include "RabbitCommonDir.h"
 
@@ -17,8 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     
     ui->setupUi(this);
     
-    auto server = std::make_shared<CProxyServerSocket>(
-                new CProxyServerSocket(this));
+    auto server = std::make_shared<CProxyServerSocks>(
+                new CProxyServerSocks(this));
     m_Server.push_back(server);
     
     on_actionLoad_triggered();

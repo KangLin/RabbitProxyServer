@@ -1,11 +1,11 @@
 //! @author Kang Lin(kl222@126.com)
 
-#ifndef CPROXYSOCKET5_H
-#define CPROXYSOCKET5_H
+#ifndef CPROXYSOCKS5_H
+#define CPROXYSOCKS5_H
 
 #pragma once
 
-#include "ProxySocket4.h"
+#include "ProxySocks4.h"
 #include <QByteArray>
 #include <QVector>
 #include <string>
@@ -18,13 +18,13 @@
  *        Implement SOCKET5(RFC1928)：http://www.ietf.org/rfc/rfc1928.txt
  * @note  The first version is processed in CProxyServerSocket::slotRead()
  */
-class CProxySocket5 : public CProxySocket4
+class CProxySocks5 : public CProxySocks4
 {
     Q_OBJECT
 
 public:
-    explicit CProxySocket5(QTcpSocket* pSocket, CProxyServer *server, QObject *parent = nullptr);
-    virtual ~CProxySocket5();
+    explicit CProxySocks5(QTcpSocket* pSocket, CProxyServer *server, QObject *parent = nullptr);
+    virtual ~CProxySocks5();
 
 public Q_SLOTS:
     virtual void slotRead() override;
@@ -140,4 +140,4 @@ private:
 
 };
 
-#endif // CPROXYSOCKET5_H
+#endif // CPROXYSOCKS5_H

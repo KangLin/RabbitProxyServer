@@ -1,7 +1,7 @@
 //! @author Kang Lin(kl222@126.com)
 
-#ifndef CPROXYSOCKET4_H
-#define CPROXYSOCKET4_H
+#ifndef CPROXYSOCKS4_H
+#define CPROXYSOCKS4_H
 
 #include "Proxy.h"
 #include "PeerConnecter.h"
@@ -14,12 +14,12 @@
  * @see   https://www.openssh.com/txt/socks4.protocol
  *        https://www.openssh.com/txt/socks4a.protocol
  */
-class CProxySocket4 : public CProxy
+class CProxySocks4 : public CProxy
 {
     Q_OBJECT
 
 public:
-    CProxySocket4(QTcpSocket* pSocket, CProxyServer *server, QObject* parent = nullptr);
+    CProxySocks4(QTcpSocket* pSocket, CProxyServer *server, QObject* parent = nullptr);
 
 public Q_SLOTS:
     virtual void slotRead() override;
@@ -85,4 +85,4 @@ private:
     int reply(emErrorCode code);
 };
 
-#endif // CPROXYSOCKET4_H
+#endif // CPROXYSOCKS4_H

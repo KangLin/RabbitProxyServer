@@ -2,7 +2,7 @@
 #define FRMSOCKET_H
 
 #include <QWidget>
-#include "ParameterSocket.h"
+#include "ParameterSocks.h"
 
 namespace Ui {
 class CFrmSocket;
@@ -21,7 +21,7 @@ public Q_SLOTS:
     
 private:
     Ui::CFrmSocket *ui;
-    CParameterSocket* m_pPara;
+    CParameterSocks* m_pPara;
 };
 
 #endif // FRMSOCKET_H

@@ -5,14 +5,14 @@ project(RabbitProxy)
 set(INSTALL_HEAD_FILES
     ${INSTALL_HEAD_FILES}
     ProxyServer.h
-    ProxyServerSocket.h
+    ProxyServerSocks.h
     Proxy.h
-    ProxySocket4.h
-    ProxySocket5.h
+    ProxySocks4.h
+    ProxySocks5.h
     PeerConnecter.h
     Signal.h
     Parameter.h
-    ParameterSocket.h
+    ParameterSocks.h
     )
 set(HEADER_FILES
     ${INSTALL_HEAD_FILES}
@@ -20,14 +20,14 @@ set(HEADER_FILES
 set(SOURCE_FILES
     ${SOURCE_FILES}
     ProxyServer.cpp
-    ProxyServerSocket.cpp
+    ProxyServerSocks.cpp
     Proxy.cpp
-    ProxySocket4.cpp
-    ProxySocket5.cpp
+    ProxySocks4.cpp
+    ProxySocks5.cpp
     PeerConnecter.cpp
     Signal.cpp
     Parameter.cpp
-    ParameterSocket.cpp
+    ParameterSocks.cpp
     )
 set(SOURCE_UI_FILES
     )

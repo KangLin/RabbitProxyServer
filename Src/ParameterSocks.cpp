@@ -1,6 +1,6 @@
-#include "ParameterSocket.h"
+#include "ParameterSocks.h"
 
-CParameterSocket::CParameterSocket(QObject *parent) : CParameter(parent),
+CParameterSocks::CParameterSocks(QObject *parent) : CParameter(parent),
     m_bIce(false),
     m_bV4(true),
     m_bV5(true)
@@ -8,7 +8,7 @@ CParameterSocket::CParameterSocket(QObject *parent) : CParameter(parent),
     SetPort(1080);
 }
 
-int CParameterSocket::Save(QSettings &set)
+int CParameterSocks::Save(QSettings &set)
 {
     CParameter::Save(set);
     set.setValue(Name() + "Ice", m_bIce);
@@ -17,7 +17,7 @@ int CParameterSocket::Save(QSettings &set)
     return 0;
 }
 
-int CParameterSocket::Load(QSettings &set)
+int CParameterSocks::Load(QSettings &set)
 {
     CParameter::Load(set);
     m_bIce = set.value(Name() + "Ice", m_bIce).toBool();
@@ -26,37 +26,37 @@ int CParameterSocket::Load(QSettings &set)
     return 0;
 }
 
-QString CParameterSocket::Name()
+QString CParameterSocks::Name()
 {
     return "Socks/";
 }
 
-bool CParameterSocket::GetIce()
+bool CParameterSocks::GetIce()
 {
     return m_bIce;
 }
 
-void CParameterSocket::SetIce(bool ice)
+void CParameterSocks::SetIce(bool ice)
 {
     m_bIce = ice;
 }
 
-bool CParameterSocket::GetV4()
+bool CParameterSocks::GetV4()
 {
     return m_bV4;
 }
 
-void CParameterSocket::SetV4(bool v)
+void CParameterSocks::SetV4(bool v)
 {
     m_bV4 = v;
 }
 
-bool CParameterSocket::GetV5()
+bool CParameterSocks::GetV5()
 {
     return m_bV5;
 }
 
-void CParameterSocket::SetV5(bool v)
+void CParameterSocks::SetV5(bool v)
 {
     m_bV5 = v;
 }

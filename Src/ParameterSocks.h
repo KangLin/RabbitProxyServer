@@ -1,9 +1,9 @@
-#ifndef CPARAMETERSOCKET_H
-#define CPARAMETERSOCKET_H
+#ifndef CPARAMETERSOCKS_H
+#define CPARAMETERSOCKS_H
 
 #include "Parameter.h"
 
-class RABBITPROXY_EXPORT CParameterSocket : public CParameter
+class RABBITPROXY_EXPORT CParameterSocks : public CParameter
 {
     Q_OBJECT
     Q_PROPERTY(bool Ice READ GetIce WRITE SetIce)
@@ -11,7 +11,7 @@ class RABBITPROXY_EXPORT CParameterSocket : public CParameter
     Q_PROPERTY(bool V5 READ GetV5 WRITE SetV5)
     
 public:
-    explicit CParameterSocket(QObject *parent = nullptr);
+    explicit CParameterSocks(QObject *parent = nullptr);
     
     virtual int Save(QSettings &set);
     virtual int Load(QSettings &set);
@@ -33,4 +33,4 @@ private:
     bool m_bV5;
 };
 
-#endif // CPARAMETERSOCKET_H
+#endif // CPARAMETERSOCKS_H

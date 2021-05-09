@@ -1,7 +1,7 @@
 //! @author Kang Lin(kl222@126.com)
 
-#include "ProxySocket5.h"
-#include "ParameterSocket.h"
+#include "ProxySocks5.h"
+#include "ParameterSocks.h"
 
 #ifdef HAVE_ICE
     #include "PeerConnecterIce.h"
@@ -12,30 +12,30 @@
 #include <QtEndian>
 #include <memory>
 
-CProxySocket5::CProxySocket5(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
-    : CProxySocket4(pSocket, server, parent),
+CProxySocks5::CProxySocks5(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
+    : CProxySocks4(pSocket, server, parent),
       m_Status(emStatus::Negotiate),
       m_currentVersion(VERSION_SOCK5)
 {
     m_vAuthenticator << AUTHENTICATOR_UserPassword << AUTHENTICATOR_NO;
 }
 
-CProxySocket5::~CProxySocket5()
+CProxySocks5::~CProxySocks5()
 {
-    qDebug() << "CProxySocket::~CProxySocket()";
+    qDebug() << "CProxySocks::~CProxySocks()";
 
 }
 
-void CProxySocket5::slotClose()
+void CProxySocks5::slotClose()
 {
-    qDebug() << "CProxySocket::slotClose()";
+    qDebug() << "CProxySocks::slotClose()";
 
     CProxy::slotClose();
 }
 
-void CProxySocket5::slotRead()
+void CProxySocks5::slotRead()
 {
-    //LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotRead() command:0x%X", m_Command);
+    //LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotRead() command:0x%X", m_Command);
     int nRet = 0;
     switch (m_Status) {
     case emStatus::Negotiate:
@@ -57,27 +57,27 @@ void CProxySocket5::slotRead()
             {
                 int nWrite = m_pPeer->Write(d.data(), d.length());
                 if(-1 == nWrite)
-                    LOG_MODEL_ERROR("Socket5",
+                    LOG_MODEL_ERROR("Socks5",
                                     "Forword client to peer fail[%d]: %s",
                                     m_pPeer->Error(),
                                     m_pPeer->ErrorString().toStdString().c_str());
             }
             else
-                LOG_MODEL_DEBUG("Socket5", "From client readAll is empty");
+                LOG_MODEL_DEBUG("Socks5", "From client readAll is empty");
         }
         break;
     }
 }
 
-int CProxySocket5::processNegotiate()
+int CProxySocks5::processNegotiate()
 {
     int nRet = 0;
     int nLen = 0;
     m_cmdBuf += m_pSocket->readAll();
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket::processNegotiate()");
+    LOG_MODEL_DEBUG("Socks5", "CProxySocks::processNegotiate()");
     if(m_cmdBuf.isEmpty())
     {
-        LOG_MODEL_ERROR("Socket5", "m_pSocket->readAll() fail");
+        LOG_MODEL_ERROR("Socks5", "m_pSocket->readAll() fail");
         return -1;
     }
 
@@ -86,10 +86,10 @@ int CProxySocket5::processNegotiate()
     if(m_cmdBuf.size() >= 1)
     {
         nLen = 1 + m_cmdBuf.at(0);
-        LOG_MODEL_DEBUG("Socket5", "support %d methos", nLen - 1);
+        LOG_MODEL_DEBUG("Socks5", "support %d methos", nLen - 1);
         if(CheckBufferLength(nLen))
         {
-            LOG_MODEL_DEBUG("Socket5", "Be continuing read from socket: %s:%d",
+            LOG_MODEL_DEBUG("Socks5", "Be continuing read from socket: %s:%d",
                      m_pSocket->peerAddress().toString().toStdString().c_str());
             return ERROR_CONTINUE_READ;
         }
@@ -104,7 +104,7 @@ int CProxySocket5::processNegotiate()
     return nRet;
 }
 
-int CProxySocket5::processNegotiateReply(const QByteArray& data)
+int CProxySocks5::processNegotiateReply(const QByteArray& data)
 {
     int nRet = 0;
     unsigned char method = AUTHENTICATOR_NoAcceptable;
@@ -114,7 +114,7 @@ int CProxySocket5::processNegotiateReply(const QByteArray& data)
         if(m_vAuthenticator.contains(c))
         {
             method = c;
-            LOG_MODEL_INFO("Socket5", tr("Select authenticator: 0x%x").toStdString().c_str(), c);
+            LOG_MODEL_INFO("Socks5", tr("Select authenticator: 0x%x").toStdString().c_str(), c);
             break;
         }
         continue;
@@ -124,7 +124,7 @@ int CProxySocket5::processNegotiateReply(const QByteArray& data)
     strNegotiate buf = {m_currentVersion, method};
     if(-1 == m_pSocket->write((char*)&buf, sizeof(strNegotiate)))
     {
-        LOG_MODEL_ERROR("Socket5", "Reply authennticator fail: %s",
+        LOG_MODEL_ERROR("Socks5", "Reply authennticator fail: %s",
                         m_pSocket->errorString().toStdString().c_str());
         return -1;
     }
@@ -132,13 +132,13 @@ int CProxySocket5::processNegotiateReply(const QByteArray& data)
     return nRet;
 }
 
-int CProxySocket5::processAuthenticator()
+int CProxySocks5::processAuthenticator()
 {
     int nRet = 0;
     
     m_cmdBuf += m_pSocket->readAll();
     
-    LOG_MODEL_DEBUG("Socket5", "m_currentAuthenticator:%d", m_currentAuthenticator);
+    LOG_MODEL_DEBUG("Socks5", "m_currentAuthenticator:%d", m_currentAuthenticator);
     switch(m_currentAuthenticator)
     {
     case AUTHENTICATOR_NO:
@@ -151,7 +151,7 @@ int CProxySocket5::processAuthenticator()
             return ERROR_CONTINUE_READ;
         if(m_cmdBuf.at(0) != 0x01)
         {
-            LOG_MODEL_ERROR("Socket5",
+            LOG_MODEL_ERROR("Socks5",
                             "Authenticator user/password, the version isn't supported: 0x%X",
                             m_cmdBuf.at(0));
             replyAuthenticatorUserPassword(1);
@@ -173,7 +173,7 @@ int CProxySocket5::processAuthenticator()
         std::string szUser(m_cmdBuf.data() + 2, nUser);
         std::string szPassword(m_cmdBuf.data() + nUser + 3, nPassword);
         qDebug() << m_cmdBuf;
-        LOG_MODEL_DEBUG("Socket5", "User[%d]: %s; Password[%d]: %s",
+        LOG_MODEL_DEBUG("Socks5", "User[%d]: %s; Password[%d]: %s",
                         nUser, szUser.c_str(), nPassword, szPassword.c_str());
         nRet = processAuthenticatorUserPassword(szUser, szPassword);
         replyAuthenticatorUserPassword(nRet);
@@ -193,7 +193,7 @@ int CProxySocket5::processAuthenticator()
     return nRet;
 }
 
-int CProxySocket5::replyAuthenticatorUserPassword(char nRet)
+int CProxySocks5::replyAuthenticatorUserPassword(char nRet)
 {
     int n = 0;
     strReplyAuthenticationUserPassword repy{0x01, nRet};
@@ -206,13 +206,13 @@ int CProxySocket5::replyAuthenticatorUserPassword(char nRet)
 }
 
 /**
- * @brief CProxySocket::processAuthenticatorUserPassword
+ * @brief CProxySocks::processAuthenticatorUserPassword
  * @param szUser
  * @param szPassword
  * @return 0: success
  *     other: fail
  */
-int CProxySocket5::processAuthenticatorUserPassword(
+int CProxySocks5::processAuthenticatorUserPassword(
         std::string szUser, std::string szPassword)
 {
     int nRet = 0;
@@ -221,14 +221,14 @@ int CProxySocket5::processAuthenticatorUserPassword(
     return nRet;
 }
 
-int CProxySocket5::processClientRequest()
+int CProxySocks5::processClientRequest()
 {
     int nRet = 0;
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket::processClientRequest()");
+    LOG_MODEL_DEBUG("Socks5", "CProxySocks::processClientRequest()");
     m_cmdBuf += m_pSocket->readAll();
     if(CheckBufferLength(4))
     {
-        LOG_MODEL_DEBUG("Socket5", "Be continuing read from socket: %s:%d",
+        LOG_MODEL_DEBUG("Socks5", "Be continuing read from socket: %s:%d",
                  m_pSocket->peerAddress().toString().toStdString().c_str());        
         return ERROR_CONTINUE_READ;
     }
@@ -236,7 +236,7 @@ int CProxySocket5::processClientRequest()
     strClientRequstHead* pHead = (strClientRequstHead*)(m_cmdBuf.data());
     if(pHead->version != m_currentVersion)
     {
-        LOG_MODEL_ERROR("Socket5", "The version is not same");
+        LOG_MODEL_ERROR("Socks5", "The version is not same");
         return -1;
     }
     
@@ -250,7 +250,7 @@ int CProxySocket5::processClientRequest()
         QHostAddress add(qFromBigEndian<quint32>(m_cmdBuf.data() + 4));
         m_Client.szHost.push_back(add);
         m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 8);
-        LOG_MODEL_DEBUG("Socket5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
+        LOG_MODEL_DEBUG("Socks5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
                         m_Client.nPort);
         return processExecClientRequest();
     }
@@ -265,7 +265,7 @@ int CProxySocket5::processClientRequest()
             return ERROR_CONTINUE_READ;
         char* pAdd = m_cmdBuf.data() + sizeof(strClientRequstHead) + 1;
         std::string szAddress(pAdd, nLen);
-        LOG_MODEL_DEBUG("Socket5", "Look up domain: %s", szAddress.c_str());
+        LOG_MODEL_DEBUG("Socks5", "Look up domain: %s", szAddress.c_str());
         QHostInfo::lookupHost(szAddress.c_str(), this, SLOT(slotLookup(QHostInfo)));
         m_Status = emStatus::LookUp;
         break;
@@ -277,7 +277,7 @@ int CProxySocket5::processClientRequest()
         QHostAddress add((quint8*)(m_cmdBuf.data() + 4));
         m_Client.szHost.push_back(add);
         m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 20);
-        LOG_MODEL_DEBUG("Socket5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
+        LOG_MODEL_DEBUG("Socks5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
                         m_Client.nPort);
         return processExecClientRequest();
     }
@@ -288,7 +288,7 @@ int CProxySocket5::processClientRequest()
     return nRet;
 }
 
-void CProxySocket5::slotLookup(QHostInfo info)
+void CProxySocks5::slotLookup(QHostInfo info)
 {
     if (info.error() != QHostInfo::NoError) {
         qDebug() << "Lookup failed:" << info.errorString();
@@ -304,7 +304,7 @@ void CProxySocket5::slotLookup(QHostInfo info)
     processExecClientRequest();
 }
 
-int CProxySocket5::processClientReply(char rep)
+int CProxySocks5::processClientReply(char rep)
 {
     strClientRequstReplyHead reply;
     reply.version = m_cmdBuf.at(0);
@@ -346,7 +346,7 @@ int CProxySocket5::processClientReply(char rep)
         switch (reply.addressType) {
         case AddressTypeIpv4:
         {
-            LOG_MODEL_DEBUG("Socket5", "IP: %s:%d",
+            LOG_MODEL_DEBUG("Socks5", "IP: %s:%d",
                             add.toString().toStdString().c_str(), nPort);
             quint32 d = qToBigEndian(add.toIPv4Address());
             memcpy(buf.get() + sizeof(strClientRequstReplyHead), &d, 4);
@@ -371,10 +371,10 @@ int CProxySocket5::processClientReply(char rep)
     return 0;
 }
 
-int CProxySocket5::processExecClientRequest()
+int CProxySocks5::processExecClientRequest()
 {
     int nRet = 0;
-    LOG_MODEL_DEBUG("Socket5", "processExecClientRequest: 0x%X", m_Client.pHead->command);
+    LOG_MODEL_DEBUG("Socks5", "processExecClientRequest: 0x%X", m_Client.pHead->command);
     switch (m_Client.pHead->command) {
     case ClientRequstCommandConnect:
     {
@@ -394,7 +394,7 @@ int CProxySocket5::processExecClientRequest()
     return nRet;
 }
 
-int CProxySocket5::processConnect()
+int CProxySocks5::processConnect()
 {
     bool check = false;
     if(m_Client.szHost.isEmpty())
@@ -440,24 +440,24 @@ int CProxySocket5::processConnect()
     return 0;
 }
 
-void CProxySocket5::slotPeerConnected()
+void CProxySocks5::slotPeerConnected()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerConnected()");
+    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerConnected()");
     processClientReply(REPLY_Succeeded);
     m_Status = emStatus::Forward;
     RemoveCommandBuffer(m_Client.nLen);
     return;
 }
 
-void CProxySocket5::slotPeerDisconnectd()
+void CProxySocks5::slotPeerDisconnectd()
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerDisconnectd()");
+    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerDisconnectd()");
     slotClose();
 }
 
-void CProxySocket5::slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr)
+void CProxySocks5::slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr)
 {
-    LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerError():%d %s", err, szErr.toStdString().c_str());
+    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerError():%d %s", err, szErr.toStdString().c_str());
     switch (err) {
     case CPeerConnecter::emERROR::ConnectionRefused:
         processClientReply(REPLY_ConnectionRefused);
@@ -474,28 +474,28 @@ void CProxySocket5::slotPeerError(const CPeerConnecter::emERROR &err, const QStr
     slotClose();
 }
 
-void CProxySocket5::slotPeerRead()
+void CProxySocks5::slotPeerRead()
 {
-    //LOG_MODEL_DEBUG("Socket5", "CProxySocket::slotPeerRead()");
+    //LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerRead()");
     if(m_pPeer)
     {
         QByteArray d = m_pPeer->ReadAll();
         if(d.isEmpty())
         {
-            LOG_MODEL_DEBUG("Socket5", "Peer read all is empty");
+            LOG_MODEL_DEBUG("Socks5", "Peer read all is empty");
             return;
         }
         
         int nRet = m_pSocket->write(d.data(), d.length());
         if(-1 == nRet)
-            LOG_MODEL_ERROR("Socket5", "Forword peer to client fail[%d]: %s",
+            LOG_MODEL_ERROR("Socks5", "Forword peer to client fail[%d]: %s",
                             m_pSocket->error(),
                             m_pSocket->errorString().toStdString().c_str());
     }
 }
 
 //TODO: There are not tested!
-int CProxySocket5::processBind()
+int CProxySocks5::processBind()
 {
     int nRet = 0;
 
