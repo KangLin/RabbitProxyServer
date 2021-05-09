@@ -33,20 +33,28 @@ void CProxyServerSocket::slotRead()
         return;
     }
     
+    CParameterSocket* pPara = qobject_cast<CParameterSocket*>(Getparameter());
+    
     LOG_MODEL_INFO("Server socket", "Version is 0x%X", d.at(0));
     switch (d.at(0)) {
     case 0x05:
     {
-        // The pointer is deleted by connect signal in CProxy::CProxy
-        CProxySocket5 *p = new CProxySocket5(pSocket, this);
-        p->slotRead();
+        if(pPara->GetV5())
+        {
+            // The pointer is deleted by connect signal in CProxy::CProxy
+            CProxySocket5 *p = new CProxySocket5(pSocket, this);
+            p->slotRead();
+        }
         break;
     }
     case 0x04:
     {
-        // The pointer is deleted by connect signal in CProxy::CProxy
-        CProxySocket4 *p = new CProxySocket4(pSocket, this);
-        p->slotRead();
+        if(pPara->GetV4())
+        {
+            // The pointer is deleted by connect signal in CProxy::CProxy
+            CProxySocket4 *p = new CProxySocket4(pSocket, this);
+            p->slotRead();
+        }
         break;
     }
     default:

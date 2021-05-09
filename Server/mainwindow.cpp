@@ -58,26 +58,18 @@ void MainWindow::on_actionSave_triggered()
 {
     emit sigSaveParameter();
     
-    QFile file(RabbitCommon::CDir::Instance()->GetFileUserConfigure());
-    if(file.open(QIODevice::WriteOnly))
-    {
-        QDataStream out(&file);
-        foreach (auto s, m_Server) {
-            s->Save(out);
-        }
-        file.close();
+    QSettings set(RabbitCommon::CDir::Instance()->GetFileUserConfigure(),
+                  QSettings::IniFormat);
+    foreach (auto s, m_Server) {
+        s->Save(set);
     }
 }
 
 void MainWindow::on_actionLoad_triggered()
 {
-    QFile file(RabbitCommon::CDir::Instance()->GetFileUserConfigure());
-    if(file.open(QIODevice::ReadOnly))
-    {
-        QDataStream in(&file);
-        foreach (auto s, m_Server) {
-            s->Load(in);
-        }
-        file.close();
+    QSettings set(RabbitCommon::CDir::Instance()->GetFileUserConfigure(),
+                  QSettings::IniFormat);
+    foreach (auto s, m_Server) {
+        s->Load(set);
     }
 }

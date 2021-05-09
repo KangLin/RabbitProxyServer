@@ -20,15 +20,15 @@ CParameter* CProxyServer::Getparameter()
     return m_pParameter.get();
 }
 
-int CProxyServer::Save(QDataStream &d)
+int CProxyServer::Save(QSettings &set)
 {
-    Getparameter()->Save(d);
+    Getparameter()->Save(set);
     return 0;
 }
 
-int CProxyServer::Load(QDataStream &d)
+int CProxyServer::Load(QSettings &set)
 {
-    Getparameter()->Load(d);
+    Getparameter()->Load(set);
     return 0;
 }
 

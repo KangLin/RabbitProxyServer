@@ -20,8 +20,8 @@ public:
     virtual int Start();
     virtual int Stop();
     virtual CParameter* Getparameter();
-    virtual int Load(QDataStream& d);
-    virtual int Save(QDataStream& d);
+    virtual int Load(QSettings &set);
+    virtual int Save(QSettings &set);
 
 Q_SIGNALS:
     void sigStop();

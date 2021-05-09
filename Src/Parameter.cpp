@@ -19,14 +19,14 @@ void CParameter::SetPort(quint16 port)
     m_nPort = port;
 }
 
-QDataStream& CParameter::Save(QDataStream &d)
+int CParameter::Save(QSettings &set)
 {
-    d << m_nPort;
-    return d;
+    set.setValue("Port", m_nPort);
+    return 0;
 }
 
-QDataStream& CParameter::Load(QDataStream &d)
+int CParameter::Load(QSettings &set)
 {
-    d >> m_nPort;
-    return d;
+    m_nPort = set.value("Port", m_nPort).toUInt();
+    return 0;
 }

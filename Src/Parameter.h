@@ -6,7 +6,7 @@
 #define CPARAMETER_H
 
 #include <QObject>
-#include <QDataStream>
+#include <QSettings>
 #include "rabbitproxy_export.h"
 
 /**
@@ -20,8 +20,8 @@ class RABBITPROXY_EXPORT CParameter : public QObject
 public:
     explicit CParameter(QObject *parent = nullptr);
 
-    virtual QDataStream& Save(QDataStream &d);
-    virtual QDataStream& Load(QDataStream &d);
+    virtual int Save(QSettings &set);
+    virtual int Load(QSettings &set);
     
     quint16 GetPort();
     void SetPort(quint16 port);
