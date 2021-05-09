@@ -32,6 +32,17 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
     
     ui->leUser->setText(m_pPara->GetUser());
     ui->lePasswrod->setText(m_pPara->GetPassword());
+    
+    ui->leSignalServer->setText(m_pPara->GetSignalServer());
+    ui->spSignalPort->setValue(m_pPara->GetSignalPort());
+    ui->leSignalUser->setText(m_pPara->GetSignalUser());
+    ui->leSignalPassword->setText(m_pPara->GetSignalPassword());
+    ui->leStunIp->setText(m_pPara->GetStunServer());
+    ui->spStunPort->setValue(m_pPara->GetStunPort());
+    ui->leTurnIp->setText(m_pPara->GetTurnServer());
+    ui->spTurnPort->setValue(m_pPara->GetTurnPort());
+    ui->leTurnUser->setText(m_pPara->GetTurnUser());
+    ui->leTurnPassword->setText(m_pPara->GetTurnPassword());
 }
 
 CFrmSocket::~CFrmSocket()
@@ -62,6 +73,17 @@ void CFrmSocket::slotAccept()
     m_pPara->SetV5Method(method);
     m_pPara->SetUser(ui->leUser->text());
     m_pPara->SetPassword(ui->lePasswrod->text());
+    
+    m_pPara->SetSignalServer(ui->leSignalServer->text());
+    m_pPara->SetSignalPort(ui->spSignalPort->value());
+    m_pPara->SetSignalUser(ui->leSignalUser->text());
+    m_pPara->SetSignalPassword(ui->leSignalPassword->text());
+    m_pPara->SetStunServer(ui->leStunIp->text());
+    m_pPara->SetStunPort(ui->spStunPort->value());
+    m_pPara->SetTurnServer(ui->leTurnIp->text());
+    m_pPara->SetTurnPort(ui->spTurnPort->value());
+    m_pPara->SetTurnUser(ui->leTurnUser->text());
+    m_pPara->SetTurnPassword(ui->leTurnPassword->text());
     
     emit m_pPara->sigUpdate();
 }

@@ -13,6 +13,16 @@ class RABBITPROXY_EXPORT CParameterSocks : public CParameter
     Q_PROPERTY(QVector<unsigned char> V5Method READ GetV5Method WRITE SetV5Method)
     Q_PROPERTY(QString User READ GetUser WRITE SetUser)
     Q_PROPERTY(QString Password READ GetPassword WRITE SetPassword)
+    Q_PROPERTY(QString SignalServer READ GetSignalServer WRITE SetSignalServer)
+    Q_PROPERTY(quint16 SignalPort READ GetSignalPort WRITE SetSignalPort)
+    Q_PROPERTY(QString StunServer READ GetStunServer WRITE SetStunServer)
+    Q_PROPERTY(quint16 StunPort READ GetStunPort WRITE SetStunPort)
+    Q_PROPERTY(QString TurnServer READ GetTurnServer WRITE SetStunServer)
+    Q_PROPERTY(quint16 TurnPort READ GetTurnPort WRITE SetTurnPort)
+    Q_PROPERTY(QString SignalUser READ GetSignalUser WRITE SetSignalUser)
+    Q_PROPERTY(QString SignalPassord READ GetSignalPassword WRITE SetSignalPassword)
+    Q_PROPERTY(QString TurnUser READ GetTurnUser WRITE SetTurnUser)
+    Q_PROPERTY(QString TurnPassword READ GetTurnPassword WRITE SetTurnPassword)
     
 public:
     explicit CParameterSocks(QObject *parent = nullptr);
@@ -45,6 +55,27 @@ public:
     QString GetPassword();
     void SetPassword(const QString &password);
     
+    QString GetSignalServer();
+    void SetSignalServer(const QString &szServer);
+    quint16 GetSignalPort();
+    void SetSignalPort(quint16 port);
+    QString GetStunServer();
+    void SetStunServer(const QString &szServer);
+    quint16 GetStunPort();
+    void SetStunPort(quint16 port);
+    QString GetTurnServer();
+    void SetTurnServer(const QString &szServer);
+    quint16 GetTurnPort();
+    void SetTurnPort(quint16 port);
+    QString GetSignalUser();
+    void SetSignalUser(const QString& user);
+    QString GetSignalPassword();
+    void SetSignalPassword(const QString& password);
+    QString GetTurnUser();
+    void SetTurnUser(const QString& user);
+    QString GetTurnPassword();
+    void SetTurnPassword(const QString& password);
+    
 protected:
     virtual QString Name();
     
@@ -57,6 +88,18 @@ private:
     QVector<unsigned char> m_V5AuthenticatorMethod;
     QString m_szUser;
     QString m_szPassword;
+    
+    // ICE
+    QString m_szSignalServer;
+    quint16 m_nSignalPort;
+    QString m_szSignalUser;
+    QString m_szSignalPassword;
+    QString m_szStunServer;
+    quint16 m_nStunPort;
+    QString m_szTurnSerer;
+    quint16 m_nTurnPort;
+    QString m_szTurnUser;
+    QString m_szTurnPassword;
 };
 
 #endif // CPARAMETERSOCKS_H

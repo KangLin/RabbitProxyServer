@@ -3,7 +3,10 @@
 CParameterSocks::CParameterSocks(QObject *parent) : CParameter(parent),
     m_bIce(false),
     m_bV4(true),
-    m_bV5(true)
+    m_bV5(true),
+    m_nSignalPort(80),
+    m_nStunPort(3478),
+    m_nTurnPort(3478)
 {
     SetPort(1080);
  
@@ -27,6 +30,17 @@ int CParameterSocks::Save(QSettings &set)
     set.setValue(Name() + "User", m_szUser);
     set.setValue(Name() + "Password", m_szPassword);
     
+    set.setValue(Name() + "SignalServer", m_szSignalServer);
+    set.setValue(Name() + "SignalServer", m_nSignalPort);
+    set.setValue(Name() + "SignalUser", m_szSignalUser);
+    set.setValue(Name() + "SignalPassword", m_szSignalPassword);
+    set.setValue(Name() + "StunServer", m_szStunServer);
+    set.setValue(Name() + "StunPort", m_nStunPort);
+    set.setValue(Name() + "TurnServer", m_szTurnSerer);
+    set.setValue(Name() + "TurnPort", m_nTurnPort);
+    set.setValue(Name() + "TurnUser", m_szTurnUser);
+    set.setValue(Name() + "TurnPassword", m_szTurnPassword);
+    
     return 0;
 }
 
@@ -46,6 +60,18 @@ int CParameterSocks::Load(QSettings &set)
     
     m_szUser = set.value(Name() + "User").toString();
     m_szPassword = set.value(Name() + "Password").toString();
+    
+    m_szSignalServer = set.value(Name() + "SignalServer", m_szSignalServer).toString();
+    m_nSignalPort = set.value(Name() + "SignalServer", m_nSignalPort).toUInt();
+    m_szSignalUser = set.value(Name() + "SignalUser", m_szSignalUser).toString();
+    m_szSignalPassword = set.value(Name() + "SignalPassword", m_szSignalPassword).toString();
+    m_szStunServer = set.value(Name() + "StunServer", m_szStunServer).toString();
+    m_nStunPort = set.value(Name() + "StunPort", m_nStunPort).toUInt();
+    m_szTurnSerer = set.value(Name() + "TurnServer", m_szTurnSerer).toString();
+    m_nTurnPort = set.value(Name() + "TurnPort", m_nTurnPort).toUInt();
+    m_szTurnUser = set.value(Name() + "TurnUser", m_szTurnUser).toString();
+    m_szTurnPassword = set.value(Name() + "TurnPassword", m_szTurnPassword).toString();
+    
     return 0;
 }
 
@@ -112,4 +138,104 @@ QString CParameterSocks::GetPassword()
 void CParameterSocks::SetPassword(const QString &password)
 {
     m_szPassword = password;
+}
+
+QString CParameterSocks::GetSignalServer()
+{
+    return m_szSignalServer;
+}
+
+void CParameterSocks::SetSignalServer(const QString &szServer)
+{
+    m_szSignalServer = szServer;
+}
+
+quint16 CParameterSocks::GetSignalPort()
+{
+    return m_nSignalPort;
+}
+
+void CParameterSocks::SetSignalPort(quint16 port)
+{
+    m_nSignalPort = port;
+}
+
+QString CParameterSocks::GetStunServer()
+{
+    return m_szStunServer;
+}
+
+void CParameterSocks::SetStunServer(const QString &szServer)
+{
+    m_szStunServer = szServer;
+}
+
+quint16 CParameterSocks::GetStunPort()
+{
+    return m_nStunPort;
+}
+
+void CParameterSocks::SetStunPort(quint16 port)
+{
+    m_nStunPort = port;
+}
+
+QString CParameterSocks::GetTurnServer()
+{
+    return m_szTurnSerer;
+}
+
+void CParameterSocks::SetTurnServer(const QString &szServer)
+{
+    m_szTurnSerer = szServer;
+}
+
+quint16 CParameterSocks::GetTurnPort()
+{
+    return m_nTurnPort;
+}
+
+void CParameterSocks::SetTurnPort(quint16 port)
+{
+    m_nTurnPort = port;
+}
+
+QString CParameterSocks::GetSignalUser()
+{
+    return m_szSignalUser;
+}
+
+void CParameterSocks::SetSignalUser(const QString &user)
+{
+    m_szSignalUser = user;
+}
+
+QString CParameterSocks::GetSignalPassword()
+{
+    return m_szSignalPassword;
+}
+
+void CParameterSocks::SetSignalPassword(const QString &password)
+{
+    m_szSignalPassword = password;
+}
+
+QString CParameterSocks::GetTurnUser()
+{
+    return m_szTurnUser;
+}
+
+void CParameterSocks::SetTurnUser(const QString &user)
+{
+    m_szTurnUser = user;
+}
+
+QString CParameterSocks::GetTurnPassword()
+{
+    return m_szTurnPassword;
+}
+
+void CParameterSocks::SetTurnPassword(const QString &password)
+{
+    m_szTurnPassword = password;
 }
