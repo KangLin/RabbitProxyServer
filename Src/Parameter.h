@@ -19,6 +19,7 @@ class RABBITPROXY_EXPORT CParameter : public QObject
 
 public:
     explicit CParameter(QObject *parent = nullptr);
+    virtual ~CParameter();
 
     virtual int Save(QSettings &set);
     virtual int Load(QSettings &set);

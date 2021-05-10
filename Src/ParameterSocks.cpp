@@ -1,4 +1,5 @@
 #include "ParameterSocks.h"
+#include <QDebug>
 
 CParameterSocks::CParameterSocks(QObject *parent) : CParameter(parent),
     m_bIce(false),
@@ -11,6 +12,11 @@ CParameterSocks::CParameterSocks(QObject *parent) : CParameter(parent),
     SetPort(1080);
  
     m_V5AuthenticatorMethod << AUTHENTICATOR_UserPassword << AUTHENTICATOR_NO;
+}
+
+CParameterSocks::~CParameterSocks()
+{
+    qDebug() << "CParameterSocks::~CParameterSocks()";
 }
 
 int CParameterSocks::Save(QSettings &set)

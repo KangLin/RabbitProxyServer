@@ -18,8 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     
     ui->setupUi(this);
     
-    auto server = std::make_shared<CProxyServerSocks>(
-                new CProxyServerSocks(this));
+    auto server = std::make_shared<CProxyServerSocks>(this);
     m_Server.push_back(server);
     
     on_actionLoad_triggered();
@@ -80,4 +79,9 @@ void MainWindow::on_actionLoad_triggered()
 void MainWindow::on_actionRestart_triggered()
 {
     on_actionStart_triggered();
+}
+
+void MainWindow::on_actionExit_triggered()
+{
+    close();
 }

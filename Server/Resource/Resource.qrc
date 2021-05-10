@@ -5,5 +5,7 @@
         <file alias="Start">Image/Start.png</file>
         <file alias="Stop">Image/Stop.png</file>
         <file alias="Restart">Image/Restart.png</file>
+        <file alias="Exit">Image/exit.png</file>
+        <file alias="App">Image/App.png</file>
     </qresource>
 </RCC>

@@ -3,12 +3,17 @@
  */
 
 #include "Parameter.h"
+#include <QDebug>
 
 CParameter::CParameter(QObject *parent) : QObject(parent),
     m_nPort(0)
 {
 }
 
+CParameter::~CParameter()
+{
+    qDebug() << "CParameter::~CParameter()";
+}
 quint16 CParameter::GetPort()
 {
     return m_nPort;

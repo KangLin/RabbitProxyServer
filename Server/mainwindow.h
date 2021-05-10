@@ -36,6 +36,8 @@ private slots:
     
     void on_actionRestart_triggered();
 
+    void on_actionExit_triggered();
+
 private:
     Ui::MainWindow *ui;
     std::list<std::shared_ptr<CProxyServer> > m_Server;

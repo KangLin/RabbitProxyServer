@@ -26,7 +26,8 @@ class RABBITPROXY_EXPORT CParameterSocks : public CParameter
     
 public:
     explicit CParameterSocks(QObject *parent = nullptr);
-    
+    virtual ~CParameterSocks();
+
     virtual int Save(QSettings &set);
     virtual int Load(QSettings &set);
     
