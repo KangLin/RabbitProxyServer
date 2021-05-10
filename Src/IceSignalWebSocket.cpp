@@ -84,24 +84,14 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
             return;
         std::string type = it->get<std::string>();
 
-//        std::shared_ptr<PeerConnection> pc;
-//        if (auto jt = peerConnectionMap.find(id); jt != peerConnectionMap.end()) {
-//            pc = jt->second;
-//        } else if (type == "offer") {
-//            cout << "Answering to " + id << endl;
-//            pc = createPeerConnection(config, ws, id);
-//        } else {
-//            return;
-//        }
-
-//        if (type == "offer" || type == "answer") {
-//            auto sdp = message["description"].get<string>();
-//            pc->setRemoteDescription(Description(sdp, type));
-//        } else if (type == "candidate") {
-//            auto sdp = message["candidate"].get<string>();
-//            auto mid = message["mid"].get<string>();
-//            pc->addRemoteCandidate(Candidate(sdp, mid));
-//        }
+        if (type == "offer" || type == "answer") {
+            auto sdp = message["description"].get<std::string>();
+            emit sigDescription(id.c_str(), rtc::Description(sdp, type));
+        } else if (type == "candidate") {
+            auto sdp = message["candidate"].get<std::string>();
+            auto mid = message["mid"].get<std::string>();
+            emit sigCandiate(id.c_str(), rtc::Candidate(sdp, mid));
+        }
     });
     try {
         m_webSocket->open(szUrl);

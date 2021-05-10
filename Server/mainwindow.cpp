@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     check = connect(this, SIGNAL(sigSaveParameter()),
                     pFrmSocket, SLOT(slotAccept()));
     Q_ASSERT(check);
-    m_pTabWidget->addTab(pFrmSocket, "Socket proxy server");
+    m_pTabWidget->addTab(pFrmSocket, tr("Socks proxy server"));
     
     on_actionStart_triggered();
 }

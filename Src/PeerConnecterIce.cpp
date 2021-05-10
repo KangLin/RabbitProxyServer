@@ -59,13 +59,25 @@ void CPeerConnecterIce::slotSignalDisconnected()
 void CPeerConnecterIce::slotSignalReceiverCandiate(const QString& user,
                                            const rtc::Candidate& candiate)
 {
-
+    if(m_peerConnection)
+        m_peerConnection->addRemoteCandidate(candiate);
 }
 
 void CPeerConnecterIce::slotSignalReceiverDescription(const QString& user,
                                              const rtc::Description& description)
 {
-
+    if(description.type() == rtc::Description::Type::Offer)
+    {
+        LOG_MODEL_ERROR("PeerConnectIce",
+                        "Create peerconnect and Answering to %s",
+                        user.toStdString().c_str());
+        CParameterSocks* pPara =
+                qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
+        pPara->SetPeerUser(user);
+        CreateDataChannel();
+    }
+    if(m_peerConnection)
+        m_peerConnection->setRemoteDescription(description);
 }
 
 void CPeerConnecterIce::slotSignalError(int error, const QString& szError)
