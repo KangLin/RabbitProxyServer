@@ -27,6 +27,7 @@
     <property name="title">
      <string>Operate</string>
     </property>
+    <addaction name="actionRestart"/>
     <addaction name="actionStart"/>
     <addaction name="actionStop"/>
     <addaction name="separator"/>
@@ -86,6 +87,15 @@
    </property>
    <property name="text">
     <string>Load</string>
+   </property>
+  </action>
+  <action name="actionRestart">
+   <property name="icon">
+    <iconset resource="Resource/Resource.qrc">
+     <normaloff>:/image/Restart</normaloff>:/image/Restart</iconset>
+   </property>
+   <property name="text">
+    <string>Restart</string>
    </property>
   </action>
  </widget>

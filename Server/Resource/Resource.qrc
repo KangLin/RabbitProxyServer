@@ -4,5 +4,6 @@
         <file alias="Save">Image/Save.png</file>
         <file alias="Start">Image/Start.png</file>
         <file alias="Stop">Image/Stop.png</file>
+        <file alias="Restart">Image/Restart.png</file>
     </qresource>
 </RCC>

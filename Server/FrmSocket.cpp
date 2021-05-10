@@ -14,7 +14,7 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
 #ifdef HAVE_ICE
     ui->cbIce->setChecked(m_pPara->GetIce());
 #else
-    ui->twSocks->widget(2)->hide();
+    ui->twSocks->widget(2)->setEnabled(false);
 #endif
     
     ui->cbEnableV4->setChecked(m_pPara->GetV4());

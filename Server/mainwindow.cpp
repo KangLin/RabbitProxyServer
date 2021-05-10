@@ -6,6 +6,7 @@
 #include "ProxyServerSocks.h"
 #include "FrmSocket.h"
 #include "RabbitCommonDir.h"
+#include "RabbitCommonLog.h"
 
 #include <QFile>
 
@@ -42,6 +43,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionStart_triggered()
 {
     on_actionStop_triggered();
+    LOG_MODEL_INFO("main", "Start server");
     foreach (auto s, m_Server) {
         s->Start();
     }
@@ -49,6 +51,7 @@ void MainWindow::on_actionStart_triggered()
 
 void MainWindow::on_actionStop_triggered()
 {
+    LOG_MODEL_INFO("main", "Stop server");
     foreach (auto s, m_Server) {
         s->Stop();
     }
@@ -72,4 +75,9 @@ void MainWindow::on_actionLoad_triggered()
     foreach (auto s, m_Server) {
         s->Load(set);
     }
+}
+
+void MainWindow::on_actionRestart_triggered()
+{
+    on_actionStart_triggered();
 }
