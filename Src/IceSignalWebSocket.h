@@ -3,18 +3,26 @@
 #ifndef CICESIGNAL_H
 #define CICESIGNAL_H
 
-#include "Signal.h"
+#include "IceSignal.h"
 #include "rtc/rtc.hpp"
 
-class CSignalWebSocket : public CSignal
+class CIceSignalWebSocket : public CIceSignal
 {
     Q_OBJECT
 public:
-    explicit CSignalWebSocket(QObject *parent = nullptr);
+    explicit CIceSignalWebSocket(QObject *parent = nullptr);
     
+    virtual int Open(const std::string& szServer, quint16 nPort,
+                     const std::string& user, const std::string& password);
     virtual int Open(const std::string &szUrl) override;
     virtual int Close() override;
     virtual bool IsOpen() override;
+
+    virtual int SendDescription(const QString& user,
+                                const rtc::Description& description);
+    virtual int SendCandiate(const QString& user,
+                             const rtc::Candidate& candidate);
+
     virtual int Write(const char* buf, int nLen) override;
     virtual int Read(char* buf, int nLen) override;
 

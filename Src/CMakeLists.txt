@@ -10,7 +10,6 @@ set(INSTALL_HEAD_FILES
     ProxySocks4.h
     ProxySocks5.h
     PeerConnecter.h
-    Signal.h
     Parameter.h
     ParameterSocks.h
     )
@@ -25,7 +24,6 @@ set(SOURCE_FILES
     ProxySocks4.cpp
     ProxySocks5.cpp
     PeerConnecter.cpp
-    Signal.cpp
     Parameter.cpp
     ParameterSocks.cpp
     )
@@ -62,12 +60,14 @@ if(LibDataChannel_FOUND)
     set(INSTALL_HEAD_FILES
         ${INSTALL_HEAD_FILES}
         PeerConnecterIce.h
-        SignalWebSocket.h
+        IceSignal.h
+        IceSignalWebSocket.h
         )
     set(SOURCE_FILES
         ${SOURCE_FILES}
         PeerConnecterIce.cpp
-        SignalWebSocket.cpp
+        IceSignal.cpp
+        IceSignalWebSocket.cpp
         )
     list(APPEND PROXY_DEFINITIONS HAVE_ICE)
 else()
@@ -94,5 +94,5 @@ ADD_TARGET(NAME ${PROJECT_NAME}
     PRIVATE_DEFINITIONS ${PROXY_PRIVATE_DEFINITIONS}
     DEFINITIONS ${PROXY_DEFINITIONS}
     LIBS ${_LibDataChannel_LIBS}
-    PRIVATE_INCLUDE_DIRS ${_LibDataChannel_INCLUDE_DIRS}
+    INCLUDE_DIRS ${_LibDataChannel_INCLUDE_DIRS}
     VERSION ${BUILD_VERSION})

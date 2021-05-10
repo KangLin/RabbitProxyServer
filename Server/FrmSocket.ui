@@ -322,7 +322,7 @@
        <item row="0" column="0">
         <widget class="QCheckBox" name="cbIce">
          <property name="text">
-          <string>Enable ice</string>
+          <string>Enable ice, need restart if changed</string>
          </property>
         </widget>
        </item>

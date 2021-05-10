@@ -5,10 +5,52 @@
 #include "ParameterSocks.h"
 #include "RabbitCommonLog.h"
 
+#ifdef HAVE_ICE
+    #include "IceSignalWebSocket.h"
+#endif
+
 CProxyServerSocks::CProxyServerSocks(QObject *parent) : CProxyServer(parent)
 {
     m_pParameter.reset(new CParameterSocks(this));
+
+#ifdef HAVE_ICE
+    m_Signal = std::make_shared<CIceSignalWebSocket>();
+#endif
 }
+
+#ifdef HAVE_ICE
+std::shared_ptr<CIceSignal> CProxyServerSocks::GetSignal()
+{
+    return m_Signal;
+}
+
+int CProxyServerSocks::Start()
+{
+    int nRet = 0;
+    CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
+    if(p->GetIce())
+    {
+        nRet = m_Signal->Open(p->GetSignalServer().toStdString(),
+                              p->GetSignalPort(),
+                              p->GetSignalUser().toStdString(),
+                              p->GetSignalPassword().toStdString());
+        if(nRet)
+        {
+            LOG_MODEL_ERROR("ProxyServerSocks", "Open signal fail");
+            return -1;
+        }
+    }
+    nRet = CProxyServer::Start();
+    return nRet;
+}
+
+int CProxyServerSocks::Stop()
+{
+    if(m_Signal)
+        m_Signal->Close();
+    return CProxyServer::Stop();
+}
+#endif
 
 void CProxyServerSocks::onAccecpt(QTcpSocket* pSocket)
 {

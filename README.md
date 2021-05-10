@@ -10,7 +10,7 @@ This software implements multiple protocol proxy service functions
 
 ### Supported protocols
 
-- [ ] Socks protocol
+- Socks protocol
   - [x] SOCKS Protocol Version 4: 
     + socks4:
       - https://www.openssh.com/txt/socks4.protocol

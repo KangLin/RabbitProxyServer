@@ -9,7 +9,7 @@
   
 ### 支持的协议
 
-- [ ] Socks 代理协议
+- Socks 代理协议
   - [x] SOCKS 协议版本 4: 
     + socks4:
       - https://www.openssh.com/txt/socks4.protocol

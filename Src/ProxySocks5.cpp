@@ -110,7 +110,7 @@ int CProxySocks5::processNegotiateReply(const QByteArray& data)
     for(unsigned char i = 0; i < data.at(0); i++)
     {
         char c = data.at(i + 1);
-        CParameterSocks* pPara = qobject_cast<CParameterSocks*>(Getparameter());
+        CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
         if(pPara->GetV5Method().contains(c))
         {
             method = c;
@@ -216,7 +216,7 @@ int CProxySocks5::replyAuthenticatorUserPassword(char nRet)
  */
 int CProxySocks5::processAuthenticatorUserPassword(QString szUser, QString szPassword)
 {
-    CParameterSocks* pPara = qobject_cast<CParameterSocks*>(Getparameter());
+    CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
     if(pPara->GetAuthentUser() == szUser && pPara->GetAuthentPassword() == szPassword)
         return 0;
     
@@ -409,12 +409,11 @@ int CProxySocks5::processConnect()
     else
     {
 #ifdef HAVE_ICE
-        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pParameter);
+        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
         if(pPara->GetIce())
         {
-            
-            m_pPeer = std::make_shared<CPeerConnecterIce>(this);
-            
+            m_pPeer = std::make_shared<CPeerConnecterIce>(
+                        qobject_cast<CProxyServerSocks*>(m_pServer), this);
         } else 
 #endif
             m_pPeer = std::make_shared<CPeerConnecter>(this);
@@ -506,12 +505,11 @@ int CProxySocks5::processBind()
     else
     {
 #ifdef HAVE_ICE
-        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pParameter);
+        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
         if(pPara->GetIce())
         {
-            
-            m_pPeer = std::make_shared<CPeerConnecterIce>(this);
-            
+            m_pPeer = std::make_shared<CPeerConnecterIce>(
+                        qobject_cast<CProxyServerSocks*>(m_pServer), this);
         } else 
 #endif
             m_pPeer = std::make_shared<CPeerConnecter>(this);

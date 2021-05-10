@@ -3,10 +3,10 @@
 #include "Proxy.h"
 #include "RabbitCommonLog.h"
 
-CProxy::CProxy(QTcpSocket* pSocket, CProxyServer *server, QObject *parent)
+CProxy::CProxy(QTcpSocket* pSocket, CProxyServer* server, QObject *parent)
     : QObject(parent),
     m_pSocket(pSocket),
-    m_pParameter(nullptr)
+    m_pServer(server)
 {
     bool check = false;
     if(m_pSocket)
@@ -25,20 +25,12 @@ CProxy::CProxy(QTcpSocket* pSocket, CProxyServer *server, QObject *parent)
                         this, SLOT(deleteLater()));
         Q_ASSERT(check);
     }
-    
-    if(server)
-        m_pParameter = server->Getparameter();
 }
 
 CProxy::~CProxy()
 {
     qDebug() << "CProxy::~CProxy()";
     slotClose();
-}
-
-CParameter* CProxy::Getparameter()
-{
-    return m_pParameter;
 }
 
 void CProxy::slotDisconnected()

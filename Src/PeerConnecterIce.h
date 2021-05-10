@@ -5,7 +5,8 @@
 
 #include "PeerConnecter.h"
 #include "rtc/rtc.hpp"
-#include "Signal.h"
+#include "IceSignal.h"
+#include "ProxyServerSocks.h"
 
 //using namespace rtc;
 class CPeerConnecterIce : public CPeerConnecter
@@ -13,7 +14,7 @@ class CPeerConnecterIce : public CPeerConnecter
     Q_OBJECT
 
 public:
-    explicit CPeerConnecterIce(QObject *parent = nullptr);
+    explicit CPeerConnecterIce(CProxyServerSocks* pServer, QObject *parent = nullptr);
 
 public:
     virtual int Connect(const QHostAddress &address, qint16 nPort) override;
@@ -33,13 +34,21 @@ private:
     int OnReciveForword(rtc::binary &data);
     
 private Q_SLOTS:
+    virtual void slotSignalConnected();
+    virtual void slotSignalDisconnected();
+    virtual void slotSignalCandiate(const QString& user,
+                                    const rtc::Candidate& candidate);
+    virtual void slotSignalescription(const QString& user,
+                                      const rtc::Description& description);
+    virtual void slotSignalError(int error, const QString& szError);
     virtual void slotPeerConnected();
     virtual void slotPeerDisconnectd();
     virtual void slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr);
     virtual void slotPeerRead();
 
 private:
-    std::shared_ptr<CSignal> m_Signal;
+    CProxyServerSocks* m_pServer;
+    std::shared_ptr<CIceSignal> m_Signal;
     std::shared_ptr<rtc::PeerConnection> m_peerConnection;
     std::shared_ptr<rtc::DataChannel> m_dataChannel;
     std::string m_szId;
