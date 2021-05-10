@@ -24,14 +24,14 @@ public:
 protected Q_SLOTS:
     virtual int Start();
     virtual int Stop();
+
+private:
+    std::shared_ptr<CIceSignal> m_Signal;
 #endif
 
 protected Q_SLOTS:
     virtual void onAccecpt(QTcpSocket* pSocket);
     virtual void slotRead();
-
-private:
-    std::shared_ptr<CIceSignal> m_Signal;
 };
 
 #endif // CPROXYSERVERSOCKS_H
