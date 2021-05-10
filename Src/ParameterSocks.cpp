@@ -36,6 +36,7 @@ int CParameterSocks::Save(QSettings &set)
     set.setValue(Name() + "Autenticator/User", m_szAuthentUser);
     set.setValue(Name() + "Autenticator/Password", m_szAuthentPassword);
     
+    set.setValue(Name() + "Signal/Peer/User", m_szPeerUser);
     set.setValue(Name() + "Signal/Server", m_szSignalServer);
     set.setValue(Name() + "Signal/Port", m_nSignalPort);
     set.setValue(Name() + "Signal/User", m_szSignalUser);
@@ -68,6 +69,7 @@ int CParameterSocks::Load(QSettings &set)
     m_szAuthentUser = set.value(Name() + "Autenticator/User").toString();
     m_szAuthentPassword = set.value(Name() + "Autenticator/Password").toString();
     
+    m_szPeerUser = set.value(Name() + "Signal/Peer/User", m_szPeerUser).toString();
     m_szSignalServer = set.value(Name() + "Signal/Server", m_szSignalServer).toString();
     m_nSignalPort = set.value(Name() + "Signal/Port", m_nSignalPort).toUInt();
     m_szSignalUser = set.value(Name() + "Signal/User", m_szSignalUser).toString();
@@ -145,6 +147,16 @@ QString CParameterSocks::GetAuthentPassword()
 void CParameterSocks::SetAuthentPassword(const QString &password)
 {
     m_szAuthentPassword = password;
+}
+
+QString CParameterSocks::GetPeerUser()
+{
+    return m_szPeerUser;
+}
+
+void CParameterSocks::SetPeerUser(const QString &user)
+{
+    m_szPeerUser = user;
 }
 
 QString CParameterSocks::GetSignalServer()

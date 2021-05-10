@@ -18,30 +18,30 @@ CPeerConnecterIce::CPeerConnecterIce(CProxyServerSocks *pServer, QObject *parent
     m_bConnectSide = false;
     m_Status = CONNECT;
 
-    m_Signal = m_pServer->GetSignal();
-    if(m_Signal)
+    std::shared_ptr<CIceSignal> signal = m_pServer->GetSignal();
+    if(signal)
     {
-        check = connect(m_Signal.get(), SIGNAL(sigConnected()),
+        check = connect(signal.get(), SIGNAL(sigConnected()),
                         this, SLOT(slotSignalConnected()));
         Q_ASSERT(check);
-        check = connect(m_Signal.get(), SIGNAL(sigDisconnected()),
+        check = connect(signal.get(), SIGNAL(sigDisconnected()),
                         this, SLOT(slotSignalDisconnected()));
         Q_ASSERT(check);
-        check = connect(m_Signal.get(),
+        check = connect(signal.get(),
                         SIGNAL(sigDescription(const QString&,
                                               const rtc::Description&)),
                         this,
-                        SLOT(slotSignalescription(const QString& user,
+                        SLOT(slotSignalReceiverDescription(const QString&,
                                                   const rtc::Description&)));
         Q_ASSERT(check);
-        check = connect(m_Signal.get(),
+        check = connect(signal.get(),
                         SIGNAL(sigCandiate(const QString&,
                                            const rtc::Candidate&)),
                         this,
-                        SLOT(slotSignalCandiate(const QString&,
+                        SLOT(slotSignalReceiverCandiate(const QString&,
                                                 const rtc::Candidate&)));
         Q_ASSERT(check);
-        check = connect(m_Signal.get(), SIGNAL(sigError(int, const QString&)),
+        check = connect(signal.get(), SIGNAL(sigError(int, const QString&)),
                         this, SLOT(slotSignalError(int, const QString&)));
         Q_ASSERT(check);
     }
@@ -56,13 +56,13 @@ void CPeerConnecterIce::slotSignalDisconnected()
     emit sigError(emERROR::Unkown, tr("Signal disconnected"));
 }
 
-void CPeerConnecterIce::slotSignalCandiate(const QString& user,
+void CPeerConnecterIce::slotSignalReceiverCandiate(const QString& user,
                                            const rtc::Candidate& candiate)
 {
 
 }
 
-void CPeerConnecterIce::slotSignalescription(const QString& user,
+void CPeerConnecterIce::slotSignalReceiverDescription(const QString& user,
                                              const rtc::Description& description)
 {
 
@@ -89,7 +89,11 @@ int CPeerConnecterIce::CreateDataChannel()
                                pPara->GetTurnPassword().toStdString().c_str()));
 
     m_peerConnection = std::make_shared<rtc::PeerConnection>(config);
-    if(!m_peerConnection) return -1;
+    if(!m_peerConnection)
+    {
+        LOG_MODEL_ERROR("PeerConnecterIce", "Peer connect don't open");
+        return -1;
+    }
     m_peerConnection->onStateChange([](rtc::PeerConnection::State state) {
         LOG_MODEL_DEBUG("PeerConnecterIce", "State: %d", state);
     });
@@ -104,7 +108,8 @@ int CPeerConnecterIce::CreateDataChannel()
         // Send to the peer through the signal channel
         CParameterSocks* pPara =
                 qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
-        m_Signal->SendDescription(pPara->GetSignalUser(),
+        std::shared_ptr<CIceSignal> signal = m_pServer->GetSignal();
+        signal->SendDescription(pPara->GetPeerUser(),
                                   description);
     });
     m_peerConnection->onLocalCandidate(
@@ -115,7 +120,8 @@ int CPeerConnecterIce::CreateDataChannel()
         // Send to the peer through the signal channel
         CParameterSocks* pPara =
                 qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
-        m_Signal->SendCandiate(pPara->GetSignalUser(), candidate);
+        std::shared_ptr<CIceSignal> signal = m_pServer->GetSignal();
+        signal->SendCandiate(pPara->GetPeerUser(), candidate);
     });
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
         LOG_MODEL_DEBUG("PeerConnecterIce", "onDataChannel: DataCannel label: %s",
@@ -180,6 +186,13 @@ int CPeerConnecterIce::CreateDataChannel()
 int CPeerConnecterIce::Connect(const QHostAddress &address, qint16 nPort)
 {
     int nRet = 0;
+
+    if(!m_pServer->GetSignal()->IsOpen())
+    {
+        LOG_MODEL_ERROR("PeerConnecterIce", "Signal don't open");
+        return -1;
+    }
+
     m_peerAddress = address;
     m_peerPort = nPort;
     m_bConnectSide = true;

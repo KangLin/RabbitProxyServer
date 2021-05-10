@@ -36,6 +36,7 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
     ui->leAuthentUser->setText(m_pPara->GetAuthentUser());
     ui->leAuthentPasswrod->setText(m_pPara->GetAuthentPassword());
     
+    ui->lePeerUser->setText(m_pPara->GetPeerUser());
     ui->leSignalServer->setText(m_pPara->GetSignalServer());
     ui->spSignalPort->setValue(m_pPara->GetSignalPort());
     ui->leSignalUser->setText(m_pPara->GetSignalUser());
@@ -77,6 +78,7 @@ void CFrmSocket::slotAccept()
     m_pPara->SetAuthentUser(ui->leAuthentUser->text());
     m_pPara->SetAuthentPassword(ui->leAuthentPasswrod->text());
     
+    m_pPara->SetPeerUser(ui->lePeerUser->text());
     m_pPara->SetSignalServer(ui->leSignalServer->text());
     m_pPara->SetSignalPort(ui->spSignalPort->value());
     m_pPara->SetSignalUser(ui->leSignalUser->text());

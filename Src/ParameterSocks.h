@@ -13,6 +13,8 @@ class RABBITPROXY_EXPORT CParameterSocks : public CParameter
     Q_PROPERTY(QVector<unsigned char> V5Method READ GetV5Method WRITE SetV5Method)
     Q_PROPERTY(QString AuthentUser READ GetAuthentUser WRITE SetAuthentUser)
     Q_PROPERTY(QString AuthentPassword READ GetAuthentPassword WRITE SetAuthentPassword)
+
+    Q_PROPERTY(QString PeerUser READ GetPeerUser WRITE SetPeerUser)
     Q_PROPERTY(QString SignalServer READ GetSignalServer WRITE SetSignalServer)
     Q_PROPERTY(quint16 SignalPort READ GetSignalPort WRITE SetSignalPort)
     Q_PROPERTY(QString StunServer READ GetStunServer WRITE SetStunServer)
@@ -56,6 +58,8 @@ public:
     QString GetAuthentPassword();
     void SetAuthentPassword(const QString &password);
     
+    QString GetPeerUser();
+    void SetPeerUser(const QString &user);
     QString GetSignalServer();
     void SetSignalServer(const QString &szServer);
     quint16 GetSignalPort();
@@ -91,6 +95,7 @@ private:
     QString m_szAuthentPassword;
     
     // ICE
+    QString m_szPeerUser;
     QString m_szSignalServer;
     quint16 m_nSignalPort;
     QString m_szSignalUser;

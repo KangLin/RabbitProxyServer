@@ -7,10 +7,7 @@
 
 #include "ProxyServer.h"
 
-#ifdef HAVE_ICE
-    #include "IceSignal.h"
-#endif
-
+class CIceSignal;
 class RABBITPROXY_EXPORT CProxyServerSocks : public CProxyServer
 {
     Q_OBJECT

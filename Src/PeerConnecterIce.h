@@ -36,9 +36,9 @@ private:
 private Q_SLOTS:
     virtual void slotSignalConnected();
     virtual void slotSignalDisconnected();
-    virtual void slotSignalCandiate(const QString& user,
+    virtual void slotSignalReceiverCandiate(const QString& user,
                                     const rtc::Candidate& candidate);
-    virtual void slotSignalescription(const QString& user,
+    virtual void slotSignalReceiverDescription(const QString& user,
                                       const rtc::Description& description);
     virtual void slotSignalError(int error, const QString& szError);
     virtual void slotPeerConnected();
@@ -48,7 +48,6 @@ private Q_SLOTS:
 
 private:
     CProxyServerSocks* m_pServer;
-    std::shared_ptr<CIceSignal> m_Signal;
     std::shared_ptr<rtc::PeerConnection> m_peerConnection;
     std::shared_ptr<rtc::DataChannel> m_dataChannel;
     std::string m_szId;

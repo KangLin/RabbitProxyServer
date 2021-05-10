@@ -68,6 +68,40 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
     m_webSocket->onMessage([this](std::variant<rtc::binary, std::string> data) {
         this->m_Data = std::get<rtc::binary>(data);
         emit sigReadyRead();
+
+        if (!std::holds_alternative<std::string>(data))
+            return;
+
+        nlohmann::json message = nlohmann::json::parse(std::get<std::string>(data));
+
+        auto it = message.find("id");
+        if (it == message.end())
+            return;
+        std::string id = it->get<std::string>();
+
+        it = message.find("type");
+        if (it == message.end())
+            return;
+        std::string type = it->get<std::string>();
+
+//        std::shared_ptr<PeerConnection> pc;
+//        if (auto jt = peerConnectionMap.find(id); jt != peerConnectionMap.end()) {
+//            pc = jt->second;
+//        } else if (type == "offer") {
+//            cout << "Answering to " + id << endl;
+//            pc = createPeerConnection(config, ws, id);
+//        } else {
+//            return;
+//        }
+
+//        if (type == "offer" || type == "answer") {
+//            auto sdp = message["description"].get<string>();
+//            pc->setRemoteDescription(Description(sdp, type));
+//        } else if (type == "candidate") {
+//            auto sdp = message["candidate"].get<string>();
+//            auto mid = message["mid"].get<string>();
+//            pc->addRemoteCandidate(Candidate(sdp, mid));
+//        }
     });
     try {
         m_webSocket->open(szUrl);
