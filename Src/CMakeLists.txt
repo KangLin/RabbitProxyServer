@@ -69,6 +69,8 @@ if(LibDataChannel_FOUND)
         SignalWebSocket.cpp
         )
     list(APPEND PROXY_DEFINITIONS HAVE_ICE)
+else()
+    message(AUTHOR_WARNING "Please install libdatachannel from https://github.com/paullouisageneau/libdatachannel")
 endif()
 
 #翻译

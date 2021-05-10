@@ -10,15 +10,28 @@ This software implements multiple protocol proxy service functions
 
 ### Supported protocols
 
-- [x] socks4: 
-  + socks4:
-    - https://www.openssh.com/txt/socks4.protocol
-    - https://github.com/tsaooo/Socks4-proxy-server/blob/master/NP_Project4_Spec.pdf    
-    - https://en.wikipedia.org/wiki/SOCKS#SOCKS4
-  + [x] socks4a:
-    - https://www.openssh.com/txt/socks4a.protocol
-    - https://en.wikipedia.org/wiki/SOCKS#SOCKS4a
-- [x] SOCK5(RFC1928)：http://www.ietf.org/rfc/rfc1928.txt
-- [x] Username/Password Authentication for SOCKS V5: https://www.ietf.org/rfc/rfc1929.txt
-- [ ] SOCKS Protocol Version 6: https://datatracker.ietf.org/doc/draft-olteanu-intarea-socks-6/
+- [ ] Socks protocol
+  - [x] SOCKS Protocol Version 4: 
+    + socks4:
+      - https://www.openssh.com/txt/socks4.protocol
+      - https://github.com/tsaooo/Socks4-proxy-server/blob/master/NP_Project4_Spec.pdf    
+      - https://en.wikipedia.org/wiki/SOCKS#SOCKS4
+    + [x] socks4a:
+      - https://www.openssh.com/txt/socks4a.protocol
+      - https://en.wikipedia.org/wiki/SOCKS#SOCKS4a
+  - [x] SOCKS Protocol Version 5 (RFC1928)：http://www.ietf.org/rfc/rfc1928.txt
+    + [x] Username/Password Authentication for SOCKS V5: https://www.ietf.org/rfc/rfc1929.txt
+  - [ ] SOCKS Protocol Version 6: https://datatracker.ietf.org/doc/draft-olteanu-intarea-socks-6/
 
+### Development
+#### Dependent
+##### Tools
+- [x] [Qt](qt.io)
+- [x] c compiler
+  + gcc
+  + MSVC
+- [cmake](https://cmake.org/)
+
+##### libraries
+
+- [Option] libdatachannel: https://github.com/paullouisageneau/libdatachannel

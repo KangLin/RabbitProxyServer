@@ -7,7 +7,7 @@
 
 #include <QObject>
 #include <QTcpServer>
-
+#include <memory>
 #include "Parameter.h"
 
 class RABBITPROXY_EXPORT CProxyServer : public QObject
