@@ -55,7 +55,7 @@ int CPeerConnecter::Bind(qint16 nPort)
     return -1;
 }
 
-int CPeerConnecter::Read(char *buf, int nLen)
+qint64 CPeerConnecter::Read(char *buf, int nLen)
 {
     return m_Socket.read(buf, nLen);
 }

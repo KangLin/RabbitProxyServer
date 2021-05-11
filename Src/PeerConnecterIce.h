@@ -4,11 +4,9 @@
 #define CPEERCONNECTERICE_H
 
 #include "PeerConnecter.h"
-#include "rtc/rtc.hpp"
-#include "IceSignal.h"
 #include "ProxyServerSocks.h"
+#include "DataChannelIce.h"
 
-//using namespace rtc;
 class CPeerConnecterIce : public CPeerConnecter
 {
     Q_OBJECT
@@ -18,7 +16,7 @@ public:
 
 public:
     virtual int Connect(const QHostAddress &address, qint16 nPort) override;
-    virtual int Read(char *buf, int nLen) override;
+    virtual qint64 Read(char *buf, int nLen) override;
     virtual QByteArray ReadAll() override;
     virtual int Write(const char *buf, int nLen) override;
     virtual int Close() override;
@@ -34,13 +32,10 @@ private:
     int OnReciveForword(rtc::binary &data);
     
 private Q_SLOTS:
-    virtual void slotSignalConnected();
-    virtual void slotSignalDisconnected();
-    virtual void slotSignalReceiverCandiate(const QString& user,
-                                    const rtc::Candidate& candidate);
-    virtual void slotSignalReceiverDescription(const QString& user,
-                                      const rtc::Description& description);
-    virtual void slotSignalError(int error, const QString& szError);
+    virtual void slotDataChannelConnected();
+    virtual void slotDataChannelDisconnected();
+    virtual void slotDataChannelError(int nErr, const QString& szError);
+    virtual void slotDataChannelReadyRead();
     virtual void slotPeerConnected();
     virtual void slotPeerDisconnectd();
     virtual void slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr);
@@ -48,11 +43,7 @@ private Q_SLOTS:
 
 private:
     CProxyServerSocks* m_pServer;
-    std::shared_ptr<rtc::PeerConnection> m_peerConnection;
-    std::shared_ptr<rtc::DataChannel> m_dataChannel;
-    std::string m_szId;
-    rtc::binary m_data;
-    
+    std::shared_ptr<CDataChannel> m_DataChannel;
     QHostAddress m_peerAddress, m_bindAddress;
     qint16 m_peerPort, m_bindPort;
     bool m_bConnectSide;

@@ -62,12 +62,16 @@ if(LibDataChannel_FOUND)
         PeerConnecterIce.h
         IceSignal.h
         IceSignalWebSocket.h
+        DataChannel.h
+        DataChannelIce.h
         )
     set(SOURCE_FILES
         ${SOURCE_FILES}
         PeerConnecterIce.cpp
         IceSignal.cpp
         IceSignalWebSocket.cpp
+        DataChannel.cpp
+        DataChannelIce.cpp
         )
     list(APPEND PROXY_DEFINITIONS HAVE_ICE)
 else()

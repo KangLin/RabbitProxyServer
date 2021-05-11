@@ -11,188 +11,82 @@ CPeerConnecterIce::CPeerConnecterIce(CProxyServerSocks *pServer, QObject *parent
     : CPeerConnecter(parent),
       m_pServer(pServer)
 {
-    bool check = false;
-
     m_peerPort = 0;
     m_bindPort = 0;
     m_bConnectSide = false;
     m_Status = CONNECT;
-
-    std::shared_ptr<CIceSignal> signal = m_pServer->GetSignal();
-    if(signal)
-    {
-        check = connect(signal.get(), SIGNAL(sigConnected()),
-                        this, SLOT(slotSignalConnected()));
-        Q_ASSERT(check);
-        check = connect(signal.get(), SIGNAL(sigDisconnected()),
-                        this, SLOT(slotSignalDisconnected()));
-        Q_ASSERT(check);
-        check = connect(signal.get(),
-                        SIGNAL(sigDescription(const QString&,
-                                              const rtc::Description&)),
-                        this,
-                        SLOT(slotSignalReceiverDescription(const QString&,
-                                                  const rtc::Description&)));
-        Q_ASSERT(check);
-        check = connect(signal.get(),
-                        SIGNAL(sigCandiate(const QString&,
-                                           const rtc::Candidate&)),
-                        this,
-                        SLOT(slotSignalReceiverCandiate(const QString&,
-                                                const rtc::Candidate&)));
-        Q_ASSERT(check);
-        check = connect(signal.get(), SIGNAL(sigError(int, const QString&)),
-                        this, SLOT(slotSignalError(int, const QString&)));
-        Q_ASSERT(check);
-    }
-}
-
-void CPeerConnecterIce::slotSignalConnected()
-{
-}
-
-void CPeerConnecterIce::slotSignalDisconnected()
-{
-    emit sigError(emERROR::Unkown, tr("Signal disconnected"));
-}
-
-void CPeerConnecterIce::slotSignalReceiverCandiate(const QString& user,
-                                           const rtc::Candidate& candiate)
-{
-    if(m_peerConnection)
-        m_peerConnection->addRemoteCandidate(candiate);
-}
-
-void CPeerConnecterIce::slotSignalReceiverDescription(const QString& user,
-                                             const rtc::Description& description)
-{
-    if(description.type() == rtc::Description::Type::Offer)
-    {
-        LOG_MODEL_ERROR("PeerConnectIce",
-                        "Create peerconnect and Answering to %s",
-                        user.toStdString().c_str());
-        CParameterSocks* pPara =
-                qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
-        pPara->SetPeerUser(user);
-        CreateDataChannel();
-    }
-    if(m_peerConnection)
-        m_peerConnection->setRemoteDescription(description);
-}
-
-void CPeerConnecterIce::slotSignalError(int error, const QString& szError)
-{
-    Q_UNUSED(error)
-    emit sigError(emERROR::Unkown, tr("Signal error: %1").arg(szError));
 }
 
 int CPeerConnecterIce::CreateDataChannel()
 {
-    rtc::Configuration config;
-    CParameterSocks* pPara =
-            qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
-    config.iceServers.push_back(
-                rtc::IceServer(pPara->GetStunServer().toStdString().c_str(),
-                               pPara->GetStunPort()));
-    config.iceServers.push_back(
-                rtc::IceServer(pPara->GetTurnServer().toStdString().c_str(),
-                               pPara->GetTurnPort(),
-                               pPara->GetTurnUser().toStdString().c_str(),
-                               pPara->GetTurnPassword().toStdString().c_str()));
-
-    m_peerConnection = std::make_shared<rtc::PeerConnection>(config);
-    if(!m_peerConnection)
+    m_DataChannel = std::make_shared<CDataChannelIce>(m_pServer->GetSignal(), this);
+    if(m_DataChannel)
     {
-        LOG_MODEL_ERROR("PeerConnecterIce", "Peer connect don't open");
-        return -1;
-    }
-    m_peerConnection->onStateChange([](rtc::PeerConnection::State state) {
-        LOG_MODEL_DEBUG("PeerConnecterIce", "State: %d", state);
-    });
-    m_peerConnection->onGatheringStateChange(
-                [](rtc::PeerConnection::GatheringState state) {
-        LOG_MODEL_DEBUG("PeerConnecterIce", "Gathering: %d", state);
-    });
-    m_peerConnection->onLocalDescription(
-                [this](rtc::Description description) {
-        LOG_MODEL_DEBUG("PeerConnecterIce", "onLocalDescription: %s",
-                        std::string(description).c_str());
-        // Send to the peer through the signal channel
-        CParameterSocks* pPara =
-                qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
-        std::shared_ptr<CIceSignal> signal = m_pServer->GetSignal();
-        signal->SendDescription(pPara->GetPeerUser(),
-                                  description);
-    });
-    m_peerConnection->onLocalCandidate(
-                [this](rtc::Candidate candidate){
-        LOG_MODEL_DEBUG("PeerConnecterIce", "onLocalCandidate: %s, mid: %s",
-                        std::string(candidate).c_str(),
-                        candidate.mid().c_str());
-        // Send to the peer through the signal channel
-        CParameterSocks* pPara =
-                qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
-        std::shared_ptr<CIceSignal> signal = m_pServer->GetSignal();
-        signal->SendCandiate(pPara->GetPeerUser(), candidate);
-    });
-    m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
-        LOG_MODEL_DEBUG("PeerConnecterIce", "onDataChannel: DataCannel label: %s",
-                        dc->label().c_str());
-        dc->onOpen([dc]() {
-            LOG_MODEL_DEBUG("PeerConnecterIce", "Open data channel from remote: %s",
-                            dc->label().c_str());
-        });
-        
-        dc->onClosed([this, dc]() {
-            LOG_MODEL_DEBUG("PeerConnecterIce", "Close data channel from remote: %s",
-                            dc->label().c_str());
-            emit this->sigDisconnected();
-        });
-        
-        dc->onMessage([dc, this](std::variant<rtc::binary, std::string> data) {
-            if (std::holds_alternative<std::string>(data))
-                LOG_MODEL_DEBUG("PeerConnecterIce", "From remote data: %s",
-                                std::get<std::string>(data).c_str());
-            else
-                LOG_MODEL_DEBUG("PeerConnecterIce", "From remote Received, size=%d",
-                                std::get<rtc::binary>(data).size());
-            if(CONNECT == m_Status)
-                OnReciveConnectRequst(dc, std::get<rtc::binary>(data));
-            else
-                OnReciveForword(std::get<rtc::binary>(data));
-        });
-    });
-    
-    m_dataChannel = m_peerConnection->createDataChannel("data");
-    m_dataChannel->onOpen([this]() {
-        LOG_MODEL_DEBUG("PeerConnecterIce", "Data channel is open");
-        //Send client requst
-        OnConnectionRequst();
-        
-    });
-    m_dataChannel->onClosed([this](){
-        LOG_MODEL_DEBUG("PeerConnecterIce", "Data channel is close");
-        emit this->sigDisconnected();
-    });
-    m_dataChannel->onMessage([this](std::variant<rtc::binary, std::string> data) {
-        if (std::holds_alternative<std::string>(data))
-            LOG_MODEL_DEBUG("PeerConnecterIce", "data: %s",
-                            std::get<std::string>(data).c_str());
-        else
-            LOG_MODEL_DEBUG("PeerConnecterIce", "Received, size=%d",
-                            std::get<rtc::binary>(data).size());
-        //Check to reply client requst 
-        if(CONNECT == m_Status)
-            OnConnectionReply(std::get<rtc::binary>(data));
-        else
+        bool check = false;
+        check = connect(m_DataChannel.get(), SIGNAL(sigConnected()),
+                        this, SLOT(slotDataChannelConnected()));
+        Q_ASSERT(check);
+        check = connect(m_DataChannel.get(), SIGNAL(sigDisconnected()),
+                        this, SLOT(slotDataChannelDisconnected()));
+        Q_ASSERT(check);
+        check = connect(m_DataChannel.get(), SIGNAL(sigError(int, const QString&)),
+                        this, SLOT(slotDataChannelError(int, const QString&)));
+        Q_ASSERT(check);
+        check = connect(m_DataChannel.get(), SIGNAL(sigReadyRead()),
+                        this, SLOT(slotDataChannelReadyRead()));
+        Q_ASSERT(check);
+        CDataChannelIce* p = qobject_cast<CDataChannelIce*>(m_DataChannel.get());
+        CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
+        if(p && pPara)
         {
-            // Forword data
-            m_data = std::get<rtc::binary>(data);
-            emit this->sigReadyRead();
+            p->SetPeerUser(pPara->GetPeerUser());
+            rtc::Configuration config;
+            config.iceServers.push_back(
+                        rtc::IceServer(pPara->GetStunServer().toStdString().c_str(),
+                                       pPara->GetStunPort()));
+            config.iceServers.push_back(
+                        rtc::IceServer(pPara->GetTurnServer().toStdString().c_str(),
+                                       pPara->GetTurnPort(),
+                                       pPara->GetTurnUser().toStdString().c_str(),
+                                       pPara->GetTurnPassword().toStdString().c_str()));
+            if(m_DataChannel->Open())
+                LOG_MODEL_ERROR("PeerConnecterIce", "Data channel open fail");
         }
-    });
-  
+    }
     return 0;
+}
+
+void CPeerConnecterIce::slotDataChannelConnected()
+{
+    //TODO: Send connect command
+}
+
+void CPeerConnecterIce::slotDataChannelDisconnected()
+{
+    emit sigDisconnected();
+}
+
+void CPeerConnecterIce::slotDataChannelError(int nErr, const QString& szErr)
+{
+    emit sigError(emERROR::Unkown, szErr);
+}
+
+void CPeerConnecterIce::slotDataChannelReadyRead()
+{
+    if(CONNECT == m_Status)
+    {
+        //TODO: 判断返回值是否成功
+        int nRet = 0;
+
+        if(nRet)
+            return;
+
+        m_Status = FORWORD;
+        return;
+    }
+
+    //Forword
+    emit sigReadyRead();
 }
 
 int CPeerConnecterIce::Connect(const QHostAddress &address, qint16 nPort)
@@ -214,45 +108,33 @@ int CPeerConnecterIce::Connect(const QHostAddress &address, qint16 nPort)
     return nRet;
 }
 
-int CPeerConnecterIce::Read(char *buf, int nLen)
+qint64 CPeerConnecterIce::Read(char *buf, int nLen)
 {
-    if(!m_dataChannel) return -1;
-    int n = nLen;
-    if(static_cast<unsigned int>(nLen) > m_data.size())
-        n = m_data.size();
-    
-    memcpy(buf, &m_data[0], n);
-    
-    return 0;
+    if(!m_DataChannel) return -1;
+
+    return m_DataChannel->Read(buf, nLen);
 }
 
 QByteArray CPeerConnecterIce::ReadAll()
 {
-    QByteArray d((const char*)&m_data[0], m_data.size());
-    return d;
+    if(!m_DataChannel) return QByteArray();
+    return m_DataChannel->ReadAll();
 }
 
 int CPeerConnecterIce::Write(const char *buf, int nLen)
 {
-    if(!m_dataChannel)
+    if(!m_DataChannel)
         return -1;
-    bool bSend = m_dataChannel->send((const std::byte*)buf, nLen);
-    if(bSend) return nLen;
-    return -1;
+    return m_DataChannel->Write(buf, nLen);
 }
 
 int CPeerConnecterIce::Close()
 {
     int nRet = 0;
-    if(m_dataChannel)
+    if(m_DataChannel)
     {
-        m_dataChannel->close();
-        m_dataChannel.reset();
-    }
-    if(m_peerConnection)
-    {        
-        m_peerConnection->close();
-        m_peerConnection.reset();
+        m_DataChannel->Close();
+        m_DataChannel.reset();
     }
 
     return nRet;
@@ -271,68 +153,7 @@ qint16 CPeerConnecterIce::LocalPort()
 int CPeerConnecterIce::OnConnectionRequst()
 {
     int nRet = 0;
-    /*
-     The SOCKS request is formed as follows:
 
-        +----+-----+-------+------+----------+----------+
-        |VER | CMD |  RSV  | ATYP | DST.ADDR | DST.PORT |
-        +----+-----+-------+------+----------+----------+
-        | 1  |  1  | X'00' |  1   | Variable |    2     |
-        +----+-----+-------+------+----------+----------+
-
-     Where:
-
-          o  VER    protocol version: X'05'
-          o  CMD
-             o  CONNECT X'01'
-             o  BIND X'02'
-             o  UDP ASSOCIATE X'03'
-          o  RSV    RESERVED
-          o  ATYP   address type of following address
-             o  IP V4 address: X'01'
-             o  DOMAINNAME: X'03'
-             o  IP V6 address: X'04'
-          o  DST.ADDR       desired destination address
-          o  DST.PORT desired destination port in network octet
-             order
-             
-      Note: Because the domain name has been resolved,
-            so ATYP is only IP V4 or IP V6 format
-     */
-    
-    if(m_peerAddress.isNull()) return -1;
-
-    strClientRequst requst = {5, 0x01, 0, 0, {0}};
-
-    int nLen = 4;
-    switch(m_peerAddress.protocol()) {
-    case QAbstractSocket::IPv4Protocol:
-    {
-        requst.atyp = 0x01;
-        qint32 add = qToBigEndian(m_peerAddress.toIPv4Address());
-        memcpy(&requst.buf, &add, 4);
-        nLen += 4;
-        qint16 port = qToBigEndian(m_peerPort);
-        memcpy(&requst.buf[4], &port, 2);
-        nLen += 2;
-        break;
-    }
-    case QAbstractSocket::IPv6Protocol:
-    {
-        requst.atyp = 0x04;
-        Q_IPV6ADDR d = m_peerAddress.toIPv6Address();
-        memcpy(&requst.buf, &d, 16);
-        nLen += 16;
-        qint16 port = qToBigEndian(m_peerPort);
-        memcpy(&requst.buf[16], &port, 2);
-        nLen += 2;
-        break;
-    }
-    default:
-        LOG_MODEL_ERROR("PeerConnecterIce", "The address is error");
-        break;
-    }
-    m_dataChannel->send(reinterpret_cast<const std::byte*>(&requst), nLen);
     return nRet;
 }
 

@@ -408,15 +408,8 @@ int CProxySocks5::processConnect()
         Q_ASSERT(false);
     else
     {
-#ifdef HAVE_ICE
-        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
-        if(pPara->GetIce())
-        {
-            m_pPeer = std::make_shared<CPeerConnecterIce>(
-                        qobject_cast<CProxyServerSocks*>(m_pServer), this);
-        } else 
-#endif
-            m_pPeer = std::make_shared<CPeerConnecter>(this);
+        if(CreatePeer())
+            return -1;
     }
     foreach(auto add, m_Client.szHost)
     {
@@ -504,15 +497,8 @@ int CProxySocks5::processBind()
         Q_ASSERT(false);
     else
     {
-#ifdef HAVE_ICE
-        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
-        if(pPara->GetIce())
-        {
-            m_pPeer = std::make_shared<CPeerConnecterIce>(
-                        qobject_cast<CProxyServerSocks*>(m_pServer), this);
-        } else 
-#endif
-            m_pPeer = std::make_shared<CPeerConnecter>(this);
+        if(CreatePeer())
+            return -1;
     }
     bool bBind = false;
     foreach(auto add, m_Client.szHost)
@@ -556,4 +542,22 @@ int CProxySocks5::processBind()
     processClientReply(REPLY_Succeeded);
     
     return nRet;
+}
+
+int CProxySocks5::CreatePeer()
+{
+#ifdef HAVE_ICE
+        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
+        if(pPara->GetIce())
+        {
+            CProxyServerSocks* pServer = qobject_cast<CProxyServerSocks*>(m_pServer);
+            m_pPeer = std::make_shared<CPeerConnecterIce>(
+                        pServer, this);
+        } else
+#endif
+            m_pPeer = std::make_shared<CPeerConnecter>(this);
+        if(m_pPeer)
+            return 0;
+        LOG_MODEL_ERROR("Socks5", "Make peer connect fail");
+        return -1;
 }
