@@ -17,7 +17,6 @@ public:
     explicit CPeerConnecterIceServer(CProxyServerSocks* pServer, QObject *parent = nullptr);
 
 public:
-    virtual int Connect(const QHostAddress &address, qint16 nPort) override;
     virtual qint64 Read(char *buf, int nLen) override;
     virtual QByteArray ReadAll() override;
     virtual int Write(const char *buf, int nLen) override;
@@ -26,10 +25,7 @@ public:
     virtual qint16 LocalPort() override;
 
 private:
-    int CreateDataChannel();
-    int OnConnectionRequst();
     int OnReciveConnectRequst();
-    int OnConnectionReply();
     int Reply(int err, const QString &szErr = QString());
 
 private Q_SLOTS:
@@ -44,7 +40,8 @@ private Q_SLOTS:
     virtual void slotPeerRead();
 
 private:
-    std::shared_ptr<CPeerConnecter> m_pPeer;
+    std::shared_ptr<CPeerConnecter> m_Peer;
+
 };
 
 #endif // CPEERCONNECTERICESERVER_H

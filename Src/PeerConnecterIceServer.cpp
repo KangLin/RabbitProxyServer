@@ -12,48 +12,8 @@ CPeerConnecterIceServer::CPeerConnecterIceServer(CProxyServerSocks *pServer, QOb
 {
 }
 
-int CPeerConnecterIceServer::CreateDataChannel()
-{
-    m_DataChannel = std::make_shared<CDataChannelIce>(m_pServer->GetSignal(), this);
-    if(m_DataChannel)
-    {
-        bool check = false;
-        check = connect(m_DataChannel.get(), SIGNAL(sigConnected()),
-                        this, SLOT(slotDataChannelConnected()));
-        Q_ASSERT(check);
-        check = connect(m_DataChannel.get(), SIGNAL(sigDisconnected()),
-                        this, SLOT(slotDataChannelDisconnected()));
-        Q_ASSERT(check);
-        check = connect(m_DataChannel.get(), SIGNAL(sigError(int, const QString&)),
-                        this, SLOT(slotDataChannelError(int, const QString&)));
-        Q_ASSERT(check);
-        check = connect(m_DataChannel.get(), SIGNAL(sigReadyRead()),
-                        this, SLOT(slotDataChannelReadyRead()));
-        Q_ASSERT(check);
-        CDataChannelIce* p = qobject_cast<CDataChannelIce*>(m_DataChannel.get());
-        CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
-        if(p && pPara)
-        {
-            p->SetPeerUser(pPara->GetPeerUser());
-            rtc::Configuration config;
-            config.iceServers.push_back(
-                        rtc::IceServer(pPara->GetStunServer().toStdString().c_str(),
-                                       pPara->GetStunPort()));
-            config.iceServers.push_back(
-                        rtc::IceServer(pPara->GetTurnServer().toStdString().c_str(),
-                                       pPara->GetTurnPort(),
-                                       pPara->GetTurnUser().toStdString().c_str(),
-                                       pPara->GetTurnPassword().toStdString().c_str()));
-            if(m_DataChannel->Open())
-                LOG_MODEL_ERROR("PeerConnecterIce", "Data channel open fail");
-        }
-    }
-    return 0;
-}
-
 void CPeerConnecterIceServer::slotDataChannelConnected()
 {
-    OnConnectionRequst();
 }
 
 void CPeerConnecterIceServer::slotDataChannelDisconnected()
@@ -70,61 +30,37 @@ void CPeerConnecterIceServer::slotDataChannelReadyRead()
 {
     if(CONNECT == m_Status)
     {
-        if(m_bConnectSide)
-            OnConnectionReply();
-        else
-            OnReciveConnectRequst();
-
+        OnReciveConnectRequst();
         return;
     }
 
-    //Forword
-    if(m_bConnectSide)
+    if(m_Peer)
     {
-        emit sigReadyRead();
-    } else {
         QByteArray d = m_DataChannel->ReadAll();
         m_Peer->Write(d.data(), d.size());
     }
 }
 
-int CPeerConnecterIceServer::Connect(const QHostAddress &address, qint16 nPort)
-{
-    int nRet = 0;
-
-    if(!m_pServer->GetSignal()->IsOpen())
-    {
-        LOG_MODEL_ERROR("PeerConnecterIce", "Signal don't open");
-        return -1;
-    }
-
-    m_peerAddress = address;
-    m_peerPort = nPort;
-    m_bConnectSide = true;
-
-    nRet = CreateDataChannel();
-
-    return nRet;
-}
-
 qint64 CPeerConnecterIceServer::Read(char *buf, int nLen)
 {
-    if(!m_DataChannel) return -1;
-
-    return m_DataChannel->Read(buf, nLen);
+    if(CONNECT == m_Status) return -1;
+    if(!m_Peer) return -1;
+    return m_Peer->Read(buf, nLen);
 }
 
 QByteArray CPeerConnecterIceServer::ReadAll()
 {
-    if(!m_DataChannel) return QByteArray();
-    return m_DataChannel->ReadAll();
+    if(CONNECT == m_Status) return QByteArray();
+    if(!m_Peer) return QByteArray();
+    return m_Peer->ReadAll();
 }
 
 int CPeerConnecterIceServer::Write(const char *buf, int nLen)
 {
-    if(!m_DataChannel)
+    if(CONNECT == m_Status) return -1;
+    if(!m_Peer)
         return -1;
-    return m_DataChannel->Write(buf, nLen);
+    return m_Peer->Write(buf, nLen);
 }
 
 int CPeerConnecterIceServer::Close()
@@ -151,31 +87,7 @@ QHostAddress CPeerConnecterIceServer::LocalAddress()
 
 qint16 CPeerConnecterIceServer::LocalPort()
 {
-    return m_bindPort;
-}
-
-int CPeerConnecterIceServer::OnConnectionRequst()
-{
-    int nRet = 0;
-    if(m_bConnectSide)
-    {
-        strClientRequst requst = {0, 1, 0, 1, qToBigEndian(m_peerPort), {0}};
-        int nLen = 6;
-        if(m_peerAddress.protocol() == QAbstractSocket::IPv6Protocol)
-        {
-            requst.atyp = 0x04;
-            nLen += 16;
-            memcpy(requst.ip.v6, m_peerAddress.toIPv6Address().c, 16);
-        }
-        else
-        {
-            requst.atyp = 0x01;
-            nLen += 4;
-            requst.ip.v4 = qToBigEndian(m_peerAddress.toIPv4Address());
-        }
-        m_DataChannel->Write(reinterpret_cast<const char*>(&requst), nLen);
-    }
-    return nRet;
+    return m_nBindPort;
 }
 
 int CPeerConnecterIceServer::OnReciveConnectRequst()
@@ -200,13 +112,13 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
         return -1;
     }
 
-    m_peerPort = qToLittleEndian(pRequst->port);
+    m_nPeerPort = qFromBigEndian(pRequst->port);
 
     switch(pRequst->atyp)
     {
     case 0x01:
     {
-        qint32 add = qFromLittleEndian(pRequst->ip.v4);
+        qint32 add = qFromBigEndian(pRequst->ip.v4);
         m_peerAddress.setAddress(add);
         break;
     }
@@ -238,23 +150,7 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
                     this, SLOT(slotPeerRead()));
     Q_ASSERT(check);
 
-    nRet = m_Peer->Connect(m_peerAddress, m_peerPort);
-    return nRet;
-}
-
-int CPeerConnecterIceServer::OnConnectionReply()
-{
-    int nRet = 0;
-
-    QByteArray data = m_DataChannel->ReadAll();
-    strReply* pReply = reinterpret_cast<strReply*>(data.data());
-    if(emERROR::Success == pReply->rep)
-    {
-        emit sigConnected();
-        m_Status = FORWORD;
-    }
-    else
-        emit sigError(pReply->rep);
+    nRet = m_Peer->Connect(m_peerAddress, m_nPeerPort);
     return nRet;
 }
 
@@ -268,7 +164,7 @@ int CPeerConnecterIceServer::Reply(int nError, const QString& szError)
     reply.rep = nError;
     if(0 == nError)
     {
-        reply.port = qToBigEndian(m_bindPort);
+        reply.port = qToBigEndian(m_nBindPort);
         if(m_bindAddress.protocol() == QAbstractSocket::IPv6Protocol)
         {
             nLen += 16;
@@ -286,6 +182,13 @@ int CPeerConnecterIceServer::Reply(int nError, const QString& szError)
 
 void CPeerConnecterIceServer::slotPeerConnected()
 {
+    if(!m_Peer)
+    {
+        Reply(emERROR::Unkown);
+        return;
+    }
+    m_nBindPort = m_Peer->LocalPort();
+    m_peerAddress = m_Peer->LocalAddress();
     Reply(emERROR::Success);
     m_Status = FORWORD;
 }
@@ -295,8 +198,9 @@ void CPeerConnecterIceServer::slotPeerDisconnectd()
     if(CONNECT == m_Status)
     {
         Reply(emERROR::NotAllowdConnection);
-        Close();
     }
+    Close();
+    emit sigDisconnected();
 }
 
 void CPeerConnecterIceServer::slotPeerError(int nError, const QString &szErr)
@@ -305,13 +209,12 @@ void CPeerConnecterIceServer::slotPeerError(int nError, const QString &szErr)
     if(CONNECT == m_Status)
     {
         Reply(nError);
-        Close();
     }
+    Close();
+    emit sigError(nError, szErr);
 }
 
 void CPeerConnecterIceServer::slotPeerRead()
 {
-    if(!m_DataChannel) return;
-    QByteArray d = m_Peer->ReadAll();
-    m_DataChannel->Write(d.data(), d.size());
+    emit sigReadyRead();
 }

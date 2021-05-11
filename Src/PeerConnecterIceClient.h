@@ -6,9 +6,9 @@
 #pragma once
 
 #include "PeerConnecter.h"
-#include "ProxyServerSocks.h"
 #include "DataChannelIce.h"
 
+class CProxyServerSocks;
 class CPeerConnecterIceClient : public CPeerConnecter
 {
     Q_OBJECT
@@ -25,9 +25,9 @@ public:
     virtual QHostAddress LocalAddress() override;
     virtual qint16 LocalPort() override;
 
+    int CreateDataChannel(const QString& user = QString());
+    QString GetPeerUser();
 private:
-    int CreateDataChannel();
-    int OnReciveConnectRequst();
     int OnConnectionReply();
 
 private Q_SLOTS:
@@ -37,6 +37,7 @@ private Q_SLOTS:
     virtual void slotDataChannelReadyRead();
 
 protected:
+    QString m_szPeerUser;
     CProxyServerSocks* m_pServer;
     std::shared_ptr<CDataChannel> m_DataChannel;
     QHostAddress m_peerAddress, m_bindAddress;

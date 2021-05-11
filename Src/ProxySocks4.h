@@ -31,7 +31,7 @@ protected Q_SLOTS:
     virtual void slotLookup(QHostInfo info);
     virtual void slotPeerConnected();
     virtual void slotPeerDisconnectd();
-    virtual void slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr);
+    virtual void slotPeerError(int err, const QString &szErr);
     virtual void slotPeerRead();
 
 protected:

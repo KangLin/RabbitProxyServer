@@ -6,6 +6,7 @@
 #include "RabbitCommonLog.h"
 #include <QJsonDocument>
 #include <QtEndian>
+#include "ProxyServerSocks.h"
 
 CPeerConnecterIceClient::CPeerConnecterIceClient(CProxyServerSocks *pServer, QObject *parent)
     : CPeerConnecter(parent),
@@ -16,7 +17,7 @@ CPeerConnecterIceClient::CPeerConnecterIceClient(CProxyServerSocks *pServer, QOb
 {
 }
 
-int CPeerConnecterIceClient::CreateDataChannel()
+int CPeerConnecterIceClient::CreateDataChannel(const QString &user)
 {
     m_DataChannel = std::make_shared<CDataChannelIce>(m_pServer->GetSignal(), this);
     if(m_DataChannel)
@@ -38,7 +39,13 @@ int CPeerConnecterIceClient::CreateDataChannel()
         CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
         if(p && pPara)
         {
-            p->SetPeerUser(pPara->GetPeerUser());
+            if(user.isEmpty())
+                m_szPeerUser = pPara->GetPeerUser();
+            else
+                m_szPeerUser = user;
+
+            p->SetPeerUser(m_szPeerUser);
+
             rtc::Configuration config;
             config.iceServers.push_back(
                         rtc::IceServer(pPara->GetStunServer().toStdString().c_str(),
@@ -56,6 +63,11 @@ int CPeerConnecterIceClient::CreateDataChannel()
         }
     }
     return 0;
+}
+
+QString CPeerConnecterIceClient::GetPeerUser()
+{
+    return m_szPeerUser;
 }
 
 void CPeerConnecterIceClient::slotDataChannelConnected()
@@ -157,52 +169,6 @@ QHostAddress CPeerConnecterIceClient::LocalAddress()
 qint16 CPeerConnecterIceClient::LocalPort()
 {
     return m_nBindPort;
-}
-
-
-int CPeerConnecterIceClient::OnReciveConnectRequst()
-{
-    int nRet = 0;
-
-    strClientRequst* pRequst;
-    QByteArray data = m_DataChannel->ReadAll();
-    pRequst = reinterpret_cast<strClientRequst*>(data.data());
-
-    if(pRequst->version != 0)
-    {
-        LOG_MODEL_ERROR("PeerConnecterIce", "The version [0x%x] is not support",
-                        pRequst->version);
-        return -1;
-    }
-
-    if(0x01 != pRequst->command)
-    {
-        LOG_MODEL_ERROR("PeerConnecterIce", "The command [0x%x] is not support",
-                        pRequst->command);
-        return -1;
-    }
-
-    m_nPeerPort = qToLittleEndian(pRequst->port);
-
-    switch(pRequst->atyp)
-    {
-    case 0x01:
-    {
-        qint32 add = qFromLittleEndian(pRequst->ip.v4);
-        m_peerAddress.setAddress(add);
-        break;
-    }
-    case 0x04:
-    {
-        m_peerAddress.setAddress(pRequst->ip.v6);
-        break;
-    }
-    default:
-        LOG_MODEL_DEBUG("PeerConnecterIce", "The address type [0x%x] isn't support",
-                        pRequst->atyp);
-    }
-
-    return nRet;
 }
 
 int CPeerConnecterIceClient::OnConnectionReply()

@@ -2,6 +2,7 @@
 
 #include "ProxySocks5.h"
 #include "ParameterSocks.h"
+#include "ProxyServerSocks.h"
 
 #ifdef HAVE_ICE
     #include "PeerConnecterIceClient.h"
@@ -419,8 +420,8 @@ int CProxySocks5::processConnect()
         check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
                         this, SLOT(slotPeerDisconnectd()));
         Q_ASSERT(check);
-        check = connect(m_pPeer.get(), SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
-                        this, SLOT(slotPeerError(const CPeerConnecter:: emERROR&, const QString&)));
+        check = connect(m_pPeer.get(), SIGNAL(sigError(int, const QString&)),
+                        this, SLOT(slotPeerError(int, const QString&)));
         Q_ASSERT(check);
         check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
                         this, SLOT(slotPeerRead()));
@@ -449,7 +450,7 @@ void CProxySocks5::slotPeerDisconnectd()
     slotClose();
 }
 
-void CProxySocks5::slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr)
+void CProxySocks5::slotPeerError(int err, const QString &szErr)
 {
     LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerError():%d %s", err, szErr.toStdString().c_str());
     switch (err) {
@@ -531,9 +532,9 @@ int CProxySocks5::processBind()
                     this, SLOT(slotPeerDisconnectd()));
     Q_ASSERT(check);
     check = connect(m_pPeer.get(),
-           SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
+           SIGNAL(sigError(int, const QString&)),
            this,
-           SLOT(slotPeerError(const CPeerConnecter::emERROR&, const QString&)));
+           SLOT(slotPeerError(int, const QString&)));
     Q_ASSERT(check);
     check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
                     this, SLOT(slotPeerRead()));

@@ -33,7 +33,7 @@ private Q_SLOTS:
     virtual void slotLookup(QHostInfo info) override;
     virtual void slotPeerConnected() override;
     virtual void slotPeerDisconnectd() override;
-    virtual void slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr) override;
+    virtual void slotPeerError(int err, const QString &szErr) override;
     virtual void slotPeerRead() override;
     
 private:

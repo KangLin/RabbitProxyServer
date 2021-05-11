@@ -7,6 +7,7 @@
 
 #ifdef HAVE_ICE
     #include "IceSignalWebSocket.h"
+    #include "PeerConnecterIceServer.h"
 #endif
 
 CProxyServerSocks::CProxyServerSocks(QObject *parent) : CProxyServer(parent)
@@ -39,6 +40,9 @@ int CProxyServerSocks::Start()
             LOG_MODEL_ERROR("ProxyServerSocks", "Open signal fail");
             return -1;
         }
+        bool check = connect(m_Signal.get(), SIGNAL(sigOffer(const QString&)),
+                             this, SLOT(slotOffer(const QString&)));
+        Q_ASSERT(check);
     }
     nRet = CProxyServer::Start();
     return nRet;
@@ -48,7 +52,51 @@ int CProxyServerSocks::Stop()
 {
     if(m_Signal)
         m_Signal->Close();
+
+    m_ConnectServer.clear();
     return CProxyServer::Stop();
+}
+
+void CProxyServerSocks::slotOffer(const QString& user)
+{
+    CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
+    if(!p->GetPeerUser().isEmpty() && p->GetPeerUser() != user)
+    {
+        LOG_MODEL_ERROR("ProxyServerSocks", "User[%s] isn't same to set user[%s]",
+                        user.toStdString().c_str(),
+                        p->GetPeerUser().toStdString().c_str());
+        return;
+    }
+
+    if(m_ConnectServer.find(user) != m_ConnectServer.end())
+    {
+        return;
+    }
+
+    LOG_MODEL_DEBUG("ProxyServerSocks", "new peer connecter ice server, user:%s",
+                    user.toStdString().c_str());
+    std::shared_ptr<CPeerConnecterIceServer> ice
+            = std::make_shared<CPeerConnecterIceServer>(this);
+    bool check = connect(ice.get(), SIGNAL(sigDisconnected()),
+                         this, SLOT(slotRemotePeerConnectServer()));
+    Q_ASSERT(check);
+    check = connect(ice.get(), SIGNAL(sigError(int, const QString&)),
+                             this, SLOT(slotError(int, const QString&)));
+        Q_ASSERT(check);
+    ice->CreateDataChannel(user);
+    m_ConnectServer.insert(user, ice);
+}
+
+void CProxyServerSocks::slotError(int, const QString&)
+{
+    slotRemotePeerConnectServer();
+}
+
+void CProxyServerSocks::slotRemotePeerConnectServer()
+{
+    CPeerConnecterIceServer* pServer
+            = qobject_cast<CPeerConnecterIceServer*>(sender());
+    m_ConnectServer.remove(pServer->GetPeerUser());
 }
 #endif
 

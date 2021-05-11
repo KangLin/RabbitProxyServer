@@ -169,9 +169,9 @@ int CProxySocks4::processConnect()
                         this, SLOT(slotPeerDisconnectd()));
         Q_ASSERT(check);
         check = connect(m_pPeer.get(),
-           SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
+           SIGNAL(sigError(int, const QString&)),
            this,
-           SLOT(slotPeerError(const CPeerConnecter::emERROR&, const QString&)));
+           SLOT(slotPeerError(int, const QString&)));
         Q_ASSERT(check);
         check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
                         this, SLOT(slotPeerRead()));
@@ -233,9 +233,9 @@ int CProxySocks4::processBind()
                     this, SLOT(slotPeerDisconnectd()));
     Q_ASSERT(check);
     check = connect(m_pPeer.get(),
-           SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
+           SIGNAL(sigError(int, const QString&)),
            this,
-           SLOT(slotPeerError(const CPeerConnecter::emERROR&, const QString&)));
+           SLOT(slotPeerError(int, const QString&)));
     Q_ASSERT(check);
     check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
                     this, SLOT(slotPeerRead()));
@@ -271,7 +271,7 @@ void CProxySocks4::slotPeerDisconnectd()
     slotClose();
 }
 
-void CProxySocks4::slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr)
+void CProxySocks4::slotPeerError(int err, const QString &szErr)
 {
     LOG_MODEL_DEBUG("Socks4", "slotPeerError():%d %s", err, szErr.toStdString().c_str());
     if(emCommand::ClientRequest == m_Command)
