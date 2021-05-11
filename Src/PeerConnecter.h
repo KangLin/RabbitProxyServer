@@ -40,7 +40,7 @@ public:
 Q_SIGNALS:
     void sigConnected();
     void sigDisconnected();
-    void sigError(const CPeerConnecter::emERROR &eNo, const QString& szError);
+    void sigError(int nErr, const QString& szError = QString());
     void sigReadyRead();
     
 private Q_SLOTS:

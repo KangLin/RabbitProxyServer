@@ -17,10 +17,12 @@ public:
                           QObject *parent = nullptr);
     virtual ~CDataChannelIce();
 
+    //! @note These properties must be set before calling Open
     int SetSignal(std::shared_ptr<CIceSignal> signal);
     int SetPeerUser(const QString& user);
     int SetConfigure(const rtc::Configuration& config);
 
+    //! @note The above properties must be set before calling Open
     virtual int Open();
     virtual int Close();
     virtual qint64 Read(char *buf, int nLen);

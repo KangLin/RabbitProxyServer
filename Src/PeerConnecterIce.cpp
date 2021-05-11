@@ -58,7 +58,7 @@ int CPeerConnecterIce::CreateDataChannel()
 
 void CPeerConnecterIce::slotDataChannelConnected()
 {
-    //TODO: Send connect command
+    OnConnectionRequst();
 }
 
 void CPeerConnecterIce::slotDataChannelDisconnected()
@@ -68,25 +68,29 @@ void CPeerConnecterIce::slotDataChannelDisconnected()
 
 void CPeerConnecterIce::slotDataChannelError(int nErr, const QString& szErr)
 {
-    emit sigError(emERROR::Unkown, szErr);
+    emit sigError(nErr, szErr);
 }
 
 void CPeerConnecterIce::slotDataChannelReadyRead()
 {
     if(CONNECT == m_Status)
     {
-        //TODO: 判断返回值是否成功
-        int nRet = 0;
+        if(m_bConnectSide)
+            OnConnectionReply();
+        else
+            OnReciveConnectRequst();
 
-        if(nRet)
-            return;
-
-        m_Status = FORWORD;
         return;
     }
 
     //Forword
-    emit sigReadyRead();
+    if(m_bConnectSide)
+    {
+        emit sigReadyRead();
+    } else {
+        QByteArray d = m_DataChannel->ReadAll();
+        m_Peer->Write(d.data(), d.size());
+    }
 }
 
 int CPeerConnecterIce::Connect(const QHostAddress &address, qint16 nPort)
@@ -137,6 +141,11 @@ int CPeerConnecterIce::Close()
         m_DataChannel.reset();
     }
 
+    if(m_Peer)
+    {
+        m_Peer->Close();
+        m_Peer.reset();
+    }
     return nRet;
 }
 
@@ -153,52 +162,62 @@ qint16 CPeerConnecterIce::LocalPort()
 int CPeerConnecterIce::OnConnectionRequst()
 {
     int nRet = 0;
-
+    if(m_bConnectSide)
+    {
+        strClientRequst requst = {0, 1, 0, 1, qToBigEndian(m_peerPort), {0}};
+        int nLen = 6;
+        if(m_peerAddress.protocol() == QAbstractSocket::IPv6Protocol)
+        {
+            requst.atyp = 0x04;
+            nLen += 16;
+            memcpy(requst.ip.v6, m_peerAddress.toIPv6Address().c, 16);
+        }
+        else
+        {
+            requst.atyp = 0x01;
+            nLen += 4;
+            requst.ip.v4 = qToBigEndian(m_peerAddress.toIPv4Address());
+        }
+        m_DataChannel->Write(reinterpret_cast<const char*>(&requst), nLen);
+    }
     return nRet;
 }
 
-int CPeerConnecterIce::OnConnectionReply(rtc::binary &data)
+int CPeerConnecterIce::OnReciveConnectRequst()
 {
     int nRet = 0;
-    
-    return nRet;
-}
 
-int CPeerConnecterIce::OnReciveConnectRequst(
-        std::shared_ptr<rtc::DataChannel> dc,
-        rtc::binary &data)
-{
-    int nRet = 0;
-    //解析包，得到IP和PORT
-    strClientRequst* pRequst = reinterpret_cast<strClientRequst*>(&data[0]);
-    if(pRequst->version != 5)
+    strClientRequst* pRequst;
+    QByteArray data = m_DataChannel->ReadAll();
+    pRequst = reinterpret_cast<strClientRequst*>(data.data());
+
+    if(pRequst->version != 0)
     {
         LOG_MODEL_ERROR("PeerConnecterIce", "The version [0x%x] is not support",
                         pRequst->version);
         return -1;
     }
-    
+
     if(0x01 != pRequst->command)
     {
         LOG_MODEL_ERROR("PeerConnecterIce", "The command [0x%x] is not support",
                         pRequst->command);
         return -1;
     }
-    
+
+    m_peerPort = qToLittleEndian(pRequst->port);
+
     switch(pRequst->atyp)
     {
     case 0x01:
     {
-        qint32 add = qToLittleEndian(*reinterpret_cast<qint32*>(&pRequst->buf));
+        qint32 add = qFromLittleEndian(pRequst->ip.v4);
         m_peerAddress.setAddress(add);
-        m_peerPort = qToLittleEndian(*reinterpret_cast<qint16*>(&pRequst->buf[4]));
         break;
     }
     case 0x04:
     {
-        Q_IPV6ADDR* pAdd = reinterpret_cast<Q_IPV6ADDR*>(&pRequst->buf[0]);
-        m_peerAddress.setAddress(*pAdd);
-        m_peerPort = qToLittleEndian(*reinterpret_cast<qint16*>(&pRequst->buf[16]));
+        m_peerAddress.setAddress(pRequst->ip.v6);
         break;
     }
     default:
@@ -210,50 +229,94 @@ int CPeerConnecterIce::OnReciveConnectRequst(
         Q_ASSERT(false);
     else
         m_Peer = std::make_shared<CPeerConnecter>(this);
-    
+
     bool check = connect(m_Peer.get(), SIGNAL(sigConnected()),
                          this, SLOT(slotPeerConnected()));
     Q_ASSERT(check);
     check = connect(m_Peer.get(), SIGNAL(sigDisconnected()),
                     this, SLOT(slotPeerDisconnectd()));
     Q_ASSERT(check);
-    check = connect(m_Peer.get(), SIGNAL(sigError(const CPeerConnecter::emERROR&, const QString&)),
-                    this, SLOT(slotPeerError(const CPeerConnecter:: emERROR&, const QString&)));
+    check = connect(m_Peer.get(), SIGNAL(sigError(int, const QString&)),
+                    this, SLOT(slotPeerError(int, const QString&)));
     Q_ASSERT(check);
     check = connect(m_Peer.get(), SIGNAL(sigReadyRead()),
                     this, SLOT(slotPeerRead()));
     Q_ASSERT(check);
-    
+
     nRet = m_Peer->Connect(m_peerAddress, m_peerPort);
     return nRet;
 }
 
-int CPeerConnecterIce::OnReciveForword(rtc::binary &data)
+int CPeerConnecterIce::OnConnectionReply()
 {
     int nRet = 0;
-    if(data.size() <= 0 || nullptr == m_Peer)
-        return -1;
 
-    nRet = m_Peer->Write(reinterpret_cast<const char*>(&data[0]), data.size());
+    QByteArray data = m_DataChannel->ReadAll();
+    strReply* pReply = reinterpret_cast<strReply*>(data.data());
+    if(emERROR::Success == pReply->rep)
+    {
+        emit sigConnected();
+        m_Status = FORWORD;
+    }
+    else
+        emit sigError(pReply->rep);
     return nRet;
+}
+
+int CPeerConnecterIce::Reply(int nError, const QString& szError)
+{
+    Q_UNUSED(szError)
+    if(!m_DataChannel) return -1;
+    int nLen = 6;
+    strReply reply;
+    memset(&reply, 0, sizeof(strReply));
+    reply.rep = nError;
+    if(0 == nError)
+    {
+        reply.port = qToBigEndian(m_bindPort);
+        if(m_bindAddress.protocol() == QAbstractSocket::IPv6Protocol)
+        {
+            nLen += 16;
+            reply.atyp = 0x04;
+            memcpy(reply.ip.v6, m_bindAddress.toIPv6Address().c, 16);
+        } else {
+            nLen += 2;
+            reply.atyp = 0x01;
+            reply.ip.v4 = qToBigEndian(m_bindAddress.toIPv4Address());
+        }
+    }
+    m_DataChannel->Write(reinterpret_cast<char*>(&reply), nLen);
+    return 0;
 }
 
 void CPeerConnecterIce::slotPeerConnected()
 {
-    
+    Reply(emERROR::Success);
+    m_Status = FORWORD;
 }
 
 void CPeerConnecterIce::slotPeerDisconnectd()
 {
-    
+    if(CONNECT == m_Status)
+    {
+        Reply(emERROR::NotAllowdConnection);
+        Close();
+    }
 }
 
-void CPeerConnecterIce::slotPeerError(const CPeerConnecter::emERROR &err, const QString &szErr)
+void CPeerConnecterIce::slotPeerError(int nError, const QString &szErr)
 {
-    
+    Q_UNUSED(szErr);
+    if(CONNECT == m_Status)
+    {
+        Reply(nError);
+        Close();
+    }
 }
 
 void CPeerConnecterIce::slotPeerRead()
 {
-    
+    if(!m_DataChannel) return;
+    QByteArray d = m_Peer->ReadAll();
+    m_DataChannel->Write(d.data(), d.size());
 }
