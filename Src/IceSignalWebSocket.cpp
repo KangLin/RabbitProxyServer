@@ -85,6 +85,8 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
         std::string type = it->get<std::string>();
 
         if (type == "offer" || type == "answer") {
+            if(type == "offer")
+                emit sigOffer(id.c_str());
             auto sdp = message["description"].get<std::string>();
             emit sigDescription(id.c_str(), rtc::Description(sdp, type));
         } else if (type == "candidate") {

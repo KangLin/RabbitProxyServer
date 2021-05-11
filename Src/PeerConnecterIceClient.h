@@ -1,18 +1,20 @@
 //! @author Kang Lin(kl222@126.com)
 
-#ifndef CPEERCONNECTERICE_H
-#define CPEERCONNECTERICE_H
+#ifndef CPEERCONNECTERICECLIENT_H
+#define CPEERCONNECTERICECLIENT_H
+
+#pragma once
 
 #include "PeerConnecter.h"
 #include "ProxyServerSocks.h"
 #include "DataChannelIce.h"
 
-class CPeerConnecterIce : public CPeerConnecter
+class CPeerConnecterIceClient : public CPeerConnecter
 {
     Q_OBJECT
 
 public:
-    explicit CPeerConnecterIce(CProxyServerSocks* pServer, QObject *parent = nullptr);
+    explicit CPeerConnecterIceClient(CProxyServerSocks* pServer, QObject *parent = nullptr);
 
 public:
     virtual int Connect(const QHostAddress &address, qint16 nPort) override;
@@ -25,10 +27,8 @@ public:
 
 private:
     int CreateDataChannel();
-    int OnConnectionRequst();
     int OnReciveConnectRequst();
     int OnConnectionReply();
-    int Reply(int err, const QString &szErr = QString());
 
 private Q_SLOTS:
     virtual void slotDataChannelConnected();
@@ -36,25 +36,17 @@ private Q_SLOTS:
     virtual void slotDataChannelError(int nErr, const QString& szError);
     virtual void slotDataChannelReadyRead();
 
-    virtual void slotPeerConnected();
-    virtual void slotPeerDisconnectd();
-    virtual void slotPeerError(int nError, const QString &szErr);
-    virtual void slotPeerRead();
-
-private:
+protected:
     CProxyServerSocks* m_pServer;
     std::shared_ptr<CDataChannel> m_DataChannel;
     QHostAddress m_peerAddress, m_bindAddress;
-    quint16 m_peerPort, m_bindPort;
-    bool m_bConnectSide;
+    quint16 m_nPeerPort, m_nBindPort;
 
     enum STATUS{
         CONNECT,
         FORWORD
     };
     STATUS m_Status;
-
-    std::shared_ptr<CPeerConnecter> m_Peer;
 
 #pragma pack(push)
 #pragma pack(1)
@@ -144,4 +136,4 @@ private:
 #pragma pack(pop)
 };
 
-#endif // CPEERCONNECTERICE_H
+#endif // CPEERCONNECTERICECLIENT_H

@@ -50,6 +50,7 @@ Q_SIGNALS:
     void sigReadyRead();
     void sigError(int nError, const QString& szError);
 
+    void sigOffer(const QString& user);
     void sigCandiate(const QString& user,
                      const rtc::Candidate& candidate);
     void sigDescription(const QString& user,

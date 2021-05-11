@@ -4,7 +4,7 @@
 #include "ParameterSocks.h"
 
 #ifdef HAVE_ICE
-    #include "PeerConnecterIce.h"
+    #include "PeerConnecterIceClient.h"
 #endif
 
 #include "RabbitCommonLog.h"
@@ -551,7 +551,7 @@ int CProxySocks5::CreatePeer()
         if(pPara->GetIce())
         {
             CProxyServerSocks* pServer = qobject_cast<CProxyServerSocks*>(m_pServer);
-            m_pPeer = std::make_shared<CPeerConnecterIce>(
+            m_pPeer = std::make_shared<CPeerConnecterIceClient>(
                         pServer, this);
         } else
 #endif

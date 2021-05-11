@@ -1,23 +1,18 @@
 //! @author Kang Lin(kl222@126.com)
 
-#include "PeerConnecterIce.h"
+#include "PeerConnecterIceServer.h"
 #include "ParameterSocks.h"
 #include "IceSignalWebSocket.h"
 #include "RabbitCommonLog.h"
 #include <QJsonDocument>
 #include <QtEndian>
 
-CPeerConnecterIce::CPeerConnecterIce(CProxyServerSocks *pServer, QObject *parent)
-    : CPeerConnecter(parent),
-      m_pServer(pServer)
+CPeerConnecterIceServer::CPeerConnecterIceServer(CProxyServerSocks *pServer, QObject *parent)
+    : CPeerConnecterIceClient(pServer, parent)
 {
-    m_peerPort = 0;
-    m_bindPort = 0;
-    m_bConnectSide = false;
-    m_Status = CONNECT;
 }
 
-int CPeerConnecterIce::CreateDataChannel()
+int CPeerConnecterIceServer::CreateDataChannel()
 {
     m_DataChannel = std::make_shared<CDataChannelIce>(m_pServer->GetSignal(), this);
     if(m_DataChannel)
@@ -56,22 +51,22 @@ int CPeerConnecterIce::CreateDataChannel()
     return 0;
 }
 
-void CPeerConnecterIce::slotDataChannelConnected()
+void CPeerConnecterIceServer::slotDataChannelConnected()
 {
     OnConnectionRequst();
 }
 
-void CPeerConnecterIce::slotDataChannelDisconnected()
+void CPeerConnecterIceServer::slotDataChannelDisconnected()
 {
     emit sigDisconnected();
 }
 
-void CPeerConnecterIce::slotDataChannelError(int nErr, const QString& szErr)
+void CPeerConnecterIceServer::slotDataChannelError(int nErr, const QString& szErr)
 {
     emit sigError(nErr, szErr);
 }
 
-void CPeerConnecterIce::slotDataChannelReadyRead()
+void CPeerConnecterIceServer::slotDataChannelReadyRead()
 {
     if(CONNECT == m_Status)
     {
@@ -93,7 +88,7 @@ void CPeerConnecterIce::slotDataChannelReadyRead()
     }
 }
 
-int CPeerConnecterIce::Connect(const QHostAddress &address, qint16 nPort)
+int CPeerConnecterIceServer::Connect(const QHostAddress &address, qint16 nPort)
 {
     int nRet = 0;
 
@@ -112,27 +107,27 @@ int CPeerConnecterIce::Connect(const QHostAddress &address, qint16 nPort)
     return nRet;
 }
 
-qint64 CPeerConnecterIce::Read(char *buf, int nLen)
+qint64 CPeerConnecterIceServer::Read(char *buf, int nLen)
 {
     if(!m_DataChannel) return -1;
 
     return m_DataChannel->Read(buf, nLen);
 }
 
-QByteArray CPeerConnecterIce::ReadAll()
+QByteArray CPeerConnecterIceServer::ReadAll()
 {
     if(!m_DataChannel) return QByteArray();
     return m_DataChannel->ReadAll();
 }
 
-int CPeerConnecterIce::Write(const char *buf, int nLen)
+int CPeerConnecterIceServer::Write(const char *buf, int nLen)
 {
     if(!m_DataChannel)
         return -1;
     return m_DataChannel->Write(buf, nLen);
 }
 
-int CPeerConnecterIce::Close()
+int CPeerConnecterIceServer::Close()
 {
     int nRet = 0;
     if(m_DataChannel)
@@ -149,17 +144,17 @@ int CPeerConnecterIce::Close()
     return nRet;
 }
 
-QHostAddress CPeerConnecterIce::LocalAddress()
+QHostAddress CPeerConnecterIceServer::LocalAddress()
 {
     return m_bindAddress;
 }
 
-qint16 CPeerConnecterIce::LocalPort()
+qint16 CPeerConnecterIceServer::LocalPort()
 {
     return m_bindPort;
 }
 
-int CPeerConnecterIce::OnConnectionRequst()
+int CPeerConnecterIceServer::OnConnectionRequst()
 {
     int nRet = 0;
     if(m_bConnectSide)
@@ -183,7 +178,7 @@ int CPeerConnecterIce::OnConnectionRequst()
     return nRet;
 }
 
-int CPeerConnecterIce::OnReciveConnectRequst()
+int CPeerConnecterIceServer::OnReciveConnectRequst()
 {
     int nRet = 0;
 
@@ -247,7 +242,7 @@ int CPeerConnecterIce::OnReciveConnectRequst()
     return nRet;
 }
 
-int CPeerConnecterIce::OnConnectionReply()
+int CPeerConnecterIceServer::OnConnectionReply()
 {
     int nRet = 0;
 
@@ -263,7 +258,7 @@ int CPeerConnecterIce::OnConnectionReply()
     return nRet;
 }
 
-int CPeerConnecterIce::Reply(int nError, const QString& szError)
+int CPeerConnecterIceServer::Reply(int nError, const QString& szError)
 {
     Q_UNUSED(szError)
     if(!m_DataChannel) return -1;
@@ -289,13 +284,13 @@ int CPeerConnecterIce::Reply(int nError, const QString& szError)
     return 0;
 }
 
-void CPeerConnecterIce::slotPeerConnected()
+void CPeerConnecterIceServer::slotPeerConnected()
 {
     Reply(emERROR::Success);
     m_Status = FORWORD;
 }
 
-void CPeerConnecterIce::slotPeerDisconnectd()
+void CPeerConnecterIceServer::slotPeerDisconnectd()
 {
     if(CONNECT == m_Status)
     {
@@ -304,7 +299,7 @@ void CPeerConnecterIce::slotPeerDisconnectd()
     }
 }
 
-void CPeerConnecterIce::slotPeerError(int nError, const QString &szErr)
+void CPeerConnecterIceServer::slotPeerError(int nError, const QString &szErr)
 {
     Q_UNUSED(szErr);
     if(CONNECT == m_Status)
@@ -314,7 +309,7 @@ void CPeerConnecterIce::slotPeerError(int nError, const QString &szErr)
     }
 }
 
-void CPeerConnecterIce::slotPeerRead()
+void CPeerConnecterIceServer::slotPeerRead()
 {
     if(!m_DataChannel) return;
     QByteArray d = m_Peer->ReadAll();

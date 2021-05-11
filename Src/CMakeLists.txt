@@ -59,7 +59,8 @@ endif()
 if(LibDataChannel_FOUND)
     set(INSTALL_HEAD_FILES
         ${INSTALL_HEAD_FILES}
-        PeerConnecterIce.h
+        PeerConnecterIceClient.h
+        PeerConnecterIceServer.h
         IceSignal.h
         IceSignalWebSocket.h
         DataChannel.h
@@ -67,7 +68,8 @@ if(LibDataChannel_FOUND)
         )
     set(SOURCE_FILES
         ${SOURCE_FILES}
-        PeerConnecterIce.cpp
+        PeerConnecterIceClient.cpp
+        PeerConnecterIceServer.cpp
         IceSignal.cpp
         IceSignalWebSocket.cpp
         DataChannel.cpp
