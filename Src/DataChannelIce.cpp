@@ -94,20 +94,22 @@ int CDataChannelIce::CreateDataChannel()
     });
     m_peerConnection->onLocalDescription(
                 [this](rtc::Description description) {
+        /*
         LOG_MODEL_DEBUG("DataChannel", "onLocalDescription: %s",
-                        std::string(description).c_str());
+                        std::string(description).c_str());//*/
         // Send to the peer through the signal channel
-        if(m_szPeerUser.isEmpty())
+        if(m_szPeerUser.isEmpty() || m_szId.isEmpty())
            LOG_MODEL_ERROR("DataChannel", "Please peer user by SetPeerUser()");
         m_Signal->SendDescription(m_szPeerUser, m_szId, description);
     });
     m_peerConnection->onLocalCandidate(
                 [this](rtc::Candidate candidate){
+        /*
         LOG_MODEL_DEBUG("DataChannel", "onLocalCandidate: %s, mid: %s",
                         std::string(candidate).c_str(),
-                        candidate.mid().c_str());
+                        candidate.mid().c_str());//*/
         // Send to the peer through the signal channel
-        if(m_szPeerUser.isEmpty())
+        if(m_szPeerUser.isEmpty() || m_szId.isEmpty())
            LOG_MODEL_ERROR("DataChannel", "Please peer user by SetPeerUser()");
         m_Signal->SendCandiate(m_szPeerUser, m_szId, candidate);
     });
@@ -234,11 +236,12 @@ void CDataChannelIce::slotSignalReceiverCandiate(const QString& user,
                                                  const QString& mid,
                                                  const QString& sdp)
 {
+    /*
     LOG_MODEL_DEBUG("CDataChannelIce", "Candiate:User:%s; id:%s, mid:%s; sdp:%s",
                     user.toStdString().c_str(),
                     id.toStdString().c_str(),
                     mid.toStdString().c_str(),
-                    sdp.toStdString().c_str());
+                    sdp.toStdString().c_str());//*/
     if(GetPeerUser() != user || GetId() != id) return;
     if(m_peerConnection)
     {
@@ -252,11 +255,12 @@ void CDataChannelIce::slotSignalReceiverDescription(const QString& user,
                                                     const QString &type,
                                                     const QString &sdp)
 {
+    /*
     LOG_MODEL_DEBUG("CDataChannelIce", "Description: User:%s; id:%s, type:%s; sdp:%s",
                     user.toStdString().c_str(),
                     id.toStdString().c_str(),
                     type.toStdString().c_str(),
-                    sdp.toStdString().c_str());
+                    sdp.toStdString().c_str());//*/
     rtc::Description des(sdp.toStdString(), type.toStdString());
     if(des.type() == rtc::Description::Type::Offer
             && GetPeerUser().isEmpty()

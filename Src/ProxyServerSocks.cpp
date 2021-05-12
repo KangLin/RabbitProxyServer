@@ -73,8 +73,9 @@ void CProxyServerSocks::slotOffer(const QString& user, const QString &id)
     CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
     if(!p->GetPeerUser().isEmpty() && p->GetPeerUser() != user)
     {
-        LOG_MODEL_ERROR("ProxyServerSocks", "User[%s] isn't same to set user[%s]",
+        LOG_MODEL_ERROR("ProxyServerSocks", "User[%s] isn't same to set user[%s/%d]",
                         user.toStdString().c_str(),
+                        id.toStdString().c_str(),
                         p->GetPeerUser().toStdString().c_str());
         return;
     }
