@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>500</width>
-    <height>430</height>
+    <height>463</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -182,6 +182,13 @@
          </item>
          <item>
           <widget class="QLineEdit" name="lePeerUser"/>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="cbIceServer">
+           <property name="text">
+            <string>Is server</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </item>

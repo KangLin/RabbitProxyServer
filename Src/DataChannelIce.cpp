@@ -87,7 +87,7 @@ int CDataChannelIce::CreateDataChannel()
     });
     m_peerConnection->onGatheringStateChange(
                 [](rtc::PeerConnection::GatheringState state) {
-        LOG_MODEL_DEBUG("DataChannel", "Gathering: %d", state);
+        LOG_MODEL_DEBUG("DataChannel", "Gathering status: %d", state);
     });
     m_peerConnection->onLocalDescription(
                 [this](rtc::Description description) {
@@ -221,7 +221,7 @@ void CDataChannelIce::slotSignalReceiverCandiate(const QString& user,
                                                  const QString& mid,
                                                  const QString& sdp)
 {
-    Q_UNUSED(user)
+    if(m_szPeerUser != user) return;
     if(m_peerConnection)
     {
         rtc::Candidate candiate(sdp.toStdString().c_str(), mid.toStdString().c_str());
@@ -236,7 +236,7 @@ void CDataChannelIce::slotSignalReceiverDescription(
     if(des.type() == rtc::Description::Type::Offer && m_szPeerUser.isEmpty())
     {
         LOG_MODEL_ERROR("CDataChannelIce",
-                        "Create peerconnect and Answering to %s",
+                        "Create peerconnect and Answering to user: %s",
                         user.toStdString().c_str());
         SetPeerUser(user);
         CreateDataChannel();

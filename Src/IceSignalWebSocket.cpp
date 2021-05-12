@@ -72,11 +72,8 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
         emit sigDisconnected();
     });
     m_webSocket->onMessage([this](std::variant<rtc::binary, std::string> data) {
-//        this->m_Data = std::get<rtc::binary>(data);
-//        emit sigReadyRead();
-
-//        if (!std::holds_alternative<std::string>(data))
-//            return;
+        if (!std::holds_alternative<std::string>(data))
+            return;
 
         nlohmann::json message = nlohmann::json::parse(std::get<std::string>(data));
 

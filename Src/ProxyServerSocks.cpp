@@ -43,9 +43,12 @@ int CProxyServerSocks::Start()
             LOG_MODEL_ERROR("ProxyServerSocks", "Open signal fail");
             return -1;
         }
-        bool check = connect(m_Signal.get(), SIGNAL(sigOffer(const QString&)),
-                             this, SLOT(slotOffer(const QString&)));
-        Q_ASSERT(check);
+        if(p->GetIsIceServer())
+        {
+            bool check = connect(m_Signal.get(), SIGNAL(sigOffer(const QString&)),
+                                 this, SLOT(slotOffer(const QString&)));
+            Q_ASSERT(check);
+        }
     }
     nRet = CProxyServer::Start();
     return nRet;
@@ -54,9 +57,14 @@ int CProxyServerSocks::Start()
 int CProxyServerSocks::Stop()
 {
     if(m_Signal)
+    {
         m_Signal->Close();
+        m_Signal->disconnect(this);
+    }
 
     m_ConnectServer.clear();
+
+
     return CProxyServer::Stop();
 }
 

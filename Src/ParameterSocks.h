@@ -14,6 +14,7 @@ class RABBITPROXY_EXPORT CParameterSocks : public CParameter
     Q_PROPERTY(QString AuthentUser READ GetAuthentUser WRITE SetAuthentUser)
     Q_PROPERTY(QString AuthentPassword READ GetAuthentPassword WRITE SetAuthentPassword)
 
+    Q_PROPERTY(bool IsIceServer READ GetIsIceServer WRITE SetIsIceServer)
     Q_PROPERTY(QString PeerUser READ GetPeerUser WRITE SetPeerUser)
     Q_PROPERTY(QString SignalServer READ GetSignalServer WRITE SetSignalServer)
     Q_PROPERTY(quint16 SignalPort READ GetSignalPort WRITE SetSignalPort)
@@ -57,7 +58,9 @@ public:
     void SetAuthentUser(const QString &user);
     QString GetAuthentPassword();
     void SetAuthentPassword(const QString &password);
-    
+
+    bool GetIsIceServer();
+    void SetIsIceServer(bool bServer);
     QString GetPeerUser();
     void SetPeerUser(const QString &user);
     QString GetSignalServer();
@@ -95,6 +98,7 @@ private:
     QString m_szAuthentPassword;
     
     // ICE
+    bool m_bIsIceServer;
     QString m_szPeerUser;
     QString m_szSignalServer;
     quint16 m_nSignalPort;

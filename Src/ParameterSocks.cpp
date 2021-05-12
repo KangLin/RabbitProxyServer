@@ -5,6 +5,7 @@ CParameterSocks::CParameterSocks(QObject *parent) : CParameter(parent),
     m_bIce(false),
     m_bV4(true),
     m_bV5(true),
+    m_bIsIceServer(true),
     m_nSignalPort(80),
     m_nStunPort(3478),
     m_nTurnPort(3478)
@@ -22,31 +23,35 @@ CParameterSocks::~CParameterSocks()
 int CParameterSocks::Save(QSettings &set)
 {
     CParameter::Save(set);
-    set.setValue(Name() + "Ice", m_bIce);
-    set.setValue(Name() + "V4", m_bV4);
-    set.setValue(Name() + "V5", m_bV5);
-    
-    set.setValue(Name() + "Autenticator/Method/count",
+
+    set.setValue(Name() + "V4/Enable", m_bV4);
+
+    set.setValue(Name() + "V5/Enable", m_bV5);
+    set.setValue(Name() + "V5/Autenticator/Method/count",
                  m_V5AuthenticatorMethod.size());
     for(int i = 0; i < m_V5AuthenticatorMethod.size(); i++)
     {
-        set.setValue(Name() + "Autenticator/Method/" + QString::number(i),
+        set.setValue(Name() + "V5/Autenticator/Method/" + QString::number(i),
                      m_V5AuthenticatorMethod.at(i));
     }
-    set.setValue(Name() + "Autenticator/User", m_szAuthentUser);
-    set.setValue(Name() + "Autenticator/Password", m_szAuthentPassword);
+    set.setValue(Name() + "V5/Autenticator/UserAndPassword/User", m_szAuthentUser);
+    set.setValue(Name()
+                 + "V5/Autenticator/V5/Autenticator/UserAndPassword/Password",
+                 m_szAuthentPassword);
     
-    set.setValue(Name() + "Signal/Peer/User", m_szPeerUser);
-    set.setValue(Name() + "Signal/Server", m_szSignalServer);
-    set.setValue(Name() + "Signal/Port", m_nSignalPort);
-    set.setValue(Name() + "Signal/User", m_szSignalUser);
-    set.setValue(Name() + "Signal/Password", m_szSignalPassword);
-    set.setValue(Name() + "Stun/Server", m_szStunServer);
-    set.setValue(Name() + "Stun/Port", m_nStunPort);
-    set.setValue(Name() + "Turn/Server", m_szTurnSerer);
-    set.setValue(Name() + "Turn/Port", m_nTurnPort);
-    set.setValue(Name() + "Turn/User", m_szTurnUser);
-    set.setValue(Name() + "Turn/Password", m_szTurnPassword);
+    set.setValue(Name() + "Ice/Enable", m_bIce);
+    set.setValue(Name() + "Ice/IsIceServer", m_bIsIceServer);
+    set.setValue(Name() + "Ice/Signal/Peer/User", m_szPeerUser);
+    set.setValue(Name() + "Ice/Signal/Server", m_szSignalServer);
+    set.setValue(Name() + "Ice/Signal/Port", m_nSignalPort);
+    set.setValue(Name() + "Ice/Signal/User", m_szSignalUser);
+    set.setValue(Name() + "Ice/Signal/Password", m_szSignalPassword);
+    set.setValue(Name() + "Ice/Stun/Server", m_szStunServer);
+    set.setValue(Name() + "Ice/Stun/Port", m_nStunPort);
+    set.setValue(Name() + "Ice/Turn/Server", m_szTurnSerer);
+    set.setValue(Name() + "Ice/Turn/Port", m_nTurnPort);
+    set.setValue(Name() + "Ice/Turn/User", m_szTurnUser);
+    set.setValue(Name() + "Ice/Turn/Password", m_szTurnPassword);
     
     return 0;
 }
@@ -54,32 +59,33 @@ int CParameterSocks::Save(QSettings &set)
 int CParameterSocks::Load(QSettings &set)
 {
     CParameter::Load(set);
-    m_bIce = set.value(Name() + "Ice", m_bIce).toBool();
-    m_bV4 = set.value(Name() + "V4", m_bV4).toBool();
-    m_bV5 = set.value(Name() + "V5", m_bV5).toBool();
-    
-    int v5MethodCount = set.value(Name() + "Autenticator/Method/count").toUInt();
+
+    m_bV4 = set.value(Name() + "V4/Enable", m_bV4).toBool();
+
+    m_bV5 = set.value(Name() + "V5/Enable", m_bV5).toBool();
+    int v5MethodCount = set.value(Name() + "V5/Autenticator/Method/count").toUInt();
     if(v5MethodCount > 0) m_V5AuthenticatorMethod.clear();
     for(int i = 0; i < v5MethodCount; i++)
     {
-        int m = set.value(Name() + "Autenticator/Method/" + QString::number(i)).toUInt();
+        int m = set.value(Name() + "V5/Autenticator/Method/" + QString::number(i)).toUInt();
         m_V5AuthenticatorMethod.push_back(m);
     }
+    m_szAuthentUser = set.value(Name() + "V5/Autenticator/UserAndPassword/User").toString();
+    m_szAuthentPassword = set.value(Name() + "V5/Autenticator/UserAndPassword/Password").toString();
     
-    m_szAuthentUser = set.value(Name() + "Autenticator/User").toString();
-    m_szAuthentPassword = set.value(Name() + "Autenticator/Password").toString();
-    
-    m_szPeerUser = set.value(Name() + "Signal/Peer/User", m_szPeerUser).toString();
-    m_szSignalServer = set.value(Name() + "Signal/Server", m_szSignalServer).toString();
-    m_nSignalPort = set.value(Name() + "Signal/Port", m_nSignalPort).toUInt();
-    m_szSignalUser = set.value(Name() + "Signal/User", m_szSignalUser).toString();
-    m_szSignalPassword = set.value(Name() + "Signal/Password", m_szSignalPassword).toString();
-    m_szStunServer = set.value(Name() + "Stun/Server", m_szStunServer).toString();
-    m_nStunPort = set.value(Name() + "Stun/Port", m_nStunPort).toUInt();
-    m_szTurnSerer = set.value(Name() + "Turn/Server", m_szTurnSerer).toString();
-    m_nTurnPort = set.value(Name() + "Turn/Port", m_nTurnPort).toUInt();
-    m_szTurnUser = set.value(Name() + "Turn/User", m_szTurnUser).toString();
-    m_szTurnPassword = set.value(Name() + "Turn/Password", m_szTurnPassword).toString();
+    m_bIce = set.value(Name() + "Ice/Enable", m_bIce).toBool();
+    m_bIsIceServer = set.value(Name() + "Ice/IsIceServer", m_bIsIceServer).toBool();
+    m_szPeerUser = set.value(Name() + "Ice/Signal/Peer/User", m_szPeerUser).toString();
+    m_szSignalServer = set.value(Name() + "Ice/Signal/Server", m_szSignalServer).toString();
+    m_nSignalPort = set.value(Name() + "Ice/Signal/Port", m_nSignalPort).toUInt();
+    m_szSignalUser = set.value(Name() + "Ice/Signal/User", m_szSignalUser).toString();
+    m_szSignalPassword = set.value(Name() + "Ice/Signal/Password", m_szSignalPassword).toString();
+    m_szStunServer = set.value(Name() + "Ice/Stun/Server", m_szStunServer).toString();
+    m_nStunPort = set.value(Name() + "Ice/Stun/Port", m_nStunPort).toUInt();
+    m_szTurnSerer = set.value(Name() + "Ice/Turn/Server", m_szTurnSerer).toString();
+    m_nTurnPort = set.value(Name() + "Ice/Turn/Port", m_nTurnPort).toUInt();
+    m_szTurnUser = set.value(Name() + "Ice/Turn/User", m_szTurnUser).toString();
+    m_szTurnPassword = set.value(Name() + "Ice/Turn/Password", m_szTurnPassword).toString();
     
     return 0;
 }
@@ -147,6 +153,16 @@ QString CParameterSocks::GetAuthentPassword()
 void CParameterSocks::SetAuthentPassword(const QString &password)
 {
     m_szAuthentPassword = password;
+}
+
+bool CParameterSocks::GetIsIceServer()
+{
+    return m_bIsIceServer;
+}
+
+void CParameterSocks::SetIsIceServer(bool bServer)
+{
+    m_bIsIceServer = bServer;
 }
 
 QString CParameterSocks::GetPeerUser()
