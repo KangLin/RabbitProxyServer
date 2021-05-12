@@ -18,6 +18,7 @@ class RABBITPROXY_EXPORT CProxyServerSocks : public CProxyServer
     
 public:
     CProxyServerSocks(QObject *parent = nullptr);
+    virtual ~CProxyServerSocks();
 
 #ifdef HAVE_ICE
     std::shared_ptr<CIceSignal> GetSignal();

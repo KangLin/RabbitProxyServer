@@ -1,6 +1,7 @@
 //! @author Kang Lin(kl222@126.com)
 
 #include "DataChannelIce.h"
+#include "rtc/rtc.hpp"
 #include "RabbitCommonLog.h"
 #include <QDebug>
 
@@ -28,17 +29,21 @@ int CDataChannelIce::SetSignal(std::shared_ptr<CIceSignal> signal)
         Q_ASSERT(check);
         check = connect(m_Signal.get(),
                         SIGNAL(sigDescription(const QString&,
-                                              const rtc::Description&)),
+                                              const QString&,
+                                              const QString&)),
                         this,
                         SLOT(slotSignalReceiverDescription(const QString&,
-                                                  const rtc::Description&)));
+                                                           const QString&,
+                                                           const QString&)));
         Q_ASSERT(check);
         check = connect(m_Signal.get(),
                         SIGNAL(sigCandiate(const QString&,
-                                           const rtc::Candidate&)),
+                                           const QString&,
+                                           const QString&)),
                         this,
                         SLOT(slotSignalReceiverCandiate(const QString&,
-                                                const rtc::Candidate&)));
+                                                        const QString&,
+                                                        const QString&)));
         Q_ASSERT(check);
         check = connect(m_Signal.get(), SIGNAL(sigError(int, const QString&)),
                         this, SLOT(slotSignalError(int, const QString&)));
@@ -51,6 +56,11 @@ int CDataChannelIce::SetPeerUser(const QString &user)
 {
     m_szPeerUser = user;
     return 0;
+}
+
+QString CDataChannelIce::GetPeerUser()
+{
+    return m_szPeerUser;
 }
 
 int CDataChannelIce::SetConfigure(const rtc::Configuration &config)
@@ -208,26 +218,35 @@ void CDataChannelIce::slotSignalDisconnected()
 }
 
 void CDataChannelIce::slotSignalReceiverCandiate(const QString& user,
-                                           const rtc::Candidate& candiate)
+                                                 const QString& mid,
+                                                 const QString& sdp)
 {
     Q_UNUSED(user)
     if(m_peerConnection)
+    {
+        rtc::Candidate candiate(sdp.toStdString().c_str(), mid.toStdString().c_str());
         m_peerConnection->addRemoteCandidate(candiate);
+    }
 }
 
-void CDataChannelIce::slotSignalReceiverDescription(const QString& user,
-                                             const rtc::Description& description)
+void CDataChannelIce::slotSignalReceiverDescription(
+        const QString& user, const QString &type, const QString &sdp)
 {
-    if(description.type() == rtc::Description::Type::Offer)
+    rtc::Description des(sdp.toStdString().c_str(), type.toStdString().c_str());
+    if(des.type() == rtc::Description::Type::Offer && m_szPeerUser.isEmpty())
     {
-        LOG_MODEL_ERROR("PeerConnectIce",
+        LOG_MODEL_ERROR("CDataChannelIce",
                         "Create peerconnect and Answering to %s",
                         user.toStdString().c_str());
         SetPeerUser(user);
         CreateDataChannel();
     }
+
+    if(des.type() == rtc::Description::Type::Answer && m_szPeerUser != user)
+        return;
+
     if(m_peerConnection)
-        m_peerConnection->setRemoteDescription(description);
+        m_peerConnection->setRemoteDescription(des);
 }
 
 void CDataChannelIce::slotSignalError(int error, const QString& szError)

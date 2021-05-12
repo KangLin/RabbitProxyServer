@@ -11,7 +11,8 @@ class CIceSignalWebSocket : public CIceSignal
     Q_OBJECT
 public:
     explicit CIceSignalWebSocket(QObject *parent = nullptr);
-    
+    virtual ~CIceSignalWebSocket();
+
     virtual int Open(const std::string& szServer, quint16 nPort,
                      const std::string& user, const std::string& password);
     virtual int Open(const std::string &szUrl) override;

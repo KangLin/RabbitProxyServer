@@ -13,6 +13,7 @@ CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
 
 CProxyServer::~CProxyServer()
 {
+    Stop();
 }
 
 CParameter* CProxyServer::Getparameter()

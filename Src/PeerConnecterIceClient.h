@@ -25,8 +25,9 @@ public:
     virtual QHostAddress LocalAddress() override;
     virtual qint16 LocalPort() override;
 
-    int CreateDataChannel(const QString& user = QString());
-    QString GetPeerUser();
+protected:
+    int CreateDataChannel(bool bOpen);
+
 private:
     int OnConnectionReply();
 
@@ -37,9 +38,8 @@ private Q_SLOTS:
     virtual void slotDataChannelReadyRead();
 
 protected:
-    QString m_szPeerUser;
     CProxyServerSocks* m_pServer;
-    std::shared_ptr<CDataChannel> m_DataChannel;
+    std::shared_ptr<CDataChannelIce> m_DataChannel;
     QHostAddress m_peerAddress, m_bindAddress;
     quint16 m_nPeerPort, m_nBindPort;
 

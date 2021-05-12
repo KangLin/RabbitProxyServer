@@ -14,7 +14,8 @@ class CIceSignal : public QObject
 
 public:
     explicit CIceSignal(QObject *parent = nullptr);
-    
+    virtual ~CIceSignal();
+
     virtual int Open(const std::string& szServer, quint16 nPort,
                      const std::string& user, const std::string& password) = 0;
     virtual int Open(const std::string &szUrl) = 0;
@@ -52,9 +53,11 @@ Q_SIGNALS:
 
     void sigOffer(const QString& user);
     void sigCandiate(const QString& user,
-                     const rtc::Candidate& candidate);
+                     const QString& mid,
+                     const QString& sdp);
     void sigDescription(const QString& user,
-                        const rtc::Description& description);
+                        const QString& type,
+                        const QString& sdp);
 };
 
 #endif // CSIGNAL_H

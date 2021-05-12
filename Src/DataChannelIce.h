@@ -22,6 +22,7 @@ public:
     //! @note These properties must be set before calling Open
     int SetSignal(std::shared_ptr<CIceSignal> signal);
     int SetPeerUser(const QString& user);
+    QString GetPeerUser();
     int SetConfigure(const rtc::Configuration& config);
 
     //! @note The above properties must be set before calling Open
@@ -35,9 +36,11 @@ private Q_SLOTS:
     virtual void slotSignalConnected();
     virtual void slotSignalDisconnected();
     virtual void slotSignalReceiverCandiate(const QString& user,
-                                    const rtc::Candidate& candidate);
+                                            const QString& mid,
+                                            const QString& sdp);
     virtual void slotSignalReceiverDescription(const QString& user,
-                                      const rtc::Description& description);
+                                      const QString& type,
+                                               const QString& sdp);
     virtual void slotSignalError(int error, const QString& szError);
 
 private:

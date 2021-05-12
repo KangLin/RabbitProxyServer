@@ -3,12 +3,12 @@
 #include "ProxyServerSocks.h"
 #include "ProxySocks5.h"
 #include "ParameterSocks.h"
-#include "RabbitCommonLog.h"
 
 #ifdef HAVE_ICE
     #include "IceSignalWebSocket.h"
     #include "PeerConnecterIceServer.h"
 #endif
+#include "RabbitCommonLog.h"
 
 CProxyServerSocks::CProxyServerSocks(QObject *parent) : CProxyServer(parent)
 {
@@ -18,6 +18,9 @@ CProxyServerSocks::CProxyServerSocks(QObject *parent) : CProxyServer(parent)
     m_Signal = std::make_shared<CIceSignalWebSocket>();
 #endif
 }
+
+CProxyServerSocks::~CProxyServerSocks()
+{}
 
 #ifdef HAVE_ICE
 std::shared_ptr<CIceSignal> CProxyServerSocks::GetSignal()
@@ -82,8 +85,7 @@ void CProxyServerSocks::slotOffer(const QString& user)
     Q_ASSERT(check);
     check = connect(ice.get(), SIGNAL(sigError(int, const QString&)),
                              this, SLOT(slotError(int, const QString&)));
-        Q_ASSERT(check);
-    ice->CreateDataChannel(user);
+    Q_ASSERT(check);
     m_ConnectServer.insert(user, ice);
 }
 

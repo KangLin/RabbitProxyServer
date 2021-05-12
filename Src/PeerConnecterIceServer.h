@@ -24,6 +24,7 @@ public:
     virtual QHostAddress LocalAddress() override;
     virtual qint16 LocalPort() override;
 
+    QString GetPeerUser();
 private:
     int OnReciveConnectRequst();
     int Reply(int err, const QString &szErr = QString());
@@ -41,7 +42,6 @@ private Q_SLOTS:
 
 private:
     std::shared_ptr<CPeerConnecter> m_Peer;
-
 };
 
 #endif // CPEERCONNECTERICESERVER_H

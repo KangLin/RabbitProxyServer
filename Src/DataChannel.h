@@ -16,6 +16,7 @@ class CDataChannel : public QObject
 
 public:
     explicit CDataChannel(QObject *parent = nullptr);
+    virtual ~CDataChannel();
 
     virtual int Open() = 0;
     virtual int Close() = 0;

@@ -5,4 +5,10 @@
 #include <QDebug>
 
 CDataChannel::CDataChannel(QObject* parent) : QObject(parent)
-{}
+{
+}
+
+CDataChannel::~CDataChannel()
+{
+    qDebug() << "CDataChannel::~CDataChannel()";
+}

@@ -17,57 +17,51 @@ CPeerConnecterIceClient::CPeerConnecterIceClient(CProxyServerSocks *pServer, QOb
 {
 }
 
-int CPeerConnecterIceClient::CreateDataChannel(const QString &user)
+int CPeerConnecterIceClient::CreateDataChannel(bool bOpen)
 {
     m_DataChannel = std::make_shared<CDataChannelIce>(m_pServer->GetSignal(), this);
-    if(m_DataChannel)
-    {
-        bool check = false;
-        check = connect(m_DataChannel.get(), SIGNAL(sigConnected()),
-                        this, SLOT(slotDataChannelConnected()));
-        Q_ASSERT(check);
-        check = connect(m_DataChannel.get(), SIGNAL(sigDisconnected()),
-                        this, SLOT(slotDataChannelDisconnected()));
-        Q_ASSERT(check);
-        check = connect(m_DataChannel.get(), SIGNAL(sigError(int, const QString&)),
-                        this, SLOT(slotDataChannelError(int, const QString&)));
-        Q_ASSERT(check);
-        check = connect(m_DataChannel.get(), SIGNAL(sigReadyRead()),
-                        this, SLOT(slotDataChannelReadyRead()));
-        Q_ASSERT(check);
-        CDataChannelIce* p = qobject_cast<CDataChannelIce*>(m_DataChannel.get());
-        CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
-        if(p && pPara)
+    if(!m_DataChannel) return -1;
+
+    bool check = false;
+    check = connect(m_DataChannel.get(), SIGNAL(sigConnected()),
+                    this, SLOT(slotDataChannelConnected()));
+    Q_ASSERT(check);
+    check = connect(m_DataChannel.get(), SIGNAL(sigDisconnected()),
+                    this, SLOT(slotDataChannelDisconnected()));
+    Q_ASSERT(check);
+    check = connect(m_DataChannel.get(), SIGNAL(sigError(int, const QString&)),
+                    this, SLOT(slotDataChannelError(int, const QString&)));
+    Q_ASSERT(check);
+    check = connect(m_DataChannel.get(), SIGNAL(sigReadyRead()),
+                    this, SLOT(slotDataChannelReadyRead()));
+    Q_ASSERT(check);
+    CDataChannelIce* p = qobject_cast<CDataChannelIce*>(m_DataChannel.get());
+    CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
+    if(!(p && pPara)) return -1;
+
+    p->SetPeerUser(pPara->GetPeerUser());
+
+    rtc::Configuration config;
+    if(!pPara->GetStunServer().isEmpty() && pPara->GetStunPort())
+        config.iceServers.push_back(
+                    rtc::IceServer(pPara->GetStunServer().toStdString().c_str(),
+                                   pPara->GetStunPort()));
+    if(!pPara->GetTurnServer().isEmpty() && pPara->GetTurnPort())
+        config.iceServers.push_back(
+                    rtc::IceServer(pPara->GetTurnServer().toStdString().c_str(),
+                                   pPara->GetTurnPort(),
+                                   pPara->GetTurnUser().toStdString().c_str(),
+                                   pPara->GetTurnPassword().toStdString().c_str()));
+    m_DataChannel->SetConfigure(config);
+
+    if(bOpen)
+        if(m_DataChannel->Open())
         {
-            if(user.isEmpty())
-                m_szPeerUser = pPara->GetPeerUser();
-            else
-                m_szPeerUser = user;
-
-            p->SetPeerUser(m_szPeerUser);
-
-            rtc::Configuration config;
-            config.iceServers.push_back(
-                        rtc::IceServer(pPara->GetStunServer().toStdString().c_str(),
-                                       pPara->GetStunPort()));
-            config.iceServers.push_back(
-                        rtc::IceServer(pPara->GetTurnServer().toStdString().c_str(),
-                                       pPara->GetTurnPort(),
-                                       pPara->GetTurnUser().toStdString().c_str(),
-                                       pPara->GetTurnPassword().toStdString().c_str()));
-            if(m_DataChannel->Open())
-            {
-                LOG_MODEL_ERROR("PeerConnecterIce", "Data channel open fail");
-                emit sigError(emERROR::NetWorkUnreachable);
-            }
+            LOG_MODEL_ERROR("PeerConnecterIce", "Data channel open fail");
+            emit sigError(emERROR::NetWorkUnreachable);
         }
-    }
-    return 0;
-}
 
-QString CPeerConnecterIceClient::GetPeerUser()
-{
-    return m_szPeerUser;
+    return 0;
 }
 
 void CPeerConnecterIceClient::slotDataChannelConnected()
@@ -124,7 +118,14 @@ int CPeerConnecterIceClient::Connect(const QHostAddress &address, qint16 nPort)
     m_peerAddress = address;
     m_nPeerPort = nPort;
 
-    nRet = CreateDataChannel();
+    CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
+    if(pPara->GetPeerUser().isEmpty())
+    {
+        LOG_MODEL_ERROR("PeerConnecterIce", "Please set peer user");
+        emit sigError(emERROR::NetWorkUnreachable, tr("Please set peer user"));
+        return -2;
+    }
+    nRet = CreateDataChannel(true);
 
     return nRet;
 }

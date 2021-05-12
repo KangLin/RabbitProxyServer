@@ -10,6 +10,7 @@
 CPeerConnecterIceServer::CPeerConnecterIceServer(CProxyServerSocks *pServer, QObject *parent)
     : CPeerConnecterIceClient(pServer, parent)
 {
+    CreateDataChannel(false);
 }
 
 void CPeerConnecterIceServer::slotDataChannelConnected()
@@ -217,4 +218,11 @@ void CPeerConnecterIceServer::slotPeerError(int nError, const QString &szErr)
 void CPeerConnecterIceServer::slotPeerRead()
 {
     emit sigReadyRead();
+}
+
+QString CPeerConnecterIceServer::GetPeerUser()
+{
+    if(m_DataChannel)
+        return m_DataChannel->GetPeerUser();
+    return QString();
 }

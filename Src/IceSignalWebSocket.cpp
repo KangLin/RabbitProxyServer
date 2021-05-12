@@ -4,10 +4,16 @@
 
 #include <nlohmann/json.hpp>
 #include "RabbitCommonLog.h"
+#include <QDebug>
 
 CIceSignalWebSocket::CIceSignalWebSocket(QObject *parent) : CIceSignal(parent)
 {
     m_webSocket = std::make_shared<rtc::WebSocket>();
+}
+
+CIceSignalWebSocket::~CIceSignalWebSocket()
+{
+    qDebug() << "CIceSignalWebSocket::~CIceSignalWebSocket()";
 }
 
 int CIceSignalWebSocket::Write(const char *buf, int nLen)
@@ -66,11 +72,11 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
         emit sigDisconnected();
     });
     m_webSocket->onMessage([this](std::variant<rtc::binary, std::string> data) {
-        this->m_Data = std::get<rtc::binary>(data);
-        emit sigReadyRead();
+//        this->m_Data = std::get<rtc::binary>(data);
+//        emit sigReadyRead();
 
-        if (!std::holds_alternative<std::string>(data))
-            return;
+//        if (!std::holds_alternative<std::string>(data))
+//            return;
 
         nlohmann::json message = nlohmann::json::parse(std::get<std::string>(data));
 
@@ -88,11 +94,11 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
             if(type == "offer")
                 emit sigOffer(id.c_str());
             auto sdp = message["description"].get<std::string>();
-            emit sigDescription(id.c_str(), rtc::Description(sdp, type));
+            emit sigDescription(id.c_str(), type.c_str(), sdp.c_str());
         } else if (type == "candidate") {
             auto sdp = message["candidate"].get<std::string>();
             auto mid = message["mid"].get<std::string>();
-            emit sigCandiate(id.c_str(), rtc::Candidate(sdp, mid));
+            emit sigCandiate(id.c_str(), mid.c_str(), sdp.c_str());
         }
     });
     try {
