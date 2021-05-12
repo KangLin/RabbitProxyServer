@@ -84,6 +84,8 @@ public:
     QString GetTurnPassword();
     void SetTurnPassword(const QString& password);
     
+    QString GenerateChannelId();
+
 protected:
     virtual QString Name();
     
@@ -110,6 +112,8 @@ private:
     quint16 m_nTurnPort;
     QString m_szTurnUser;
     QString m_szTurnPassword;
+
+    quint64 m_nChannelId;
 };
 
 #endif // CPARAMETERSOCKS_H

@@ -18,7 +18,7 @@ public:
     explicit CDataChannel(QObject *parent = nullptr);
     virtual ~CDataChannel();
 
-    virtual int Open() = 0;
+    virtual int Open(const QString& user, const QString& id) = 0;
     virtual int Close() = 0;
     virtual qint64 Read(char *buf, int nLen) = 0;
     virtual QByteArray ReadAll() = 0;

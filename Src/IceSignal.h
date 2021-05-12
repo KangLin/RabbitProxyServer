@@ -24,8 +24,10 @@ public:
 
 
     virtual int SendDescription(const QString& user,
+                                const QString& id,
                                 const rtc::Description& description) = 0;
     virtual int SendCandiate(const QString& user,
+                             const QString& id,
                              const rtc::Candidate& candidate) = 0;
 
     /**
@@ -51,11 +53,32 @@ Q_SIGNALS:
     void sigReadyRead();
     void sigError(int nError, const QString& szError);
 
-    void sigOffer(const QString& user);
+    /**
+     * @brief sigOffer
+     * @param user
+     * @param id: channel id
+     */
+    void sigOffer(const QString& user, const QString& id);
+    /**
+     * @brief sigCandiate
+     * @param user
+     * @param id: channel id
+     * @param mid
+     * @param sdp
+     */
     void sigCandiate(const QString& user,
+                     const QString& id,
                      const QString& mid,
                      const QString& sdp);
+    /**
+     * @brief sigDescription
+     * @param user
+     * @param id: channel id
+     * @param type
+     * @param sdp
+     */
     void sigDescription(const QString& user,
+                        const QString& id,
                         const QString& type,
                         const QString& sdp);
 };

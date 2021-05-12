@@ -226,3 +226,10 @@ QString CPeerConnecterIceServer::GetPeerUser()
         return m_DataChannel->GetPeerUser();
     return QString();
 }
+
+QString CPeerConnecterIceServer::GetId()
+{
+    if(m_DataChannel)
+        return m_DataChannel->GetId();
+    return QString();
+}

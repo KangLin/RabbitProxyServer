@@ -28,12 +28,12 @@ protected Q_SLOTS:
     virtual int Stop();
 
 private Q_SLOTS:
-    virtual void slotOffer(const QString& user);
+    virtual void slotOffer(const QString& user, const QString&id);
     void slotRemotePeerConnectServer();
     void slotError(int nErr, const QString& szError = QString());
 private:
     std::shared_ptr<CIceSignal> m_Signal;
-    QMap<QString, std::shared_ptr<CPeerConnecterIceServer> > m_ConnectServer;
+    QMap<QString, QMap<QString, std::shared_ptr<CPeerConnecterIceServer> > > m_ConnectServer;
 #endif
 
 protected Q_SLOTS:

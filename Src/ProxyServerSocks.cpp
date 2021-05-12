@@ -45,8 +45,8 @@ int CProxyServerSocks::Start()
         }
         if(p->GetIsIceServer())
         {
-            bool check = connect(m_Signal.get(), SIGNAL(sigOffer(const QString&)),
-                                 this, SLOT(slotOffer(const QString&)));
+            bool check = connect(m_Signal.get(), SIGNAL(sigOffer(const QString&, const QString&)),
+                                 this, SLOT(slotOffer(const QString&, const QString&)));
             Q_ASSERT(check);
         }
     }
@@ -68,7 +68,7 @@ int CProxyServerSocks::Stop()
     return CProxyServer::Stop();
 }
 
-void CProxyServerSocks::slotOffer(const QString& user)
+void CProxyServerSocks::slotOffer(const QString& user, const QString &id)
 {
     CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
     if(!p->GetPeerUser().isEmpty() && p->GetPeerUser() != user)
@@ -79,10 +79,7 @@ void CProxyServerSocks::slotOffer(const QString& user)
         return;
     }
 
-    if(m_ConnectServer.find(user) != m_ConnectServer.end())
-    {
-        return;
-    }
+    if(m_ConnectServer[user][id]) return;
 
     LOG_MODEL_DEBUG("ProxyServerSocks", "new peer connecter ice server, user:%s",
                     user.toStdString().c_str());
@@ -92,9 +89,10 @@ void CProxyServerSocks::slotOffer(const QString& user)
                          this, SLOT(slotRemotePeerConnectServer()));
     Q_ASSERT(check);
     check = connect(ice.get(), SIGNAL(sigError(int, const QString&)),
-                             this, SLOT(slotError(int, const QString&)));
+                    this, SLOT(slotError(int, const QString&)));
     Q_ASSERT(check);
-    m_ConnectServer.insert(user, ice);
+
+    m_ConnectServer[user][id] = ice;
 }
 
 void CProxyServerSocks::slotError(int, const QString&)
@@ -106,7 +104,7 @@ void CProxyServerSocks::slotRemotePeerConnectServer()
 {
     CPeerConnecterIceServer* pServer
             = qobject_cast<CPeerConnecterIceServer*>(sender());
-    m_ConnectServer.remove(pServer->GetPeerUser());
+    m_ConnectServer[pServer->GetPeerUser()].remove(pServer->GetId());
 }
 #endif
 

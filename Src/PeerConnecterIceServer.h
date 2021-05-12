@@ -25,6 +25,7 @@ public:
     virtual qint16 LocalPort() override;
 
     QString GetPeerUser();
+    QString GetId();
 private:
     int OnReciveConnectRequst();
     int Reply(int err, const QString &szErr = QString());

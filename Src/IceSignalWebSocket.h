@@ -20,8 +20,10 @@ public:
     virtual bool IsOpen() override;
 
     virtual int SendDescription(const QString& user,
+                                const QString& id,
                                 const rtc::Description& description);
     virtual int SendCandiate(const QString& user,
+                             const QString& id,
                              const rtc::Candidate& candidate);
 
     virtual int Write(const char* buf, int nLen) override;

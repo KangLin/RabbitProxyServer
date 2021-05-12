@@ -81,21 +81,25 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
         if (it == message.end())
             return;
         std::string id = it->get<std::string>();
+        it = message.find("channelid");
+        if (it == message.end())
+            return;
+        std::string channelid = it->get<std::string>();
 
         it = message.find("type");
         if (it == message.end())
             return;
         std::string type = it->get<std::string>();
 
+        if(type == "offer")
+            emit sigOffer(id.c_str(), channelid.c_str());
         if (type == "offer" || type == "answer") {
-            if(type == "offer")
-                emit sigOffer(id.c_str());
             auto sdp = message["description"].get<std::string>();
-            emit sigDescription(id.c_str(), type.c_str(), sdp.c_str());
+            emit sigDescription(id.c_str(), channelid.c_str(), type.c_str(), sdp.c_str());
         } else if (type == "candidate") {
             auto sdp = message["candidate"].get<std::string>();
             auto mid = message["mid"].get<std::string>();
-            emit sigCandiate(id.c_str(), mid.c_str(), sdp.c_str());
+            emit sigCandiate(id.c_str(), channelid.c_str(), mid.c_str(), sdp.c_str());
         }
     });
     try {
@@ -125,22 +129,24 @@ bool CIceSignalWebSocket::IsOpen()
     return false;
 }
 
-int CIceSignalWebSocket::SendCandiate(const QString& user,
+int CIceSignalWebSocket::SendCandiate(const QString& user, const QString &id,
                                       const rtc::Candidate &candidate)
 {
     nlohmann::json message = {{"id", user.toStdString()},
-                    {"type", "candidate"},
-                    {"candidate", std::string(candidate)},
-                    {"mid", candidate.mid()}};
+                              {"channelid", id.toStdString()},
+                              {"type", "candidate"},
+                              {"candidate", std::string(candidate)},
+                              {"mid", candidate.mid()}};
     std::string m = message.dump();
     return Write(m.c_str(), m.size());
 }
 
-int CIceSignalWebSocket::SendDescription(const QString& user,
+int CIceSignalWebSocket::SendDescription(const QString& user, const QString &id,
                                          const rtc::Description &description)
 {
     nlohmann::json message = {
         {"id", user.toStdString()},
+        {"channelid", id.toStdString()},
         {"type", description.typeString()},
         {"description", std::string(description)}};
 

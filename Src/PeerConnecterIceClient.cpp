@@ -39,8 +39,6 @@ int CPeerConnecterIceClient::CreateDataChannel(bool bOpen)
     CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
     if(!(p && pPara)) return -1;
 
-    p->SetPeerUser(pPara->GetPeerUser());
-
     rtc::Configuration config;
     if(!pPara->GetStunServer().isEmpty() && pPara->GetStunPort())
         config.iceServers.push_back(
@@ -55,7 +53,7 @@ int CPeerConnecterIceClient::CreateDataChannel(bool bOpen)
     m_DataChannel->SetConfigure(config);
 
     if(bOpen)
-        if(m_DataChannel->Open())
+        if(m_DataChannel->Open(pPara->GetPeerUser(), pPara->GenerateChannelId()))
         {
             LOG_MODEL_ERROR("PeerConnecterIce", "Data channel open fail");
             emit sigError(emERROR::NetWorkUnreachable);

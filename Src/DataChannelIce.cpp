@@ -30,18 +30,22 @@ int CDataChannelIce::SetSignal(std::shared_ptr<CIceSignal> signal)
         check = connect(m_Signal.get(),
                         SIGNAL(sigDescription(const QString&,
                                               const QString&,
+                                              const QString&,
                                               const QString&)),
                         this,
                         SLOT(slotSignalReceiverDescription(const QString&,
+                                                           const QString&,
                                                            const QString&,
                                                            const QString&)));
         Q_ASSERT(check);
         check = connect(m_Signal.get(),
                         SIGNAL(sigCandiate(const QString&,
                                            const QString&,
+                                           const QString&,
                                            const QString&)),
                         this,
                         SLOT(slotSignalReceiverCandiate(const QString&,
+                                                        const QString&,
                                                         const QString&,
                                                         const QString&)));
         Q_ASSERT(check);
@@ -52,15 +56,14 @@ int CDataChannelIce::SetSignal(std::shared_ptr<CIceSignal> signal)
     return 0;
 }
 
-int CDataChannelIce::SetPeerUser(const QString &user)
-{
-    m_szPeerUser = user;
-    return 0;
-}
-
 QString CDataChannelIce::GetPeerUser()
 {
     return m_szPeerUser;
+}
+
+QString CDataChannelIce::GetId()
+{
+    return m_szId;
 }
 
 int CDataChannelIce::SetConfigure(const rtc::Configuration &config)
@@ -96,7 +99,7 @@ int CDataChannelIce::CreateDataChannel()
         // Send to the peer through the signal channel
         if(m_szPeerUser.isEmpty())
            LOG_MODEL_ERROR("DataChannel", "Please peer user by SetPeerUser()");
-        m_Signal->SendDescription(m_szPeerUser, description);
+        m_Signal->SendDescription(m_szPeerUser, m_szId, description);
     });
     m_peerConnection->onLocalCandidate(
                 [this](rtc::Candidate candidate){
@@ -106,7 +109,7 @@ int CDataChannelIce::CreateDataChannel()
         // Send to the peer through the signal channel
         if(m_szPeerUser.isEmpty())
            LOG_MODEL_ERROR("DataChannel", "Please peer user by SetPeerUser()");
-        m_Signal->SendCandiate(m_szPeerUser, candidate);
+        m_Signal->SendCandiate(m_szPeerUser, m_szId, candidate);
     });
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
         m_dataChannel = dc;
@@ -122,6 +125,10 @@ int CDataChannelIce::CreateDataChannel()
             LOG_MODEL_DEBUG("DataChannel", "Close data channel from remote: %s",
                             dc->label().c_str());
             emit this->sigDisconnected();
+        });
+
+        dc->onError([this](std::string error){
+            emit sigError(-1, error.c_str());
         });
 
         dc->onMessage([dc, this](std::variant<rtc::binary, std::string> data) {
@@ -146,6 +153,9 @@ int CDataChannelIce::CreateDataChannel()
         LOG_MODEL_DEBUG("DataChannel", "Data channel is close");
         emit this->sigDisconnected();
     });
+    m_dataChannel->onError([this](std::string error){
+        emit sigError(-1, error.c_str());
+    });
     m_dataChannel->onMessage([this](std::variant<rtc::binary, std::string> data) {
         if (std::holds_alternative<std::string>(data))
             LOG_MODEL_DEBUG("DataChannel", "data: %s",
@@ -161,8 +171,10 @@ int CDataChannelIce::CreateDataChannel()
     return 0;
 }
 
-int CDataChannelIce::Open()
+int CDataChannelIce::Open(const QString &user, const QString &id)
 {
+    m_szPeerUser = user;
+    m_szId = id;
     return CreateDataChannel();
 }
 
@@ -218,31 +230,46 @@ void CDataChannelIce::slotSignalDisconnected()
 }
 
 void CDataChannelIce::slotSignalReceiverCandiate(const QString& user,
+                                                 const QString &id,
                                                  const QString& mid,
                                                  const QString& sdp)
 {
-    if(m_szPeerUser != user) return;
+    LOG_MODEL_DEBUG("CDataChannelIce", "Candiate:User:%s; id:%s, mid:%s; sdp:%s",
+                    user.toStdString().c_str(),
+                    id.toStdString().c_str(),
+                    mid.toStdString().c_str(),
+                    sdp.toStdString().c_str());
+    if(GetPeerUser() != user || GetId() != id) return;
     if(m_peerConnection)
     {
-        rtc::Candidate candiate(sdp.toStdString().c_str(), mid.toStdString().c_str());
+        rtc::Candidate candiate(sdp.toStdString(), mid.toStdString());
         m_peerConnection->addRemoteCandidate(candiate);
     }
 }
 
-void CDataChannelIce::slotSignalReceiverDescription(
-        const QString& user, const QString &type, const QString &sdp)
+void CDataChannelIce::slotSignalReceiverDescription(const QString& user,
+                                                    const QString &id,
+                                                    const QString &type,
+                                                    const QString &sdp)
 {
-    rtc::Description des(sdp.toStdString().c_str(), type.toStdString().c_str());
-    if(des.type() == rtc::Description::Type::Offer && m_szPeerUser.isEmpty())
+    LOG_MODEL_DEBUG("CDataChannelIce", "Description: User:%s; id:%s, type:%s; sdp:%s",
+                    user.toStdString().c_str(),
+                    id.toStdString().c_str(),
+                    type.toStdString().c_str(),
+                    sdp.toStdString().c_str());
+    rtc::Description des(sdp.toStdString(), type.toStdString());
+    if(des.type() == rtc::Description::Type::Offer
+            && GetPeerUser().isEmpty()
+            && GetId().isEmpty())
     {
         LOG_MODEL_ERROR("CDataChannelIce",
                         "Create peerconnect and Answering to user: %s",
                         user.toStdString().c_str());
-        SetPeerUser(user);
-        CreateDataChannel();
+        Open(user, id);
     }
 
-    if(des.type() == rtc::Description::Type::Answer && m_szPeerUser != user)
+    if(des.type() == rtc::Description::Type::Answer
+            && (GetPeerUser() != user || GetId() != user))
         return;
 
     if(m_peerConnection)

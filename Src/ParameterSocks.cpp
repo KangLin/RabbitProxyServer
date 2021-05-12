@@ -8,7 +8,8 @@ CParameterSocks::CParameterSocks(QObject *parent) : CParameter(parent),
     m_bIsIceServer(true),
     m_nSignalPort(80),
     m_nStunPort(3478),
-    m_nTurnPort(3478)
+    m_nTurnPort(3478),
+    m_nChannelId(0)
 {
     SetPort(1080);
  
@@ -273,4 +274,9 @@ QString CParameterSocks::GetTurnPassword()
 void CParameterSocks::SetTurnPassword(const QString &password)
 {
     m_szTurnPassword = password;
+}
+
+QString CParameterSocks::GenerateChannelId()
+{
+    return std::to_string(m_nChannelId++).c_str();
 }
