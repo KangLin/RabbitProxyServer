@@ -138,13 +138,17 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         dc->onOpen([dc, this]() {
             LOG_MODEL_DEBUG("DataChannel", "Open data channel from remote: %s",
                             dc->label().c_str());
-            emit sigConnected();
+            if(this->open(QIODevice::ReadWrite))
+                emit sigConnected();
+            else
+                LOG_MODEL_ERROR("DataChannel", "Open Device fail");
         });
 
         dc->onClosed([this, dc]() {
             LOG_MODEL_DEBUG("DataChannel", "Close data channel from remote: %s",
                             dc->label().c_str());
             emit this->sigDisconnected();
+            close();
         });
 
         dc->onError([this](std::string error){
@@ -168,12 +172,16 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         m_dataChannel = m_peerConnection->createDataChannel("data");
         m_dataChannel->onOpen([this]() {
             LOG_MODEL_DEBUG("DataChannel", "Data channel is open");
-            emit sigConnected();
+            if(this->open(QIODevice::ReadWrite))
+                emit sigConnected();
+            else
+                LOG_MODEL_ERROR("DataChannel", "Open Device fail");
 
         });
         m_dataChannel->onClosed([this](){
             LOG_MODEL_DEBUG("DataChannel", "Data channel is close");
             emit this->sigDisconnected();
+            close();
         });
         m_dataChannel->onError([this](std::string error){
             emit sigError(-1, error.c_str());
