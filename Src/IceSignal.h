@@ -17,18 +17,22 @@ public:
     virtual ~CIceSignal();
 
     virtual int Open(const std::string& szServer, quint16 nPort,
-                     const std::string& user, const std::string& password) = 0;
-    virtual int Open(const std::string &szUrl) = 0;
+                     const std::string& user = std::string(),
+                     const std::string& password = std::string()) = 0;
+    virtual int Open(const std::string &szUrl,
+                     const std::string& user = std::string(),
+                     const std::string& password = std::string()) = 0;
     virtual int Close() = 0;
     virtual bool IsOpen() = 0;
 
-
-    virtual int SendDescription(const QString& user,
-                                const QString& id,
-                                const rtc::Description& description) = 0;
-    virtual int SendCandiate(const QString& user,
-                             const QString& id,
-                             const rtc::Candidate& candidate) = 0;
+    virtual int SendDescription(const QString& toUser,
+                                const QString& channelId,
+                                const rtc::Description& description,
+                                const QString& fromUser = QString()) = 0;
+    virtual int SendCandiate(const QString& toUser,
+                             const QString& channelId,
+                             const rtc::Candidate& candidate,
+                             const QString& fromUser = QString()) = 0;
 
     /**
      * @brief Write
@@ -58,7 +62,11 @@ Q_SIGNALS:
      * @param user
      * @param id: channel id
      */
-    void sigOffer(const QString& user, const QString& id);
+    void sigOffer(const QString& fromUser,
+                  const QString& toUser,
+                  const QString& channelId,
+                  const QString& type,
+                  const QString& sdp);
     /**
      * @brief sigCandiate
      * @param user
@@ -66,8 +74,9 @@ Q_SIGNALS:
      * @param mid
      * @param sdp
      */
-    void sigCandiate(const QString& user,
-                     const QString& id,
+    void sigCandiate(const QString& fromUser,
+                     const QString& toUser,
+                     const QString& channelId,
                      const QString& mid,
                      const QString& sdp);
     /**
@@ -77,8 +86,9 @@ Q_SIGNALS:
      * @param type
      * @param sdp
      */
-    void sigDescription(const QString& user,
-                        const QString& id,
+    void sigDescription(const QString& fromUser,
+                        const QString& toUser,
+                        const QString& channelId,
                         const QString& type,
                         const QString& sdp);
 };

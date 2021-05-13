@@ -45,8 +45,12 @@ int CProxyServerSocks::Start()
         }
         if(p->GetIsIceServer())
         {
-            bool check = connect(m_Signal.get(), SIGNAL(sigOffer(const QString&, const QString&)),
-                                 this, SLOT(slotOffer(const QString&, const QString&)));
+            bool check = connect(m_Signal.get(),
+               SIGNAL(sigOffer(const QString&, const QString&, const QString&,
+                               const QString&, const QString&)),
+               this,
+               SLOT(slotOffer(const QString&, const QString&, const QString&,
+                              const QString&, const QString&)));
             Q_ASSERT(check);
         }
     }
@@ -68,24 +72,37 @@ int CProxyServerSocks::Stop()
     return CProxyServer::Stop();
 }
 
-void CProxyServerSocks::slotOffer(const QString& user, const QString &id)
+void CProxyServerSocks::slotOffer(const QString& fromUser,
+                                  const QString &toUser,
+                                  const QString &channelId,
+                                  const QString &type,
+                                  const QString &sdp)
 {
     CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
-    if(!p->GetPeerUser().isEmpty() && p->GetPeerUser() != user)
+
+    if(!p->GetPeerUser().isEmpty() && p->GetPeerUser() != fromUser
+            && p->GetSignalUser() != toUser)
     {
-        LOG_MODEL_ERROR("ProxyServerSocks", "User[%s] isn't same to set user[%s/%d]",
-                        user.toStdString().c_str(),
-                        id.toStdString().c_str(),
+        LOG_MODEL_ERROR("ProxyServerSocks", "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+                        fromUser.toStdString().c_str(),
+                        toUser.toStdString().c_str(),
+                        channelId.toStdString().c_str(),
+                        p->GetSignalUser().toStdString().c_str(),
                         p->GetPeerUser().toStdString().c_str());
         return;
     }
 
-    if(m_ConnectServer[user][id]) return;
+    if(m_ConnectServer[fromUser][channelId]) return;
 
-    LOG_MODEL_DEBUG("ProxyServerSocks", "new peer connecter ice server, user:%s",
-                    user.toStdString().c_str());
+    LOG_MODEL_DEBUG("ProxyServerSocks", "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+                    fromUser.toStdString().c_str(),
+                    toUser.toStdString().c_str(),
+                    channelId.toStdString().c_str(),
+                    p->GetSignalUser().toStdString().c_str(),
+                    p->GetPeerUser().toStdString().c_str());
     std::shared_ptr<CPeerConnecterIceServer> ice
-            = std::make_shared<CPeerConnecterIceServer>(this);
+            = std::make_shared<CPeerConnecterIceServer>(this, fromUser, toUser,
+                                                        channelId, type, sdp);
     bool check = connect(ice.get(), SIGNAL(sigDisconnected()),
                          this, SLOT(slotRemotePeerConnectServer()));
     Q_ASSERT(check);
@@ -93,7 +110,7 @@ void CProxyServerSocks::slotOffer(const QString& user, const QString &id)
                     this, SLOT(slotError(int, const QString&)));
     Q_ASSERT(check);
 
-    m_ConnectServer[user][id] = ice;
+    m_ConnectServer[fromUser][channelId] = ice;
 }
 
 void CProxyServerSocks::slotError(int, const QString&)

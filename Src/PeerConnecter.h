@@ -28,9 +28,9 @@ public:
     virtual int Connect(const QHostAddress &address, qint16 nPort);
     virtual int Bind(const QHostAddress &address, qint16 nPort = 0);
     virtual int Bind(qint16 nPort = 0);
-    virtual qint64 Read(char* buf, int nLen);
+    virtual qint64 Read(char* buf, qint64 nLen);
     virtual QByteArray ReadAll();
-    virtual int Write(const char* buf, int nLen);
+    virtual int Write(const char* buf, qint64 nLen);
     virtual int Close();
     virtual int Error();
     virtual QString ErrorString();

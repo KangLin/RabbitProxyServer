@@ -14,12 +14,18 @@ class CPeerConnecterIceServer : public CPeerConnecterIceClient
     Q_OBJECT
 
 public:
-    explicit CPeerConnecterIceServer(CProxyServerSocks* pServer, QObject *parent = nullptr);
+    explicit CPeerConnecterIceServer(CProxyServerSocks* pServer,
+                                     const QString& fromUser,
+                                     const QString &toUser,
+                                     const QString &channelId,
+                                     const QString &type,
+                                     const QString &sdp,
+                                     QObject *parent = nullptr);
 
 public:
-    virtual qint64 Read(char *buf, int nLen) override;
+    virtual qint64 Read(char *buf, qint64 nLen) override;
     virtual QByteArray ReadAll() override;
-    virtual int Write(const char *buf, int nLen) override;
+    virtual int Write(const char *buf, qint64 nLen) override;
     virtual int Close() override;
     virtual QHostAddress LocalAddress() override;
     virtual qint16 LocalPort() override;

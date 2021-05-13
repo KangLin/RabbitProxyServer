@@ -18,15 +18,18 @@ public:
 
 public:
     virtual int Connect(const QHostAddress &address, qint16 nPort) override;
-    virtual qint64 Read(char *buf, int nLen) override;
+    virtual qint64 Read(char *buf, qint64 nLen) override;
     virtual QByteArray ReadAll() override;
-    virtual int Write(const char *buf, int nLen) override;
+    virtual int Write(const char *buf, qint64 nLen) override;
     virtual int Close() override;
     virtual QHostAddress LocalAddress() override;
     virtual qint16 LocalPort() override;
 
 protected:
-    int CreateDataChannel(bool bOpen);
+    int CreateDataChannel(const QString& peer,
+                          const QString &user,
+                          const QString &channelId,
+                          bool bData);
 
 private:
     int OnConnectionReply();

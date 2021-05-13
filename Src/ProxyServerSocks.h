@@ -28,7 +28,11 @@ protected Q_SLOTS:
     virtual int Stop();
 
 private Q_SLOTS:
-    virtual void slotOffer(const QString& user, const QString&id);
+    virtual void slotOffer(const QString& fromUser,
+                           const QString& toUser,
+                           const QString& channelId,
+                           const QString& type,
+                           const QString& sdp);
     void slotRemotePeerConnectServer();
     void slotError(int nErr, const QString& szError = QString());
 private:

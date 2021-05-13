@@ -7,10 +7,17 @@
 #include <QJsonDocument>
 #include <QtEndian>
 
-CPeerConnecterIceServer::CPeerConnecterIceServer(CProxyServerSocks *pServer, QObject *parent)
+CPeerConnecterIceServer::CPeerConnecterIceServer(CProxyServerSocks *pServer,
+                                                 const QString& fromUser,
+                                                 const QString &toUser,
+                                                 const QString &channelId,
+                                                 const QString &type,
+                                                 const QString &sdp,
+                                                 QObject *parent)
     : CPeerConnecterIceClient(pServer, parent)
 {
-    CreateDataChannel(false);
+    CreateDataChannel(fromUser, toUser, channelId, false);
+    m_DataChannel->slotSignalReceiverDescription(fromUser, toUser, channelId, type, sdp);
 }
 
 void CPeerConnecterIceServer::slotDataChannelConnected()
@@ -37,12 +44,12 @@ void CPeerConnecterIceServer::slotDataChannelReadyRead()
 
     if(m_Peer)
     {
-        QByteArray d = m_DataChannel->ReadAll();
+        QByteArray d = m_DataChannel->readAll();
         m_Peer->Write(d.data(), d.size());
     }
 }
 
-qint64 CPeerConnecterIceServer::Read(char *buf, int nLen)
+qint64 CPeerConnecterIceServer::Read(char *buf, qint64 nLen)
 {
     if(CONNECT == m_Status) return -1;
     if(!m_Peer) return -1;
@@ -56,7 +63,7 @@ QByteArray CPeerConnecterIceServer::ReadAll()
     return m_Peer->ReadAll();
 }
 
-int CPeerConnecterIceServer::Write(const char *buf, int nLen)
+int CPeerConnecterIceServer::Write(const char *buf, qint64 nLen)
 {
     if(CONNECT == m_Status) return -1;
     if(!m_Peer)
@@ -96,7 +103,7 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
     int nRet = 0;
 
     strClientRequst* pRequst;
-    QByteArray data = m_DataChannel->ReadAll();
+    QByteArray data = m_DataChannel->readAll();
     pRequst = reinterpret_cast<strClientRequst*>(data.data());
 
     if(pRequst->version != 0)
@@ -177,7 +184,7 @@ int CPeerConnecterIceServer::Reply(int nError, const QString& szError)
             reply.ip.v4 = qToBigEndian(m_bindAddress.toIPv4Address());
         }
     }
-    m_DataChannel->Write(reinterpret_cast<char*>(&reply), nLen);
+    m_DataChannel->write(reinterpret_cast<char*>(&reply), nLen);
     return 0;
 }
 
@@ -230,6 +237,6 @@ QString CPeerConnecterIceServer::GetPeerUser()
 QString CPeerConnecterIceServer::GetId()
 {
     if(m_DataChannel)
-        return m_DataChannel->GetId();
+        return m_DataChannel->GetChannelId();
     return QString();
 }

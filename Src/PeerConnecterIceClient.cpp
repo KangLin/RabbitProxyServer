@@ -17,7 +17,10 @@ CPeerConnecterIceClient::CPeerConnecterIceClient(CProxyServerSocks *pServer, QOb
 {
 }
 
-int CPeerConnecterIceClient::CreateDataChannel(bool bOpen)
+int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
+                                               const QString &user,
+                                               const QString &channelId,
+                                               bool bData)
 {
     m_DataChannel = std::make_shared<CDataChannelIce>(m_pServer->GetSignal(), this);
     if(!m_DataChannel) return -1;
@@ -32,7 +35,7 @@ int CPeerConnecterIceClient::CreateDataChannel(bool bOpen)
     check = connect(m_DataChannel.get(), SIGNAL(sigError(int, const QString&)),
                     this, SLOT(slotDataChannelError(int, const QString&)));
     Q_ASSERT(check);
-    check = connect(m_DataChannel.get(), SIGNAL(sigReadyRead()),
+    check = connect(m_DataChannel.get(), SIGNAL(readyRead()),
                     this, SLOT(slotDataChannelReadyRead()));
     Q_ASSERT(check);
     CDataChannelIce* p = qobject_cast<CDataChannelIce*>(m_DataChannel.get());
@@ -52,12 +55,14 @@ int CPeerConnecterIceClient::CreateDataChannel(bool bOpen)
                                    pPara->GetTurnPassword().toStdString().c_str()));
     m_DataChannel->SetConfigure(config);
 
-    if(bOpen)
-        if(m_DataChannel->Open(pPara->GetPeerUser(), pPara->GenerateChannelId()))
-        {
-            LOG_MODEL_ERROR("PeerConnecterIce", "Data channel open fail");
-            emit sigError(emERROR::NetWorkUnreachable);
-        }
+    if(m_DataChannel->Open(user,
+                           peer,
+                           channelId,
+                           bData))
+    {
+        LOG_MODEL_ERROR("PeerConnecterIce", "Data channel open fail");
+        emit sigError(emERROR::NetWorkUnreachable);
+    }
 
     return 0;
 }
@@ -65,7 +70,7 @@ int CPeerConnecterIceClient::CreateDataChannel(bool bOpen)
 void CPeerConnecterIceClient::slotDataChannelConnected()
 {
     strClientRequst requst = {0, 1, 0, 1, qToBigEndian(m_nPeerPort), {0}};
-    int nLen = 6;
+    qint64 nLen = 6;
     if(m_peerAddress.protocol() == QAbstractSocket::IPv6Protocol)
     {
         requst.atyp = 0x04;
@@ -79,7 +84,7 @@ void CPeerConnecterIceClient::slotDataChannelConnected()
         requst.ip.v4 = qToBigEndian(m_peerAddress.toIPv4Address());
     }
     if(m_DataChannel)
-        m_DataChannel->Write(reinterpret_cast<const char*>(&requst), nLen);
+        m_DataChannel->write(reinterpret_cast<const char*>(&requst), nLen);
 }
 
 void CPeerConnecterIceClient::slotDataChannelDisconnected()
@@ -123,29 +128,29 @@ int CPeerConnecterIceClient::Connect(const QHostAddress &address, qint16 nPort)
         emit sigError(emERROR::NetWorkUnreachable, tr("Please set peer user"));
         return -2;
     }
-    nRet = CreateDataChannel(true);
+    nRet = CreateDataChannel(pPara->GetPeerUser(), pPara->GetSignalUser(),
+                             pPara->GenerateChannelId(), true);
 
     return nRet;
 }
 
-qint64 CPeerConnecterIceClient::Read(char *buf, int nLen)
+qint64 CPeerConnecterIceClient::Read(char *buf, qint64 nLen)
 {
     if(!m_DataChannel) return -1;
 
-    return m_DataChannel->Read(buf, nLen);
+    return m_DataChannel->read(buf, nLen);
 }
 
 QByteArray CPeerConnecterIceClient::ReadAll()
 {
-    if(!m_DataChannel) return QByteArray();
-    return m_DataChannel->ReadAll();
+    return m_DataChannel->readAll();
 }
 
-int CPeerConnecterIceClient::Write(const char *buf, int nLen)
+int CPeerConnecterIceClient::Write(const char *buf, qint64 nLen)
 {
     if(!m_DataChannel)
         return -1;
-    return m_DataChannel->Write(buf, nLen);
+    return m_DataChannel->write(buf, nLen);
 }
 
 int CPeerConnecterIceClient::Close()
@@ -174,7 +179,7 @@ int CPeerConnecterIceClient::OnConnectionReply()
 {
     int nRet = 0;
 
-    QByteArray data = m_DataChannel->ReadAll();
+    QByteArray data = m_DataChannel->readAll();
     strReply* pReply = reinterpret_cast<strReply*>(data.data());
     if(emERROR::Success == pReply->rep)
     {

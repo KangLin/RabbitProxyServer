@@ -55,7 +55,7 @@ int CPeerConnecter::Bind(qint16 nPort)
     return -1;
 }
 
-qint64 CPeerConnecter::Read(char *buf, int nLen)
+qint64 CPeerConnecter::Read(char *buf, qint64 nLen)
 {
     return m_Socket.read(buf, nLen);
 }
@@ -65,7 +65,7 @@ QByteArray CPeerConnecter::ReadAll()
     return m_Socket.readAll();
 }
 
-int CPeerConnecter::Write(const char *buf, int nLen)
+int CPeerConnecter::Write(const char *buf, qint64 nLen)
 {
     return m_Socket.write(buf, nLen);
 }

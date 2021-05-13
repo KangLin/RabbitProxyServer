@@ -50,11 +50,14 @@ int CIceSignalWebSocket::Open(const std::string &szServer, quint16 nPort,
     const std::string url = wsPrefix + szServer + ":" +
                        std::to_string(nPort) + "/" + user;
     LOG_MODEL_DEBUG("SignalWebsocket", "Url is %s", url.c_str());
-    return Open(url);
+    return Open(url, user, password);
 }
 
-int CIceSignalWebSocket::Open(const std::string &szUrl)
+int CIceSignalWebSocket::Open(const std::string &szUrl,
+                              const std::string &user,
+                              const std::string &password)
 {
+    Q_UNUSED(password);
     if(!m_webSocket)
         m_webSocket = std::make_shared<rtc::WebSocket>();
     if(!m_webSocket) return -1;
@@ -80,7 +83,14 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
         auto it = message.find("id");
         if (it == message.end())
             return;
-        std::string id = it->get<std::string>();
+        it = message.find("toUser");
+        if (it == message.end())
+            return;
+        std::string toUser = it->get<std::string>();
+        it = message.find("fromUser");
+        if (it == message.end())
+            return;
+        std::string fromUser = it->get<std::string>();
         it = message.find("channelid");
         if (it == message.end())
             return;
@@ -92,16 +102,25 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
         std::string type = it->get<std::string>();
 
         if(type == "offer")
-            emit sigOffer(id.c_str(), channelid.c_str());
-        if (type == "offer" || type == "answer") {
+        {
             auto sdp = message["description"].get<std::string>();
-            emit sigDescription(id.c_str(), channelid.c_str(), type.c_str(), sdp.c_str());
+            emit sigOffer(fromUser.c_str(), toUser.c_str(), channelid.c_str(),
+                          type.c_str(), sdp.c_str());
+        }
+        else if(type == "answer") {
+            auto sdp = message["description"].get<std::string>();
+            emit sigDescription(fromUser.c_str(), toUser.c_str(),
+                                channelid.c_str(), type.c_str(), sdp.c_str());
         } else if (type == "candidate") {
             auto sdp = message["candidate"].get<std::string>();
             auto mid = message["mid"].get<std::string>();
-            emit sigCandiate(id.c_str(), channelid.c_str(), mid.c_str(), sdp.c_str());
+            emit sigCandiate(fromUser.c_str(), toUser.c_str(),
+                             channelid.c_str(), mid.c_str(), sdp.c_str());
         }
     });
+
+    m_szUser = user;
+    m_szUrl = szUrl;
     try {
         m_webSocket->open(szUrl);
     }  catch (std::exception &e) {
@@ -111,7 +130,6 @@ int CIceSignalWebSocket::Open(const std::string &szUrl)
         return -1;
     }
 
-    m_szUrl = szUrl;
     return 0;
 }
 
@@ -129,24 +147,39 @@ bool CIceSignalWebSocket::IsOpen()
     return false;
 }
 
-int CIceSignalWebSocket::SendCandiate(const QString& user, const QString &id,
-                                      const rtc::Candidate &candidate)
+int CIceSignalWebSocket::SendCandiate(const QString& toUser,
+                                      const QString &channelId,
+                                      const rtc::Candidate &candidate,
+                                      const QString &fromUser)
 {
-    nlohmann::json message = {{"id", user.toStdString()},
-                              {"channelid", id.toStdString()},
+    std::string user = fromUser.toStdString();
+    if(user.empty())
+        user = m_szUser;
+    nlohmann::json message = {{"id", toUser.toStdString()},
+                              {"toUser", toUser.toStdString()},
+                              {"fromUser", user},
+                              {"channelid", channelId.toStdString()},
                               {"type", "candidate"},
                               {"candidate", std::string(candidate)},
                               {"mid", candidate.mid()}};
+
     std::string m = message.dump();
     return Write(m.c_str(), m.size());
 }
 
-int CIceSignalWebSocket::SendDescription(const QString& user, const QString &id,
-                                         const rtc::Description &description)
+int CIceSignalWebSocket::SendDescription(const QString& toUser,
+                                         const QString& channelId,
+                                         const rtc::Description &description,
+                                         const QString& fromUser)
 {
+    std::string user = fromUser.toStdString();
+    if(user.empty())
+        user = m_szUser;
     nlohmann::json message = {
-        {"id", user.toStdString()},
-        {"channelid", id.toStdString()},
+        {"id", toUser.toStdString()},
+        {"toUser", toUser.toStdString()},
+        {"fromUser", user},
+        {"channelid", channelId.toStdString()},
         {"type", description.typeString()},
         {"description", std::string(description)}};
 
