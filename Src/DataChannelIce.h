@@ -66,11 +66,10 @@ private:
 
     rtc::binary m_data;
 
-    // QIODevice interface
 protected:
-    qint64 readData(char *data, qint64 maxlen);
+    bool isSequential() const;
     qint64 writeData(const char *data, qint64 len);
-
+    qint64 readData(char *data, qint64 maxlen);
 };
 
 #endif // CDATACHANNELICE_H

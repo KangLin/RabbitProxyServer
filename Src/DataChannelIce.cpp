@@ -224,7 +224,7 @@ int CDataChannelIce::Close()
     return 0;
 }
 
-qint64 CDataChannelIce::readData(char* data, qint64 maxlen)
+qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
 {
     if(!m_dataChannel) return -1;
     qint64 n = maxlen;
@@ -234,6 +234,11 @@ qint64 CDataChannelIce::readData(char* data, qint64 maxlen)
     memcpy(data, &m_data[0], n);
 
     return n;
+}
+
+bool CDataChannelIce::isSequential() const
+{
+    return true;
 }
 
 qint64 CDataChannelIce::writeData(const char *data, qint64 len)

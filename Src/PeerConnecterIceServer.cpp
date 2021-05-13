@@ -45,7 +45,8 @@ void CPeerConnecterIceServer::slotDataChannelReadyRead()
     if(m_Peer)
     {
         QByteArray d = m_DataChannel->readAll();
-        m_Peer->Write(d.data(), d.size());
+        if(!d.isEmpty())
+            m_Peer->Write(d.data(), d.size());
     }
 }
 
@@ -104,6 +105,10 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
 
     strClientRequst* pRequst;
     QByteArray data = m_DataChannel->readAll();
+    if(data.isEmpty())
+    {
+        LOG_MODEL_ERROR("PeerConnecterIce", "Data channel read fail");
+    }
     pRequst = reinterpret_cast<strClientRequst*>(data.data());
 
     if(pRequst->version != 0)
