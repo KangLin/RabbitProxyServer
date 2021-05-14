@@ -134,16 +134,21 @@ int CDataChannelIce::CreateDataChannel(bool bData)
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
         m_dataChannel = dc;
 
-        if(this->open(QIODevice::ReadWrite))
-            emit sigConnected();
-        else
-            LOG_MODEL_ERROR("DataChannel", "Open Device fail");
-
         LOG_MODEL_DEBUG("DataChannel", "onDataChannel: DataCannel label: %s",
                         dc->label().c_str());
         dc->onOpen([this]() {
-            LOG_MODEL_DEBUG("DataChannel", "Open data channel from remote: %s",
+            LOG_MODEL_DEBUG("DataChannel", "Open data channel from remote::user:%s;peer:%s;channelId:%s:lable:%s",
+                            GetUser().toStdString().c_str(),
+                            GetPeerUser().toStdString().c_str(),
+                            GetChannelId().toStdString().c_str(),
                             m_dataChannel->label().c_str());
+            if(this->open(QIODevice::ReadWrite))
+                emit sigConnected();
+            else
+                LOG_MODEL_ERROR("DataChannel", "Open Device fail:user:%s;peer:%s;channelId:%d",
+                                GetUser().toStdString().c_str(),
+                                GetPeerUser().toStdString().c_str(),
+                                GetChannelId().toStdString().c_str());
         });
 
         dc->onClosed([this]() {
@@ -173,7 +178,11 @@ int CDataChannelIce::CreateDataChannel(bool bData)
     {
         m_dataChannel = m_peerConnection->createDataChannel("data");
         m_dataChannel->onOpen([this]() {
-            LOG_MODEL_DEBUG("DataChannel", "Data channel is open");
+            LOG_MODEL_DEBUG("DataChannel", "Data channel is open:user:%s;peer:%s;channelId:%s;lable:%s",
+                            GetUser().toStdString().c_str(),
+                            GetPeerUser().toStdString().c_str(),
+                            GetChannelId().toStdString().c_str(),
+                            m_dataChannel->label().c_str());
             if(this->open(QIODevice::ReadWrite))
                 emit sigConnected();
             else
@@ -229,12 +238,15 @@ int CDataChannelIce::Close()
 qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
 {
     if(!m_dataChannel) return -1;
+    if(m_data.size() == 0)
+        return 0;
+    
     qint64 n = maxlen;
     if(static_cast<unsigned int>(maxlen) > m_data.size())
         n = m_data.size();
 
     memcpy(data, &m_data[0], n);
-
+    m_data.clear();
     return n;
 }
 

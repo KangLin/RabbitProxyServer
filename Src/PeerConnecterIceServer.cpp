@@ -108,6 +108,7 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
     if(data.isEmpty())
     {
         LOG_MODEL_ERROR("PeerConnecterIce", "Data channel read fail");
+        return -1;
     }
     pRequst = reinterpret_cast<strClientRequst*>(data.data());
 
@@ -163,6 +164,9 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
                     this, SLOT(slotPeerRead()));
     Q_ASSERT(check);
 
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Connect to peer: ip:%s; port%d",
+                    m_peerAddress.toString().toStdString().c_str(),
+                    m_nPeerPort);
     nRet = m_Peer->Connect(m_peerAddress, m_nPeerPort);
     return nRet;
 }
@@ -206,7 +210,7 @@ void CPeerConnecterIceServer::slotPeerConnected()
     Reply(emERROR::Success);
     m_Status = FORWORD;
     LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Peer connected success: IP:%s; port:%d",
-                    m_peerAddress.toIPv4Address(), m_nBindPort);
+                    m_peerAddress.toString().toStdString().c_str(), m_nBindPort);
 }
 
 void CPeerConnecterIceServer::slotPeerDisconnectd()
