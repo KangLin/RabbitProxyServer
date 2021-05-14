@@ -21,6 +21,7 @@ public:
                                      const QString &type,
                                      const QString &sdp,
                                      QObject *parent = nullptr);
+    virtual ~CPeerConnecterIceServer();
 
 public:
     virtual qint64 Read(char *buf, qint64 nLen) override;

@@ -9,6 +9,7 @@ CPeerConnecter::CPeerConnecter(QObject *parent) : QObject(parent)
 
 CPeerConnecter::~CPeerConnecter()
 {
+    qDebug() << "CPeerConnecter::~CPeerConnecter()";
     Close();
 }
 

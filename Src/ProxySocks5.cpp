@@ -55,6 +55,7 @@ void CProxySocks5::slotRead()
             QByteArray d = m_pSocket->readAll();
             if(!d.isEmpty())
             {
+                LOG_MODEL_DEBUG("Socks5", "Write %d length to peer", d.length());
                 int nWrite = m_pPeer->Write(d.data(), d.length());
                 if(-1 == nWrite)
                     LOG_MODEL_ERROR("Socks5",
@@ -471,7 +472,7 @@ void CProxySocks5::slotPeerError(int err, const QString &szErr)
 
 void CProxySocks5::slotPeerRead()
 {
-    //LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerRead()");
+    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerRead()");
     if(m_pPeer)
     {
         QByteArray d = m_pPeer->ReadAll();

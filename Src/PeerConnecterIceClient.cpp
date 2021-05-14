@@ -7,6 +7,7 @@
 #include <QJsonDocument>
 #include <QtEndian>
 #include "ProxyServerSocks.h"
+#include <QThread>
 
 CPeerConnecterIceClient::CPeerConnecterIceClient(CProxyServerSocks *pServer, QObject *parent)
     : CPeerConnecter(parent),
@@ -15,6 +16,13 @@ CPeerConnecterIceClient::CPeerConnecterIceClient(CProxyServerSocks *pServer, QOb
       m_nBindPort(0),
       m_Status(CONNECT)
 {
+    LOG_MODEL_DEBUG("CPeerConnecterIceClient", "Current thread id: 0x%X",
+                    QThread::currentThread());
+}
+
+CPeerConnecterIceClient::~CPeerConnecterIceClient()
+{
+    qDebug() << "CPeerConnecterIceClient::~CPeerConnecterIceClient()";
 }
 
 int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
@@ -69,6 +77,9 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
 
 void CPeerConnecterIceClient::slotDataChannelConnected()
 {
+    LOG_MODEL_DEBUG("CPeerConnecterIceClient",
+                    "slotDataChannelConnected Current thread id: 0x%X",
+                    QThread::currentThread());
     strClientRequst requst = {0, 1, 0, 1, qToBigEndian(m_nPeerPort), {0}};
     qint64 nLen = 6;
     if(m_peerAddress.protocol() == QAbstractSocket::IPv6Protocol)
@@ -99,6 +110,9 @@ void CPeerConnecterIceClient::slotDataChannelError(int nErr, const QString& szEr
 
 void CPeerConnecterIceClient::slotDataChannelReadyRead()
 {
+    LOG_MODEL_DEBUG("CPeerConnecterIceClient",
+                    "slotDataChannelReadyRead Current thread id: 0x%X",
+                    QThread::currentThread());
     if(CONNECT == m_Status)
     {
         OnConnectionReply();

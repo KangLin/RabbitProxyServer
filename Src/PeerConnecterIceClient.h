@@ -15,6 +15,7 @@ class CPeerConnecterIceClient : public CPeerConnecter
 
 public:
     explicit CPeerConnecterIceClient(CProxyServerSocks* pServer, QObject *parent = nullptr);
+    virtual ~CPeerConnecterIceClient();
 
 public:
     virtual int Connect(const QHostAddress &address, qint16 nPort) override;

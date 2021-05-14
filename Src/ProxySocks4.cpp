@@ -12,6 +12,11 @@ CProxySocks4::CProxySocks4(QTcpSocket *pSocket, CProxyServer *server, QObject *p
 {
 }
 
+CProxySocks4::~CProxySocks4()
+{
+    qDebug() << "CProxySocks4::~CProxySocks4()";
+}
+
 void CProxySocks4::slotRead()
 {
     LOG_MODEL_DEBUG("Socks4", "slotRead() command:0x%X", m_Command);

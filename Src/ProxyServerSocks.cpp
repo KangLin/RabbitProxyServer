@@ -20,7 +20,9 @@ CProxyServerSocks::CProxyServerSocks(QObject *parent) : CProxyServer(parent)
 }
 
 CProxyServerSocks::~CProxyServerSocks()
-{}
+{
+    qDebug() << "CProxyServerSocks::~CProxyServerSocks()";
+}
 
 #ifdef HAVE_ICE
 std::shared_ptr<CIceSignal> CProxyServerSocks::GetSignal()

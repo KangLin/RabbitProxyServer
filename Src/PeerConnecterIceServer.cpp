@@ -20,6 +20,11 @@ CPeerConnecterIceServer::CPeerConnecterIceServer(CProxyServerSocks *pServer,
     m_DataChannel->slotSignalReceiverDescription(fromUser, toUser, channelId, type, sdp);
 }
 
+CPeerConnecterIceServer::~CPeerConnecterIceServer()
+{
+    qDebug() << "CPeerConnecterIceServer::~CPeerConnecterIceServer()";
+}
+
 void CPeerConnecterIceServer::slotDataChannelConnected()
 {
 }
