@@ -16,6 +16,12 @@ CDataChannelIce::CDataChannelIce(std::shared_ptr<CIceSignal> signal, QObject *pa
     SetSignal(signal);
 }
 
+CDataChannelIce::~CDataChannelIce()
+{
+    qDebug() << "CDataChannel::~CDataChannel()";
+    Close();
+}
+
 int CDataChannelIce::SetSignal(std::shared_ptr<CIceSignal> signal)
 {
     bool check = false;
@@ -80,11 +86,6 @@ int CDataChannelIce::SetConfigure(const rtc::Configuration &config)
 {
     m_Config = config;
     return 0;
-}
-
-CDataChannelIce::~CDataChannelIce()
-{
-    qDebug() << "CDataChannel::~CDataChannel()";
 }
 
 int CDataChannelIce::CreateDataChannel(bool bData)
@@ -159,6 +160,7 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         });
 
         dc->onError([this](std::string error){
+            LOG_MODEL_ERROR("DataChannel", "Data channel error:%s", error.c_str());
             emit sigError(-1, error.c_str());
         });
 
@@ -195,6 +197,7 @@ int CDataChannelIce::CreateDataChannel(bool bData)
             close();
         });
         m_dataChannel->onError([this](std::string error){
+            LOG_MODEL_ERROR("DataChannel", "Data channel error:%s", error.c_str());
             emit sigError(-1, error.c_str());
         });
         m_dataChannel->onMessage([this](std::variant<rtc::binary, std::string> data) {
@@ -212,7 +215,8 @@ int CDataChannelIce::CreateDataChannel(bool bData)
     return 0;
 }
 
-int CDataChannelIce::Open(const QString &user, const QString &peer, const QString &id, bool bData)
+int CDataChannelIce::Open(const QString &user, const QString &peer,
+                          const QString &id, bool bData)
 {
     m_szPeerUser = peer;
     m_szUser = user;
@@ -235,6 +239,15 @@ int CDataChannelIce::Close()
     return 0;
 }
 
+qint64 CDataChannelIce::writeData(const char *data, qint64 len)
+{
+    if(!m_dataChannel)
+        return -1;
+    bool bSend = m_dataChannel->send((const std::byte*)data, len);
+    if(bSend) return len;
+    return -1;
+}
+
 qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
 {
     if(!m_dataChannel) return -1;
@@ -255,13 +268,9 @@ bool CDataChannelIce::isSequential() const
     return true;
 }
 
-qint64 CDataChannelIce::writeData(const char *data, qint64 len)
+qint64 CDataChannelIce::bytesAvailable() const
 {
-    if(!m_dataChannel)
-        return -1;
-    bool bSend = m_dataChannel->send((const std::byte*)data, len);
-    if(bSend) return len;
-    return -1;
+    return m_data.size();
 }
 
 void CDataChannelIce::slotSignalConnected()
@@ -323,10 +332,4 @@ void CDataChannelIce::slotSignalReceiverDescription(const QString& fromUser,
 void CDataChannelIce::slotSignalError(int error, const QString& szError)
 {
     emit sigError(error, tr("Signal error: %1").arg(szError));
-}
-
-
-qint64 CDataChannelIce::bytesAvailable() const
-{
-    return m_data.size();
 }
