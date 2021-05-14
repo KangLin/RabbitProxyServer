@@ -164,7 +164,7 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
                     this, SLOT(slotPeerRead()));
     Q_ASSERT(check);
 
-    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Connect to peer: ip:%s; port%d",
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Connect to peer: ip:%s; port:%d",
                     m_peerAddress.toString().toStdString().c_str(),
                     m_nPeerPort);
     nRet = m_Peer->Connect(m_peerAddress, m_nPeerPort);
@@ -206,11 +206,11 @@ void CPeerConnecterIceServer::slotPeerConnected()
         return;
     }
     m_nBindPort = m_Peer->LocalPort();
-    m_peerAddress = m_Peer->LocalAddress();
+    m_bindAddress = m_Peer->LocalAddress();
     Reply(emERROR::Success);
     m_Status = FORWORD;
-    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Peer connected success: IP:%s; port:%d",
-                    m_peerAddress.toString().toStdString().c_str(), m_nBindPort);
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Peer connected success: binIP:%s;bindPort:%d",
+                    m_bindAddress.toString().toStdString().c_str(), m_nBindPort);
 }
 
 void CPeerConnecterIceServer::slotPeerDisconnectd()

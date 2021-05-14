@@ -202,8 +202,8 @@ int CPeerConnecterIceClient::OnConnectionReply()
         LOG_MODEL_DEBUG("CPeerConnecterIceClient",
                         "CPeerConnecterIceClient::OnConnectionReply(): ip:%s;port:%d",
                         m_bindAddress.toString().toStdString().c_str(), m_nBindPort);
-        emit sigConnected();
         m_Status = FORWORD;
+        emit sigConnected();
     }
     else
         emit sigError(pReply->rep);
