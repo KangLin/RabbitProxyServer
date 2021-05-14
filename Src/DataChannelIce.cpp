@@ -133,20 +133,22 @@ int CDataChannelIce::CreateDataChannel(bool bData)
     });
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
         m_dataChannel = dc;
+
+        if(this->open(QIODevice::ReadWrite))
+            emit sigConnected();
+        else
+            LOG_MODEL_ERROR("DataChannel", "Open Device fail");
+
         LOG_MODEL_DEBUG("DataChannel", "onDataChannel: DataCannel label: %s",
                         dc->label().c_str());
-        dc->onOpen([dc, this]() {
+        dc->onOpen([this]() {
             LOG_MODEL_DEBUG("DataChannel", "Open data channel from remote: %s",
-                            dc->label().c_str());
-            if(this->open(QIODevice::ReadWrite))
-                emit sigConnected();
-            else
-                LOG_MODEL_ERROR("DataChannel", "Open Device fail");
+                            m_dataChannel->label().c_str());
         });
 
-        dc->onClosed([this, dc]() {
+        dc->onClosed([this]() {
             LOG_MODEL_DEBUG("DataChannel", "Close data channel from remote: %s",
-                            dc->label().c_str());
+                            m_dataChannel->label().c_str());
             emit this->sigDisconnected();
             close();
         });
@@ -156,12 +158,12 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         });
 
         dc->onMessage([dc, this](std::variant<rtc::binary, std::string> data) {
-            if (std::holds_alternative<std::string>(data))
-                LOG_MODEL_DEBUG("DataChannel", "From remote data: %s",
-                                std::get<std::string>(data).c_str());
-            else
-                LOG_MODEL_DEBUG("DataChannel", "From remote Received, size=%d",
-                                std::get<rtc::binary>(data).size());
+//            if (std::holds_alternative<std::string>(data))
+//                LOG_MODEL_DEBUG("DataChannel", "From remote data: %s",
+//                                std::get<std::string>(data).c_str());
+//            else
+//                LOG_MODEL_DEBUG("DataChannel", "From remote Received, size=%d",
+//                                std::get<rtc::binary>(data).size());
             m_data = std::get<rtc::binary>(data);
             emit this->readyRead();
         });
@@ -187,12 +189,12 @@ int CDataChannelIce::CreateDataChannel(bool bData)
             emit sigError(-1, error.c_str());
         });
         m_dataChannel->onMessage([this](std::variant<rtc::binary, std::string> data) {
-            if (std::holds_alternative<std::string>(data))
-                LOG_MODEL_DEBUG("DataChannel", "data: %s",
-                                std::get<std::string>(data).c_str());
-            else
-                LOG_MODEL_DEBUG("DataChannel", "Received, size=%d",
-                                std::get<rtc::binary>(data).size());
+//            if (std::holds_alternative<std::string>(data))
+//                LOG_MODEL_DEBUG("DataChannel", "data: %s",
+//                                std::get<std::string>(data).c_str());
+//            else
+//                LOG_MODEL_DEBUG("DataChannel", "Received, size=%d",
+//                                std::get<rtc::binary>(data).size());
 
             m_data = std::get<rtc::binary>(data);
             emit this->readyRead();
@@ -287,7 +289,7 @@ void CDataChannelIce::slotSignalReceiverDescription(const QString& fromUser,
                                                     const QString &type,
                                                     const QString &sdp)
 {
-    //*
+    /*
     LOG_MODEL_DEBUG("CDataChannelIce",
                     "slotSignalReceiverDescription fromUser:%s; toUser:%s; channelId:%s; type:%s; sdp:%s",
                     fromUser.toStdString().c_str(),
@@ -309,4 +311,10 @@ void CDataChannelIce::slotSignalReceiverDescription(const QString& fromUser,
 void CDataChannelIce::slotSignalError(int error, const QString& szError)
 {
     emit sigError(error, tr("Signal error: %1").arg(szError));
+}
+
+
+qint64 CDataChannelIce::bytesAvailable() const
+{
+    return m_data.size();
 }

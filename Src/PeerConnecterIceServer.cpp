@@ -197,6 +197,7 @@ void CPeerConnecterIceServer::slotPeerConnected()
 {
     if(!m_Peer)
     {
+        LOG_MODEL_ERROR("CPeerConnecterIceServer", "Peer is null");
         Reply(emERROR::Unkown);
         return;
     }
@@ -204,12 +205,15 @@ void CPeerConnecterIceServer::slotPeerConnected()
     m_peerAddress = m_Peer->LocalAddress();
     Reply(emERROR::Success);
     m_Status = FORWORD;
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Peer connected success: IP:%s; port:%d",
+                    m_peerAddress.toIPv4Address(), m_nBindPort);
 }
 
 void CPeerConnecterIceServer::slotPeerDisconnectd()
 {
     if(CONNECT == m_Status)
     {
+        LOG_MODEL_ERROR("CPeerConnecterIceServer", "Peer disconnect");
         Reply(emERROR::NotAllowdConnection);
     }
     Close();
@@ -229,6 +233,7 @@ void CPeerConnecterIceServer::slotPeerError(int nError, const QString &szErr)
 
 void CPeerConnecterIceServer::slotPeerRead()
 {
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "CPeerConnecterIceServer::slotPeerRead()");
     emit sigReadyRead();
 }
 

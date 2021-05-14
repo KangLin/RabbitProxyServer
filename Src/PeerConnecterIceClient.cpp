@@ -199,6 +199,9 @@ int CPeerConnecterIceClient::OnConnectionReply()
             return -1;
         }
 
+        LOG_MODEL_DEBUG("CPeerConnecterIceClient",
+                        "CPeerConnecterIceClient::OnConnectionReply(): ip:%s;port:%d",
+                        m_bindAddress.toIPv4Address(), m_nBindPort);
         emit sigConnected();
         m_Status = FORWORD;
     }
