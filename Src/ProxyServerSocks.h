@@ -34,7 +34,7 @@ private Q_SLOTS:
                            const QString& type,
                            const QString& sdp);
     void slotRemotePeerConnectServer();
-    void slotError(int nErr, const QString& szError = QString());
+    void slotError(int nErr, const QString& szErr = QString());
 private:
     std::shared_ptr<CIceSignal> m_Signal;
     QMap<QString, QMap<QString, std::shared_ptr<CPeerConnecterIceServer> > > m_ConnectServer;

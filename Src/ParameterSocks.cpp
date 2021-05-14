@@ -1,5 +1,7 @@
 #include "ParameterSocks.h"
 #include <QDebug>
+#include <QMutex>
+#include "RabbitCommonLog.h"
 
 CParameterSocks::CParameterSocks(QObject *parent) : CParameter(parent),
     m_bIce(false),
@@ -278,5 +280,10 @@ void CParameterSocks::SetTurnPassword(const QString &password)
 
 QString CParameterSocks::GenerateChannelId()
 {
-    return std::to_string(m_nChannelId++).c_str();
+    static QMutex m;
+    m.lock();
+    std::string r = std::to_string(m_nChannelId++);
+    //LOG_MODEL_DEBUG("CParameterSocks", "channel id:%s", r.c_str());
+    m.unlock();
+    return r.c_str();
 }

@@ -115,15 +115,28 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
     m_ConnectServer[fromUser][channelId] = ice;
 }
 
-void CProxyServerSocks::slotError(int, const QString&)
+void CProxyServerSocks::slotError(int err, const QString& szErr)
 {
+    LOG_MODEL_DEBUG("CProxyServerSocks", "CProxyServerSocks::slotError: %d;%s",
+                    err, szErr.toStdString().c_str());
     slotRemotePeerConnectServer();
 }
 
 void CProxyServerSocks::slotRemotePeerConnectServer()
 {
+
     CPeerConnecterIceServer* pServer
             = qobject_cast<CPeerConnecterIceServer*>(sender());
+    if(!pServer) return;
+    if(pServer->GetPeerUser().isEmpty() || pServer->GetId().isEmpty())
+    {
+        return;
+    }
+
+    LOG_MODEL_DEBUG("CProxyServerSocks",
+                    "CProxyServerSocks::slotRemotePeerConnectServer(), peer:%s;id:%s",
+                    pServer->GetPeerUser().toStdString().c_str(),
+                    pServer->GetId().toStdString().c_str());
     m_ConnectServer[pServer->GetPeerUser()].remove(pServer->GetId());
 }
 #endif

@@ -97,7 +97,7 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         return -1;
     }
     m_peerConnection->onStateChange([](rtc::PeerConnection::State state) {
-        LOG_MODEL_DEBUG("DataChannel", "State: %d", state);
+        LOG_MODEL_DEBUG("DataChannel", "PeerConnection State: %d", state);
     });
     m_peerConnection->onGatheringStateChange(
                 [](rtc::PeerConnection::GatheringState state) {
@@ -155,8 +155,8 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         dc->onClosed([this]() {
             LOG_MODEL_DEBUG("DataChannel", "Close data channel from remote: %s",
                             m_dataChannel->label().c_str());
-            emit this->sigDisconnected();
             close();
+            emit this->sigDisconnected();
         });
 
         dc->onError([this](std::string error){
@@ -193,8 +193,8 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         });
         m_dataChannel->onClosed([this](){
             LOG_MODEL_DEBUG("DataChannel", "Data channel is close");
-            emit this->sigDisconnected();
             close();
+            emit this->sigDisconnected();
         });
         m_dataChannel->onError([this](std::string error){
             LOG_MODEL_ERROR("DataChannel", "Data channel error:%s", error.c_str());
@@ -226,6 +226,7 @@ int CDataChannelIce::Open(const QString &user, const QString &peer,
 
 int CDataChannelIce::Close()
 {
+    LOG_MODEL_DEBUG("CDataChannelIce", "CDataChannelIce::Close()");
     if(m_dataChannel)
     {
         m_dataChannel->close();

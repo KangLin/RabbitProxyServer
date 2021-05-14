@@ -100,6 +100,7 @@ qint16 CPeerConnecter::LocalPort()
 
 void CPeerConnecter::slotError(QAbstractSocket::SocketError error)
 {
+    LOG_MODEL_ERROR("CPeerConnecter", "CPeerConnecter::slotError: %d", error);
     emERROR e = Success;
     QString szErr;
     switch (error) {

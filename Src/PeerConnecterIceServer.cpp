@@ -6,6 +6,7 @@
 #include "RabbitCommonLog.h"
 #include <QJsonDocument>
 #include <QtEndian>
+#include <QThread>
 
 CPeerConnecterIceServer::CPeerConnecterIceServer(CProxyServerSocks *pServer,
                                                  const QString& fromUser,
@@ -81,6 +82,10 @@ int CPeerConnecterIceServer::Write(const char *buf, qint64 nLen)
 
 int CPeerConnecterIceServer::Close()
 {
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Close threadid:%d;peer:%s;id:%s",
+                    QThread::currentThread(),
+                    GetPeerUser().toStdString().c_str(),
+                    GetId().toStdString().c_str());
     int nRet = 0;
     if(m_DataChannel)
     {
@@ -93,6 +98,11 @@ int CPeerConnecterIceServer::Close()
         m_Peer->Close();
         m_Peer.reset();
     }
+
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Close end thread:%d; peer:%s;id:%s",
+                    QThread::currentThread(),
+                    GetPeerUser().toStdString().c_str(),
+                    GetId().toStdString().c_str());
     return nRet;
 }
 
@@ -227,25 +237,29 @@ void CPeerConnecterIceServer::slotPeerDisconnectd()
         LOG_MODEL_ERROR("CPeerConnecterIceServer", "Peer disconnect");
         Reply(emERROR::NotAllowdConnection);
     }
-    Close();
+    //Close();
     emit sigDisconnected();
 }
 
 void CPeerConnecterIceServer::slotPeerError(int nError, const QString &szErr)
 {
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "slotPeerError:%d; %s",
+                    nError, szErr.toStdString().c_str());
     Q_UNUSED(szErr);
     if(CONNECT == m_Status)
     {
         Reply(nError);
     }
-    Close();
+    //Close();
     emit sigError(nError, szErr);
 }
 
 void CPeerConnecterIceServer::slotPeerRead()
 {
-    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "CPeerConnecterIceServer::slotPeerRead()");
     QByteArray d = m_Peer->ReadAll();
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer",
+                    "CPeerConnecterIceServer::slotPeerRead(): size:%d",
+                    d.size());
     if(m_DataChannel)
         m_DataChannel->write(d.data(), d.size());
 }
