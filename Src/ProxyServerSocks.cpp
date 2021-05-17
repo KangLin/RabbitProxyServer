@@ -98,6 +98,12 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
     if(m_ConnectServer[fromUser][channelId])
     {
         m_ConnectServerMutex.unlock();
+        LOG_MODEL_ERROR("ProxyServerSocks", "Is existed. fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+                        fromUser.toStdString().c_str(),
+                        toUser.toStdString().c_str(),
+                        channelId.toStdString().c_str(),
+                        p->GetSignalUser().toStdString().c_str(),
+                        p->GetPeerUser().toStdString().c_str());
         return;
     }
     m_ConnectServerMutex.unlock();
@@ -147,15 +153,12 @@ void CProxyServerSocks::slotRemotePeerConnectServer()
                     pServer->GetId().toStdString().c_str());
     m_ConnectServerMutex.lock();
     std::shared_ptr<CPeerConnecterIceServer> svr = m_ConnectServer[pServer->GetPeerUser()][pServer->GetId()];
+    m_ConnectServer[pServer->GetPeerUser()].remove(pServer->GetId());
     m_ConnectServerMutex.unlock();
     if(svr)
     {
         svr->Close();
-        m_ConnectServerMutex.lock();
-        m_ConnectServer[pServer->GetPeerUser()].remove(pServer->GetId());
-        m_ConnectServerMutex.unlock();
     }
-
 }
 #endif
 

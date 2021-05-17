@@ -83,7 +83,7 @@ int CPeerConnecterIceServer::Write(const char *buf, qint64 nLen)
 
 int CPeerConnecterIceServer::Close()
 {
-    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Close threadid:%d;peer:%s;id:%s",
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Close threadid:0x%X;peer:%s;id:%s",
                     QThread::currentThread(),
                     GetPeerUser().toStdString().c_str(),
                     GetId().toStdString().c_str());
@@ -97,10 +97,8 @@ int CPeerConnecterIceServer::Close()
     }
 
     nRet = CPeerConnecterIceClient::Close();
-    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Close end thread:%d; peer:%s;id:%s",
-                    QThread::currentThread(),
-                    GetPeerUser().toStdString().c_str(),
-                    GetId().toStdString().c_str());
+    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Close end thread:0x%X;",
+                    QThread::currentThread());
     return nRet;
 }
 
@@ -223,7 +221,7 @@ void CPeerConnecterIceServer::slotPeerConnected()
     if(!m_Peer)
     {
         LOG_MODEL_ERROR("CPeerConnecterIceServer", "Peer is null");
-        Reply(emERROR::Unkown);
+        Reply(emERROR::Unkown, "Peer is null");
         return;
     }
     m_nBindPort = m_Peer->LocalPort();
@@ -239,9 +237,8 @@ void CPeerConnecterIceServer::slotPeerDisconnectd()
     if(CONNECT == m_Status)
     {
         LOG_MODEL_ERROR("CPeerConnecterIceServer", "Peer disconnect");
-        Reply(emERROR::NotAllowdConnection);
+        Reply(emERROR::NotAllowdConnection, "Peer disconnect");
     }
-    //Close();
     emit sigDisconnected();
 }
 
@@ -252,9 +249,8 @@ void CPeerConnecterIceServer::slotPeerError(int nError, const QString &szErr)
     Q_UNUSED(szErr);
     if(CONNECT == m_Status)
     {
-        Reply(nError);
+        Reply(nError, szErr);
     }
-    //Close();
     emit sigError(nError, szErr);
 }
 
@@ -262,7 +258,7 @@ void CPeerConnecterIceServer::slotPeerRead()
 {
     QByteArray d = m_Peer->ReadAll();
     LOG_MODEL_DEBUG("CPeerConnecterIceServer",
-                    "CPeerConnecterIceServer::slotPeerRead(): size:%d;threadId:%d",
+                    "CPeerConnecterIceServer::slotPeerRead(): size:%d;threadId:0x%X",
                     d.size(), QThread::currentThread());
     if(m_DataChannel)
         m_DataChannel->write(d.data(), d.size());

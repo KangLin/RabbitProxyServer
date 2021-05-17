@@ -281,10 +281,10 @@ bool CDataChannelIce::isSequential() const
     return true;
 }
 
-qint64 CDataChannelIce::bytesAvailable() const
-{
-    return m_data.size();
-}
+//qint64 CDataChannelIce::bytesAvailable() const
+//{
+//    return m_data.size();
+//}
 
 void CDataChannelIce::slotSignalConnected()
 {
