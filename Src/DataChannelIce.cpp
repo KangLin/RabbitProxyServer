@@ -19,7 +19,6 @@ CDataChannelIce::CDataChannelIce(std::shared_ptr<CIceSignal> signal, QObject *pa
 CDataChannelIce::~CDataChannelIce()
 {
     qDebug() << "CDataChannel::~CDataChannel()";
-    Close();
 }
 
 int CDataChannelIce::SetSignal(std::shared_ptr<CIceSignal> signal)
@@ -171,7 +170,10 @@ int CDataChannelIce::CreateDataChannel(bool bData)
 //            else
 //                LOG_MODEL_DEBUG("DataChannel", "From remote Received, size=%d",
 //                                std::get<rtc::binary>(data).size());
-            m_data = std::get<rtc::binary>(data);
+            m_MutexData.lock();
+            rtc::binary d = std::get<rtc::binary>(data);
+            m_data.append((char*)d.data(), d.size());
+            m_MutexData.unlock();
             emit this->readyRead();
         });
     });
@@ -208,7 +210,10 @@ int CDataChannelIce::CreateDataChannel(bool bData)
 //                LOG_MODEL_DEBUG("DataChannel", "Received, size=%d",
 //                                std::get<rtc::binary>(data).size());
 
-            m_data = std::get<rtc::binary>(data);
+            m_MutexData.lock();
+            rtc::binary d = std::get<rtc::binary>(data);
+            m_data.append((char*)d.data(), d.size());
+            m_MutexData.unlock();
             emit this->readyRead();
         });
     }
@@ -227,6 +232,8 @@ int CDataChannelIce::Open(const QString &user, const QString &peer,
 int CDataChannelIce::Close()
 {
     LOG_MODEL_DEBUG("CDataChannelIce", "CDataChannelIce::Close()");
+    m_Signal->disconnect(this);
+
     if(m_dataChannel)
     {
         m_dataChannel->close();
@@ -237,6 +244,7 @@ int CDataChannelIce::Close()
         m_peerConnection->close();
         m_peerConnection.reset();
     }
+
     return 0;
 }
 
@@ -255,12 +263,16 @@ qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
     if(m_data.size() == 0)
         return 0;
     
+    m_MutexData.lock();
     qint64 n = maxlen;
     if(static_cast<unsigned int>(maxlen) > m_data.size())
         n = m_data.size();
-
-    memcpy(data, &m_data[0], n);
-    m_data.clear();
+    memcpy(data, m_data.data(), n);
+    if(m_data.size() == n)
+        m_data.clear();
+    else
+        m_data.remove(0, n);
+    m_MutexData.unlock();
     return n;
 }
 

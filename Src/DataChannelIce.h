@@ -9,6 +9,7 @@
 #include "IceSignal.h"
 #include <memory>
 #include <QIODevice>
+#include <QMutex>
 
 class CDataChannelIce : public QIODevice
 {
@@ -64,7 +65,8 @@ private:
     std::shared_ptr<rtc::PeerConnection> m_peerConnection;
     std::shared_ptr<rtc::DataChannel> m_dataChannel;
 
-    rtc::binary m_data;
+    QByteArray m_data;
+    QMutex m_MutexData;
 
 protected:
     bool isSequential() const;

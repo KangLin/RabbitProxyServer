@@ -44,7 +44,8 @@ void CPeerConnecterIceServer::slotDataChannelReadyRead()
 {
     if(CONNECT == m_Status)
     {
-        OnReciveConnectRequst();
+        if(OnReciveConnectRequst())
+            emit sigError(-1, "Recive connect reply error");
         return;
     }
 
@@ -87,18 +88,15 @@ int CPeerConnecterIceServer::Close()
                     GetPeerUser().toStdString().c_str(),
                     GetId().toStdString().c_str());
     int nRet = 0;
-    if(m_DataChannel)
-    {
-        m_DataChannel->Close();
-        m_DataChannel.reset();
-    }
 
     if(m_Peer)
     {
         m_Peer->Close();
+        m_Peer->disconnect(this);
         m_Peer.reset();
     }
 
+    nRet = CPeerConnecterIceClient::Close();
     LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Close end thread:%d; peer:%s;id:%s",
                     QThread::currentThread(),
                     GetPeerUser().toStdString().c_str(),
@@ -167,6 +165,12 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
         Q_ASSERT(false);
     else
         m_Peer = std::make_shared<CPeerConnecter>(this);
+
+    if(!m_Peer)
+    {
+        LOG_MODEL_ERROR("PeerConnecterIce", "The peer is null");
+        return -1;
+    }
 
     bool check = connect(m_Peer.get(), SIGNAL(sigConnected()),
                          this, SLOT(slotPeerConnected()));
@@ -258,8 +262,8 @@ void CPeerConnecterIceServer::slotPeerRead()
 {
     QByteArray d = m_Peer->ReadAll();
     LOG_MODEL_DEBUG("CPeerConnecterIceServer",
-                    "CPeerConnecterIceServer::slotPeerRead(): size:%d",
-                    d.size());
+                    "CPeerConnecterIceServer::slotPeerRead(): size:%d;threadId:%d",
+                    d.size(), QThread::currentThread());
     if(m_DataChannel)
         m_DataChannel->write(d.data(), d.size());
 }

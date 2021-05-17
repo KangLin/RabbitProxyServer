@@ -173,9 +173,12 @@ int CPeerConnecterIceClient::Close()
     if(m_DataChannel)
     {
         m_DataChannel->Close();
+        m_DataChannel->disconnect(this);
         m_DataChannel.reset();
     }
 
+    m_pServer->GetSignal()->disconnect(this);
+    nRet = CPeerConnecter::Close();
     return nRet;
 }
 

@@ -108,6 +108,10 @@ void CPeerConnecter::slotError(QAbstractSocket::SocketError error)
         e = emERROR::ConnectionRefused;
         szErr = tr("Refused connection");
         return;
+    case QAbstractSocket::RemoteHostClosedError:
+        e = emERROR::Unkown;
+        szErr = tr("Remote host close error");
+        return;
     case QAbstractSocket::HostNotFoundError:
         e = emERROR::HostNotFound;
         szErr = tr("Not found host");
