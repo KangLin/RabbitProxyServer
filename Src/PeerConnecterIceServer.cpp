@@ -51,8 +51,9 @@ void CPeerConnecterIceServer::slotDataChannelReadyRead()
 
     if(m_Peer)
     {
-        LOG_MODEL_DEBUG("CPeerConnecterIceServer",
-                        "Forword data to peer form data channel");
+        /*
+         LOG_MODEL_DEBUG("CPeerConnecterIceServer",
+                        "Forword data to peer form data channel");//*/
         QByteArray d = m_DataChannel->readAll();
         if(!d.isEmpty())
             m_Peer->Write(d.data(), d.size());
@@ -91,8 +92,8 @@ int CPeerConnecterIceServer::Close()
 
     if(m_Peer)
     {
-        m_Peer->Close();
-        m_Peer->disconnect(this);
+        m_Peer->disconnect();
+        m_Peer->Close();        
         m_Peer.reset();
     }
 
@@ -257,9 +258,10 @@ void CPeerConnecterIceServer::slotPeerError(int nError, const QString &szErr)
 void CPeerConnecterIceServer::slotPeerRead()
 {
     QByteArray d = m_Peer->ReadAll();
+    /*
     LOG_MODEL_DEBUG("CPeerConnecterIceServer",
                     "CPeerConnecterIceServer::slotPeerRead(): size:%d;threadId:0x%X",
-                    d.size(), QThread::currentThread());
+                    d.size(), QThread::currentThread());//*/
     if(m_DataChannel)
         m_DataChannel->write(d.data(), d.size());
 }

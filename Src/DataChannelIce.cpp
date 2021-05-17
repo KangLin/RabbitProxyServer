@@ -100,7 +100,8 @@ int CDataChannelIce::CreateDataChannel(bool bData)
     });
     m_peerConnection->onGatheringStateChange(
                 [](rtc::PeerConnection::GatheringState state) {
-        LOG_MODEL_DEBUG("DataChannel", "Gathering status: %d", state);
+        Q_UNUSED(state)
+        //LOG_MODEL_DEBUG("DataChannel", "Gathering status: %d", state);
     });
     m_peerConnection->onLocalDescription(
                 [this](rtc::Description description) {
@@ -134,8 +135,8 @@ int CDataChannelIce::CreateDataChannel(bool bData)
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
         m_dataChannel = dc;
 
-        LOG_MODEL_DEBUG("DataChannel", "onDataChannel: DataCannel label: %s",
-                        dc->label().c_str());
+//        LOG_MODEL_DEBUG("DataChannel", "onDataChannel: DataCannel label: %s",
+//                        dc->label().c_str());
         dc->onOpen([this]() {
             LOG_MODEL_DEBUG("DataChannel", "Open data channel from remote::user:%s;peer:%s;channelId:%s:lable:%s",
                             GetUser().toStdString().c_str(),
@@ -194,7 +195,8 @@ int CDataChannelIce::CreateDataChannel(bool bData)
 
         });
         m_dataChannel->onClosed([this](){
-            LOG_MODEL_DEBUG("DataChannel", "Data channel is close");
+            LOG_MODEL_DEBUG("DataChannel", "Data channel is close:%s",
+                            m_dataChannel->label().c_str());
             close();
             emit this->sigDisconnected();
         });
@@ -252,8 +254,20 @@ qint64 CDataChannelIce::writeData(const char *data, qint64 len)
 {
     if(!m_dataChannel)
         return -1;
-    bool bSend = m_dataChannel->send((const std::byte*)data, len);
+
+    bool bSend = false;
+    const quint16 DEFAULT_MAX_MESSAGE_SIZE = 0xFFFF;
+
+    quint64 n = len;
+    while(n > DEFAULT_MAX_MESSAGE_SIZE)
+    {
+        bSend = m_dataChannel->send((const std::byte*)data, DEFAULT_MAX_MESSAGE_SIZE);
+        if(!bSend) return -1;
+        n -= DEFAULT_MAX_MESSAGE_SIZE;
+    }
+    bSend = m_dataChannel->send((const std::byte*)data, n);
     if(bSend) return len;
+
     return -1;
 }
 
@@ -263,8 +277,8 @@ qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
     if(m_data.size() == 0)
         return 0;
     
-    m_MutexData.lock();
     qint64 n = maxlen;
+    QMutexLocker lock(&m_MutexData);
     if(static_cast<unsigned int>(maxlen) > m_data.size())
         n = m_data.size();
     memcpy(data, m_data.data(), n);
@@ -272,7 +286,6 @@ qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
         m_data.clear();
     else
         m_data.remove(0, n);
-    m_MutexData.unlock();
     return n;
 }
 

@@ -72,8 +72,8 @@ int CPeerConnecter::Write(const char *buf, qint64 nLen)
 
 int CPeerConnecter::Close()
 {
-    m_Socket.close();
     m_Socket.disconnect();
+    m_Socket.close();
     return 0;
 }
 

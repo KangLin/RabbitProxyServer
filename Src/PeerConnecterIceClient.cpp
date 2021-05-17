@@ -170,14 +170,15 @@ int CPeerConnecterIceClient::Write(const char *buf, qint64 nLen)
 int CPeerConnecterIceClient::Close()
 {
     int nRet = 0;
+    m_pServer->GetSignal()->disconnect(this);
+
     if(m_DataChannel)
     {
+        m_DataChannel->disconnect();
         m_DataChannel->Close();
-        m_DataChannel->disconnect(this);
         m_DataChannel.reset();
     }
 
-    m_pServer->GetSignal()->disconnect(this);
     nRet = CPeerConnecter::Close();
     return nRet;
 }
