@@ -5,6 +5,7 @@
 
 #include "IceSignal.h"
 #include "rtc/rtc.hpp"
+#include <QMutex>
 
 class CIceSignalWebSocket : public CIceSignal
 {
@@ -40,6 +41,7 @@ private:
     std::string m_szUrl;
     std::string m_szUser, m_szPeerUser;
     rtc::binary m_Data;
+    QMutex m_MutexSend;
 };
 
 #endif // CICESIGNAL_H

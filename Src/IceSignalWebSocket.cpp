@@ -19,6 +19,7 @@ CIceSignalWebSocket::~CIceSignalWebSocket()
 int CIceSignalWebSocket::Write(const char *buf, int nLen)
 {
     bool bRet = 0;
+    QMutexLocker lock(&m_MutexSend);
     if(m_webSocket)
     {
         bRet = m_webSocket->send(std::string(buf, nLen));
@@ -31,12 +32,7 @@ int CIceSignalWebSocket::Write(const char *buf, int nLen)
 int CIceSignalWebSocket::Read(char *buf, int nLen)
 {
     int n = nLen;
-    if(static_cast<int>(m_Data.size()) < nLen)
-        n = m_Data.size();
-    if(n >= 0)
-        memcpy(buf, &m_Data, n);
-    else
-        return -1;
+    Q_ASSERT(false);
     return n;
 }
 
