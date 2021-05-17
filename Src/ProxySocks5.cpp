@@ -31,6 +31,11 @@ void CProxySocks5::slotClose()
     qDebug() << "CProxySocks::slotClose()";
 
     CProxy::slotClose();
+    if(m_pPeer)
+    {
+        m_pPeer->Close();
+        m_pPeer.reset();
+    }
 }
 
 void CProxySocks5::slotRead()

@@ -220,6 +220,6 @@ int CPeerConnecterIceClient::OnConnectionReply()
         emit sigConnected();
     }
     else
-        emit sigError(pReply->rep);
+        emit sigError(pReply->rep, tr("Ice connect reply fail"));
     return nRet;
 }
