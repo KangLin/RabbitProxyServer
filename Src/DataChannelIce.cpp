@@ -180,7 +180,7 @@ int CDataChannelIce::CreateDataChannel(bool bData)
 
     if(bData)
     {
-        m_dataChannel = m_peerConnection->createDataChannel("data");
+        m_dataChannel = m_peerConnection->createDataChannel("data" + GetChannelId().toStdString());
         m_dataChannel->onOpen([this]() {
             LOG_MODEL_DEBUG("DataChannel", "Data channel is open:user:%s;peer:%s;channelId:%s;lable:%s",
                             GetUser().toStdString().c_str(),
