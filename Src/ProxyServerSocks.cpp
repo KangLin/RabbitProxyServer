@@ -112,7 +112,9 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
                     this, SLOT(slotError(int, const QString&)));
     Q_ASSERT(check);
 
+    m_ConnectServerMutex.lock();
     m_ConnectServer[fromUser][channelId] = ice;
+    m_ConnectServerMutex.unlock();
 }
 
 void CProxyServerSocks::slotError(int err, const QString& szErr)
@@ -137,7 +139,14 @@ void CProxyServerSocks::slotRemotePeerConnectServer()
                     "CProxyServerSocks::slotRemotePeerConnectServer(), peer:%s;id:%s",
                     pServer->GetPeerUser().toStdString().c_str(),
                     pServer->GetId().toStdString().c_str());
-    m_ConnectServer[pServer->GetPeerUser()].remove(pServer->GetId());
+    m_ConnectServerMutex.lock();
+    std::shared_ptr<CPeerConnecterIceServer> svr = m_ConnectServer[pServer->GetPeerUser()][pServer->GetId()];
+    if(svr)
+    {
+        svr->Close();
+        m_ConnectServer[pServer->GetPeerUser()].remove(pServer->GetId());
+    }
+    m_ConnectServerMutex.unlock();
 }
 #endif
 

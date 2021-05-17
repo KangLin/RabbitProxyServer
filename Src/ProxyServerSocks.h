@@ -8,6 +8,7 @@
 #include "ProxyServer.h"
 
 #ifdef HAVE_ICE
+    #include <QMutex>
     class CPeerConnecterIceServer;
     class CIceSignal;
 #endif
@@ -37,6 +38,7 @@ private Q_SLOTS:
     void slotError(int nErr, const QString& szErr = QString());
 private:
     std::shared_ptr<CIceSignal> m_Signal;
+    QMutex m_ConnectServerMutex;
     QMap<QString, QMap<QString, std::shared_ptr<CPeerConnecterIceServer> > > m_ConnectServer;
 #endif
 
