@@ -20,8 +20,8 @@ public Q_SLOTS:
     virtual void slotRead();
     
 protected Q_SLOTS:
-    virtual void slotDisconnected();
     virtual void slotClose();
+    virtual void slotError(QAbstractSocket::SocketError socketError);
     
 protected:
     /**

@@ -15,14 +15,16 @@ CProxy::CProxy(QTcpSocket* pSocket, CProxyServer* server, QObject *parent)
                         this, SLOT(slotRead()));
         Q_ASSERT(check);
         check = connect(m_pSocket, SIGNAL(disconnected()),
-                        this, SLOT(slotDisconnected()));
+                        this, SLOT(slotClose()));
         Q_ASSERT(check);
-        connect(m_pSocket, SIGNAL(destroyed()),
-                       this, SLOT(deleteLater()));
+        check = connect(m_pSocket, SIGNAL(destroyed()),
+                       this, SLOT(slotClose()));
         Q_ASSERT(check);
-        
+        check = connect(m_pSocket, SIGNAL(error(QAbstractSocket::SocketError)),
+                this, SLOT(slotError(QAbstractSocket::SocketError)));
+        Q_ASSERT(check);
         check = connect(server, SIGNAL(sigStop()),
-                        this, SLOT(deleteLater()));
+                        this, SLOT(slotClose()));
         Q_ASSERT(check);
     }
 }
@@ -30,13 +32,6 @@ CProxy::CProxy(QTcpSocket* pSocket, CProxyServer* server, QObject *parent)
 CProxy::~CProxy()
 {
     qDebug() << "CProxy::~CProxy()";
-    slotClose();
-}
-
-void CProxy::slotDisconnected()
-{
-    qDebug() << "CProxy::slotDisconnected()";
-    deleteLater();
 }
 
 void CProxy::slotRead()
@@ -44,11 +39,22 @@ void CProxy::slotRead()
     qDebug() << m_pSocket->readAll();
 }
 
+void CProxy::slotError(QAbstractSocket::SocketError socketError)
+{
+    slotClose();
+}
+
 void CProxy::slotClose()
 {
     qDebug() << "CProxy::slotClose()";
     if(m_pSocket)
+    {
+        m_pSocket->disconnect();
         m_pSocket->close();
+        m_pSocket->deleteLater();
+        m_pSocket = nullptr;
+    }
+    deleteLater();
 }
 
 int CProxy::CheckBufferLength(int nLength)

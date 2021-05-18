@@ -132,6 +132,20 @@ int CProxySocks4::onExecClientRequest()
     return nRet;
 }
 
+void CProxySocks4::slotClose()
+{
+    qDebug() << "CProxySocks4::slotClose()";
+
+    if(m_pPeer)
+    {
+        m_pPeer->disconnect();
+        m_pPeer->Close();
+        m_pPeer.reset();
+    }
+
+    CProxy::slotClose();
+}
+
 void CProxySocks4::slotLookup(QHostInfo info)
 {
     if (info.error() != QHostInfo::NoError) {
@@ -152,7 +166,6 @@ void CProxySocks4::slotLookup(QHostInfo info)
 int CProxySocks4::processConnect()
 {
     int nRet = 0;
-    bool check = false;
     if(m_HostAddress.isEmpty())
     {
         LOG_MODEL_ERROR("Socks4", "The host is empty");
@@ -167,20 +180,7 @@ int CProxySocks4::processConnect()
         m_pPeer = std::make_shared<CPeerConnecter>(this);
     foreach(auto add, m_HostAddress)
     {
-        check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
-                        this, SLOT(slotPeerConnected()));
-        Q_ASSERT(check);
-        check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
-                        this, SLOT(slotPeerDisconnectd()));
-        Q_ASSERT(check);
-        check = connect(m_pPeer.get(),
-           SIGNAL(sigError(int, const QString&)),
-           this,
-           SLOT(slotPeerError(int, const QString&)));
-        Q_ASSERT(check);
-        check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
-                        this, SLOT(slotPeerRead()));
-        Q_ASSERT(check);
+        SetPeerConnect();
 
         m_pPeer->Connect(add, m_nPort);
         LOG_MODEL_DEBUG("Socks4", "Connect to: %s:%d",
@@ -231,20 +231,7 @@ int CProxySocks4::processBind()
         return nRet;
     }
 
-    bool check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
-                    this, SLOT(slotPeerConnected()));
-    Q_ASSERT(check);
-    check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
-                    this, SLOT(slotPeerDisconnectd()));
-    Q_ASSERT(check);
-    check = connect(m_pPeer.get(),
-           SIGNAL(sigError(int, const QString&)),
-           this,
-           SLOT(slotPeerError(int, const QString&)));
-    Q_ASSERT(check);
-    check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
-                    this, SLOT(slotPeerRead()));
-    Q_ASSERT(check);
+    SetPeerConnect();
 
     reply(emErrorCode::Ok);
 
@@ -316,4 +303,24 @@ void CProxySocks4::slotPeerRead()
                             m_pSocket->error(),
                             m_pSocket->errorString().toStdString().c_str());
     }
+}
+
+int CProxySocks4::SetPeerConnect()
+{
+    if(!m_pPeer) return -1;
+    bool check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
+                    this, SLOT(slotPeerConnected()));
+    Q_ASSERT(check);
+    check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
+                    this, SLOT(slotPeerDisconnectd()));
+    Q_ASSERT(check);
+    check = connect(m_pPeer.get(),
+           SIGNAL(sigError(int, const QString&)),
+           this,
+           SLOT(slotPeerError(int, const QString&)));
+    Q_ASSERT(check);
+    check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
+                    this, SLOT(slotPeerRead()));
+    Q_ASSERT(check);
+    return 0;
 }

@@ -2,7 +2,9 @@
 
 #include <QApplication>
 #include <QThread>
+#include <QDebug>
 #include <QSharedPointer>
+#include <QException>
 #if defined(Q_OS_ANDROID)
     #include <QtAndroid>
 #endif
@@ -63,7 +65,12 @@ int main(int argc, char *argv[])
     win->show();
 #endif
 
-    int nRet = a.exec();
+    int nRet = 0;
+    try {
+        nRet = a.exec();
+    }  catch (QException &e) {
+        LOG_MODEL_ERROR("main", "application exception: %s", e.what());
+    }
 
 #ifndef BUILD_QUIWidget
     delete win;

@@ -29,11 +29,15 @@ public Q_SLOTS:
 #define VERSION_SOCK4 0x04 // socket4
 
 protected Q_SLOTS:
+    virtual void slotClose() override;
     virtual void slotLookup(QHostInfo info);
     virtual void slotPeerConnected();
     virtual void slotPeerDisconnectd();
     virtual void slotPeerError(int err, const QString &szErr);
     virtual void slotPeerRead();
+
+protected:
+    virtual int SetPeerConnect();
 
 protected:
     std::shared_ptr<CPeerConnecter> m_pPeer;

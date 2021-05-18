@@ -29,7 +29,6 @@ public:
 public Q_SLOTS:
     virtual void slotRead() override;
 private Q_SLOTS:
-    virtual void slotClose() override;
     virtual void slotLookup(QHostInfo info) override;
     virtual void slotPeerConnected() override;
     virtual void slotPeerDisconnectd() override;

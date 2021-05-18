@@ -22,20 +22,7 @@ CProxySocks5::CProxySocks5(QTcpSocket *pSocket, CProxyServer *server, QObject *p
 
 CProxySocks5::~CProxySocks5()
 {
-    qDebug() << "CProxySocks::~CProxySocks()";
-
-}
-
-void CProxySocks5::slotClose()
-{
-    qDebug() << "CProxySocks::slotClose()";
-
-    CProxy::slotClose();
-    if(m_pPeer)
-    {
-        m_pPeer->Close();
-        m_pPeer.reset();
-    }
+    qDebug() << "CProxySocks5::~CProxySocks5()";
 }
 
 void CProxySocks5::slotRead()
@@ -60,7 +47,7 @@ void CProxySocks5::slotRead()
             QByteArray d = m_pSocket->readAll();
             if(!d.isEmpty())
             {
-                LOG_MODEL_DEBUG("Socks5", "Write %d length to peer", d.length());
+                //LOG_MODEL_DEBUG("Socks5", "Write %d length to peer", d.length());
                 int nWrite = m_pPeer->Write(d.data(), d.length());
                 if(-1 == nWrite)
                     LOG_MODEL_ERROR("Socks5",
@@ -405,7 +392,6 @@ int CProxySocks5::processExecClientRequest()
 
 int CProxySocks5::processConnect()
 {
-    bool check = false;
     if(m_Client.szHost.isEmpty())
     {
         return processClientReply(REPLY_HostUnreachable);
@@ -420,18 +406,7 @@ int CProxySocks5::processConnect()
     }
     foreach(auto add, m_Client.szHost)
     {
-        check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
-                        this, SLOT(slotPeerConnected()));
-        Q_ASSERT(check);
-        check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
-                        this, SLOT(slotPeerDisconnectd()));
-        Q_ASSERT(check);
-        check = connect(m_pPeer.get(), SIGNAL(sigError(int, const QString&)),
-                        this, SLOT(slotPeerError(int, const QString&)));
-        Q_ASSERT(check);
-        check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
-                        this, SLOT(slotPeerRead()));
-        Q_ASSERT(check);
+        SetPeerConnect();
 
         m_pPeer->Connect(add, m_Client.nPort);
 
@@ -478,7 +453,7 @@ void CProxySocks5::slotPeerError(int err, const QString &szErr)
 
 void CProxySocks5::slotPeerRead()
 {
-    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerRead()");
+    //LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerRead()");
     if(m_pPeer)
     {
         QByteArray d = m_pPeer->ReadAll();
@@ -532,20 +507,7 @@ int CProxySocks5::processBind()
         return nRet;
     }
     
-    bool check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
-                    this, SLOT(slotPeerConnected()));
-    Q_ASSERT(check);
-    check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
-                    this, SLOT(slotPeerDisconnectd()));
-    Q_ASSERT(check);
-    check = connect(m_pPeer.get(),
-           SIGNAL(sigError(int, const QString&)),
-           this,
-           SLOT(slotPeerError(int, const QString&)));
-    Q_ASSERT(check);
-    check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
-                    this, SLOT(slotPeerRead()));
-    Q_ASSERT(check);
+    SetPeerConnect();
     
     processClientReply(REPLY_Succeeded);
     
