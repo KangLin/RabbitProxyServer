@@ -7,6 +7,12 @@
 #include "FrmSocket.h"
 #include "RabbitCommonDir.h"
 #include "RabbitCommonLog.h"
+#include "FrmUpdater/FrmUpdater.h"
+#include "RabbitCommonStyle.h"
+#include "DlgAbout/DlgAbout.h"
+#ifdef BUILD_QUIWidget
+    #include "QUIWidget/QUIWidget.h"
+#endif
 
 #include <QFile>
 
@@ -89,4 +95,60 @@ void MainWindow::on_actionExit_triggered()
 void MainWindow::on_actionApply_triggered()
 {
     emit sigSaveParameter();
+}
+
+void MainWindow::on_actionAbout_triggered()
+{
+    CDlgAbout *about = new CDlgAbout(this);
+    about->m_AppIcon = QImage(":/image/App");
+    about->m_szCopyrightStartTime = "2021";
+    if(about->isHidden())
+    {
+#ifdef BUILD_QUIWidget
+    QUIWidget quiwidget;
+    quiwidget.setMainWidget(about);
+    quiwidget.setPixmap(QUIWidget::Lab_Ico, ":/image/App");
+    #if defined (Q_OS_ANDROID)
+        quiwidget.showMaximized();
+    #endif
+        quiwidget.exec();
+#else
+    #if defined (Q_OS_ANDROID)
+        about->showMaximized();
+    #endif
+        about->exec();
+#endif
+    }
+}
+
+void MainWindow::on_actionUpdate_triggered()
+{
+    CFrmUpdater* m_pfrmUpdater = new CFrmUpdater();
+    m_pfrmUpdater->SetTitle(QImage(":/image/App"));
+    m_pfrmUpdater->SetInstallAutoStartup();
+#ifdef BUILD_QUIWidget
+    QUIWidget* pQuiwidget = new QUIWidget(nullptr, true);
+    pQuiwidget->setMainWidget(m_pfrmUpdater);
+    #if defined (Q_OS_ANDROID)
+        pQuiwidget->showMaximized();
+    #else
+        pQuiwidget->show();
+    #endif
+#else
+    #if defined (Q_OS_ANDROID)
+        m_pfrmUpdater->showMaximized();
+    #else
+        m_pfrmUpdater->show();
+    #endif
+#endif
+}
+
+void MainWindow::on_actionDefault_triggered()
+{
+    RabbitCommon::CStyle::Instance()->slotSetDefaultStyle();
+}
+
+void MainWindow::on_actionLoadStyle_triggered()
+{
+    RabbitCommon::CStyle::Instance()->slotStyle();
 }

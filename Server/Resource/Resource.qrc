@@ -8,5 +8,7 @@
         <file alias="Exit">Image/exit.png</file>
         <file alias="App">Image/App.png</file>
         <file alias="Apply">Image/applying.png</file>
+        <file alias="Style">Image/skin.png</file>
+        <file alias="Option">Image/option.png</file>
     </qresource>
 </RCC>

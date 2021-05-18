@@ -142,6 +142,30 @@
         <source>Socks proxy server</source>
         <translation>Socks 代理服务器</translation>
     </message>
+    <message>
+        <source>Style</source>
+        <translation>样式</translation>
+    </message>
+    <message>
+        <source>Help</source>
+        <translation>帮助</translation>
+    </message>
+    <message>
+        <source>About</source>
+        <translation>关于</translation>
+    </message>
+    <message>
+        <source>Update</source>
+        <translation>更新</translation>
+    </message>
+    <message>
+        <source>Default style</source>
+        <translation>默认样式</translation>
+    </message>
+    <message>
+        <source>Load Style</source>
+        <translation>加载样式</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>

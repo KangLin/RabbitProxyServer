@@ -40,6 +40,15 @@ private slots:
 
     void on_actionApply_triggered();
 
+    void on_actionAbout_triggered();
+
+    void on_actionUpdate_triggered();
+
+
+    void on_actionDefault_triggered();
+
+    void on_actionLoadStyle_triggered();
+
 private:
     Ui::MainWindow *ui;
     std::list<std::shared_ptr<CProxyServer> > m_Server;
