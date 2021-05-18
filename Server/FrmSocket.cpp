@@ -36,7 +36,10 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
     ui->leAuthentUser->setText(m_pPara->GetAuthentUser());
     ui->leAuthentPasswrod->setText(m_pPara->GetAuthentPassword());
     
-    ui->cbIceServer->setChecked(m_pPara->GetIsIceServer());
+    ui->cbIceServer->setChecked((int)m_pPara->GetIceServerClient()
+                                & (int)CParameterSocks::emIceServerClient::Server);
+    ui->cbIceClient->setChecked((int)m_pPara->GetIceServerClient()
+                                & (int)CParameterSocks::emIceServerClient::Client);
     ui->lePeerUser->setText(m_pPara->GetPeerUser());
     ui->leSignalServer->setText(m_pPara->GetSignalServer());
     ui->spSignalPort->setValue(m_pPara->GetSignalPort());
@@ -78,8 +81,10 @@ void CFrmSocket::slotAccept()
     m_pPara->SetV5Method(method);
     m_pPara->SetAuthentUser(ui->leAuthentUser->text());
     m_pPara->SetAuthentPassword(ui->leAuthentPasswrod->text());
-    
-    m_pPara->SetIsIceServer(ui->cbIceServer->isChecked());
+    quint16 serverClient = 0;
+    if(ui->cbIceClient->isChecked()) serverClient |= (quint16)CParameterSocks::emIceServerClient::Client;
+    if(ui->cbIceServer->isChecked()) serverClient |= (qint16)CParameterSocks::emIceServerClient::Server;
+    m_pPara->SetIceServerClient((CParameterSocks::emIceServerClient)serverClient);
     m_pPara->SetPeerUser(ui->lePeerUser->text());
     m_pPara->SetSignalServer(ui->leSignalServer->text());
     m_pPara->SetSignalPort(ui->spSignalPort->value());

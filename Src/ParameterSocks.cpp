@@ -7,7 +7,7 @@ CParameterSocks::CParameterSocks(QObject *parent) : CParameter(parent),
     m_bIce(false),
     m_bV4(true),
     m_bV5(true),
-    m_bIsIceServer(true),
+    m_eIceServerClient(emIceServerClient::ServerClient),
     m_nSignalPort(80),
     m_nStunPort(3478),
     m_nTurnPort(3478),
@@ -43,7 +43,7 @@ int CParameterSocks::Save(QSettings &set)
                  m_szAuthentPassword);
     
     set.setValue(Name() + "Ice/Enable", m_bIce);
-    set.setValue(Name() + "Ice/IsIceServer", m_bIsIceServer);
+    set.setValue(Name() + "Ice/IceServerClient", (int)m_eIceServerClient);
     set.setValue(Name() + "Ice/Signal/Peer/User", m_szPeerUser);
     set.setValue(Name() + "Ice/Signal/Server", m_szSignalServer);
     set.setValue(Name() + "Ice/Signal/Port", m_nSignalPort);
@@ -77,7 +77,7 @@ int CParameterSocks::Load(QSettings &set)
     m_szAuthentPassword = set.value(Name() + "V5/Autenticator/UserAndPassword/Password").toString();
     
     m_bIce = set.value(Name() + "Ice/Enable", m_bIce).toBool();
-    m_bIsIceServer = set.value(Name() + "Ice/IsIceServer", m_bIsIceServer).toBool();
+    m_eIceServerClient = (emIceServerClient)set.value(Name() + "Ice/IceServerClient", (int)m_eIceServerClient).toInt();
     m_szPeerUser = set.value(Name() + "Ice/Signal/Peer/User", m_szPeerUser).toString();
     m_szSignalServer = set.value(Name() + "Ice/Signal/Server", m_szSignalServer).toString();
     m_nSignalPort = set.value(Name() + "Ice/Signal/Port", m_nSignalPort).toUInt();
@@ -158,14 +158,14 @@ void CParameterSocks::SetAuthentPassword(const QString &password)
     m_szAuthentPassword = password;
 }
 
-bool CParameterSocks::GetIsIceServer()
+CParameterSocks::emIceServerClient CParameterSocks::GetIceServerClient()
 {
-    return m_bIsIceServer;
+    return m_eIceServerClient;
 }
 
-void CParameterSocks::SetIsIceServer(bool bServer)
+void CParameterSocks::SetIceServerClient(emIceServerClient server)
 {
-    m_bIsIceServer = bServer;
+    m_eIceServerClient = server;
 }
 
 QString CParameterSocks::GetPeerUser()

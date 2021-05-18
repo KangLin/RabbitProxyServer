@@ -190,6 +190,13 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QCheckBox" name="cbIceClient">
+           <property name="text">
+            <string>Is client</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </item>
        <item row="2" column="0">
