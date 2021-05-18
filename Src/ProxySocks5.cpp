@@ -458,7 +458,8 @@ void CProxySocks5::slotPeerDisconnectd()
 
 void CProxySocks5::slotPeerError(int err, const QString &szErr)
 {
-    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerError():%d %s", err, szErr.toStdString().c_str());
+    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerError():%d %s",
+                    err, szErr.toStdString().c_str());
     switch (err) {
     case CPeerConnecter::emERROR::ConnectionRefused:
         processClientReply(REPLY_ConnectionRefused);

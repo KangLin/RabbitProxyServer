@@ -14,6 +14,7 @@
 class CDataChannelIce : public QIODevice
 {
     Q_OBJECT
+
 public:
     explicit CDataChannelIce(std::shared_ptr<CIceSignal> signal,
                           QObject *parent = nullptr);
@@ -22,8 +23,8 @@ public:
     //! @note These properties must be set before calling Open
     int SetConfigure(const rtc::Configuration& config);
     //! @note The above properties must be set before calling Open
-    virtual int Open(const QString& user, const QString& peer, const QString& id, bool bData);
-    virtual int Close();
+    virtual int open(const QString& user, const QString& peer, const QString& id, bool bData);
+    virtual void close();
 
     QString GetUser();
     QString GetPeerUser();
@@ -72,7 +73,6 @@ protected:
     bool isSequential() const;
     qint64 writeData(const char *data, qint64 len);
     qint64 readData(char *data, qint64 maxlen);
-    //qint64 bytesAvailable() const;
 };
 
 #endif // CDATACHANNELICE_H

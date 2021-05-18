@@ -63,13 +63,11 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
                                    pPara->GetTurnPassword().toStdString().c_str()));
     m_DataChannel->SetConfigure(config);
 
-    if(m_DataChannel->Open(user,
-                           peer,
-                           channelId,
-                           bData))
+    if(m_DataChannel->open(user, peer, channelId, bData))
     {
-        LOG_MODEL_ERROR("PeerConnecterIce", "Data channel open fail");
-        emit sigError(emERROR::NetWorkUnreachable);
+        m_szError = tr("Data channel open fail");
+        LOG_MODEL_ERROR("PeerConnecterIce", m_szError.toStdString().c_str());
+        emit sigError(emERROR::NetWorkUnreachable, m_szError);
     }
 
     return 0;
@@ -113,6 +111,8 @@ void CPeerConnecterIceClient::slotDataChannelReadyRead()
     LOG_MODEL_DEBUG("CPeerConnecterIceClient",
                     "slotDataChannelReadyRead Current thread id: 0x%X",
                     QThread::currentThread());
+    if(!m_DataChannel) return;
+
     if(CONNECT == m_Status)
     {
         OnConnectionReply();
@@ -128,7 +128,9 @@ int CPeerConnecterIceClient::Connect(const QHostAddress &address, qint16 nPort)
 
     if(!m_pServer->GetSignal()->IsOpen())
     {
-        LOG_MODEL_ERROR("PeerConnecterIce", "Signal don't open");
+        m_szError = tr("Signal don't open");
+        LOG_MODEL_ERROR("PeerConnecterIce", m_szError.toStdString().c_str());
+        emit sigError(emERROR::Unkown, m_szError);
         return -1;
     }
 
@@ -138,8 +140,9 @@ int CPeerConnecterIceClient::Connect(const QHostAddress &address, qint16 nPort)
     CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
     if(pPara->GetPeerUser().isEmpty())
     {
-        LOG_MODEL_ERROR("PeerConnecterIce", "Please set peer user");
-        emit sigError(emERROR::NetWorkUnreachable, tr("Please set peer user"));
+        m_szError = tr("Please set peer user");
+        LOG_MODEL_ERROR("PeerConnecterIce", m_szError.toStdString().c_str());
+        emit sigError(emERROR::NetWorkUnreachable, m_szError.toStdString().c_str());
         return -2;
     }
     nRet = CreateDataChannel(pPara->GetPeerUser(), pPara->GetSignalUser(),
@@ -157,6 +160,7 @@ qint64 CPeerConnecterIceClient::Read(char *buf, qint64 nLen)
 
 QByteArray CPeerConnecterIceClient::ReadAll()
 {
+    if(!m_DataChannel) return QByteArray();
     return m_DataChannel->readAll();
 }
 
@@ -175,7 +179,7 @@ int CPeerConnecterIceClient::Close()
     if(m_DataChannel)
     {
         m_DataChannel->disconnect();
-        m_DataChannel->Close();
+        m_DataChannel->close();
         m_DataChannel.reset();
     }
 
@@ -193,9 +197,20 @@ qint16 CPeerConnecterIceClient::LocalPort()
     return m_nBindPort;
 }
 
+QString CPeerConnecterIceClient::ErrorString()
+{
+    return m_szError;
+}
+
 int CPeerConnecterIceClient::OnConnectionReply()
 {
     int nRet = 0;
+
+    if(!m_DataChannel)
+    {
+        emit sigError(-1, "Data channel is null");
+        return -1;
+    }
 
     QByteArray data = m_DataChannel->readAll();
     strReply* pReply = reinterpret_cast<strReply*>(data.data());
@@ -211,9 +226,10 @@ int CPeerConnecterIceClient::OnConnectionReply()
             m_bindAddress.setAddress(pReply->ip.v6);
             break;
         default:
+            m_szError = tr("Don't support address type: %d").arg(pReply->atyp);
             LOG_MODEL_ERROR("PeerConnecterIce",
-                            "Don't support address type: %d", pReply->atyp);
-            emit sigError(emERROR::HostNotFound);
+                            m_szError.toStdString().c_str());
+            emit sigError(emERROR::HostNotFound, m_szError);
             return -1;
         }
 

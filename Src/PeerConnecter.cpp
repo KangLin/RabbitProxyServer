@@ -57,16 +57,34 @@ int CPeerConnecter::Bind(qint16 nPort)
 
 qint64 CPeerConnecter::Read(char *buf, qint64 nLen)
 {
+    if(!m_Socket.isOpen())
+    {
+        LOG_MODEL_ERROR("CPeerConnecter", "Socket isn't open");
+        emit sigError(-1, "Socket isn't open");
+        return -1;
+    }
     return m_Socket.read(buf, nLen);
 }
 
 QByteArray CPeerConnecter::ReadAll()
 {
+    if(!m_Socket.isOpen())
+    {
+        LOG_MODEL_ERROR("CPeerConnecter", "Socket isn't open");
+        emit sigError(-1, "Socket isn't open");
+        return QByteArray();
+    }
     return m_Socket.readAll();
 }
 
 int CPeerConnecter::Write(const char *buf, qint64 nLen)
 {
+    if(!m_Socket.isOpen())
+    {
+        LOG_MODEL_ERROR("CPeerConnecter", "Socket isn't open");
+        emit sigError(-1, "Socket isn't open");
+        return -1;
+    }
     return m_Socket.write(buf, nLen);
 }
 
@@ -99,22 +117,23 @@ qint16 CPeerConnecter::LocalPort()
 
 void CPeerConnecter::slotError(QAbstractSocket::SocketError error)
 {
-    LOG_MODEL_ERROR("CPeerConnecter", "CPeerConnecter::slotError: %d", error);
+    LOG_MODEL_ERROR("CPeerConnecter", "CPeerConnecter::slotError: %d: %s",
+                    error, ErrorString().toStdString().c_str());
     emERROR e = Success;
-    QString szErr;
+    QString szErr = ErrorString();
     switch (error) {
     case QAbstractSocket::ConnectionRefusedError:
         e = emERROR::ConnectionRefused;
         szErr = tr("Refused connection");
-        return;
+        break;
     case QAbstractSocket::RemoteHostClosedError:
         e = emERROR::Unkown;
         szErr = tr("Remote host close error");
-        return;
+        break;
     case QAbstractSocket::HostNotFoundError:
         e = emERROR::HostNotFound;
         szErr = tr("Not found host");
-        return;
+        break;
     case QAbstractSocket::SocketResourceError:
         e = emERROR::Unkown;
         szErr = tr("Socket resource error");
@@ -122,14 +141,13 @@ void CPeerConnecter::slotError(QAbstractSocket::SocketError error)
     case QAbstractSocket::SocketAccessError:
         e = emERROR::NotAllowdConnection;
         szErr = tr("Not allowd connection");
-        return;
+        break;
     case QAbstractSocket::SocketTimeoutError:
         e = emERROR::Timeout;
         szErr = tr("Connection timeout");
         break;
     default:
         e = emERROR::Unkown;
-        szErr = tr("Unkown error");
         break;
     }
     

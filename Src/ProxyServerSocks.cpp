@@ -138,7 +138,6 @@ void CProxyServerSocks::slotError(int err, const QString& szErr)
 
 void CProxyServerSocks::slotRemotePeerConnectServer()
 {
-
     CPeerConnecterIceServer* pServer
             = qobject_cast<CPeerConnecterIceServer*>(sender());
     if(!pServer) return;
@@ -157,6 +156,7 @@ void CProxyServerSocks::slotRemotePeerConnectServer()
     m_ConnectServerMutex.unlock();
     if(svr)
     {
+        svr->disconnect();
         svr->Close();
     }
 }

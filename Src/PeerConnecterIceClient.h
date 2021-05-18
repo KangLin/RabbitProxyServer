@@ -25,6 +25,7 @@ public:
     virtual int Close() override;
     virtual QHostAddress LocalAddress() override;
     virtual qint16 LocalPort() override;
+    virtual QString ErrorString();
 
 protected:
     int CreateDataChannel(const QString& peer,
@@ -46,6 +47,7 @@ protected:
     std::shared_ptr<CDataChannelIce> m_DataChannel;
     QHostAddress m_peerAddress, m_bindAddress;
     quint16 m_nPeerPort, m_nBindPort;
+    QString m_szError;
 
     enum STATUS{
         CONNECT,
@@ -71,7 +73,7 @@ protected:
       o  RSV    RESERVED
       o  ATYP   address type of following address
          o  IP V4 address: X'01'
-         o  DOMAINNAME: X'03' (Don't use)
+         o  DOMAINNAME: X'03'
          o  IP V6 address: X'04'
       o  DST.PORT desired destination port in network octet
          order
