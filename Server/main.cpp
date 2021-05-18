@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     a.setOrganizationName(QObject::tr("Kang Lin studio"));
 
     // Check update version
-//    CFrmUpdater *pUpdate = new CFrmUpdater();
+    //    CFrmUpdater *pUpdate = new CFrmUpdater();
 //    pUpdate->SetTitle(QImage(":/image/App"));
 //    if(pUpdate->GenerateUpdateXml())
 //        LOG_MODEL_ERROR("main", "GenerateUpdateXml fail");

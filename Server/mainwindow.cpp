@@ -59,6 +59,7 @@ void MainWindow::on_actionStop_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
+    on_actionApply_triggered();
     QSettings set(RabbitCommon::CDir::Instance()->GetFileUserConfigure(),
                   QSettings::IniFormat);
     foreach (auto s, m_Server) {

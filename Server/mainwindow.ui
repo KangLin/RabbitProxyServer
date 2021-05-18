@@ -137,10 +137,10 @@
     <string>Apply parameters</string>
    </property>
    <property name="statusTip">
-    <string>parameters</string>
+    <string>Apply parameters</string>
    </property>
    <property name="whatsThis">
-    <string>parameters</string>
+    <string>Apply parameters</string>
    </property>
   </action>
  </widget>
