@@ -7,5 +7,6 @@
         <file alias="Restart">Image/Restart.png</file>
         <file alias="Exit">Image/exit.png</file>
         <file alias="App">Image/App.png</file>
+        <file alias="Apply">Image/applying.png</file>
     </qresource>
 </RCC>

@@ -36,6 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    on_actionStop_triggered();
     delete ui;
 }
 
@@ -58,8 +59,6 @@ void MainWindow::on_actionStop_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    emit sigSaveParameter();
-    
     QSettings set(RabbitCommon::CDir::Instance()->GetFileUserConfigure(),
                   QSettings::IniFormat);
     foreach (auto s, m_Server) {
@@ -84,4 +83,9 @@ void MainWindow::on_actionRestart_triggered()
 void MainWindow::on_actionExit_triggered()
 {
     close();
+}
+
+void MainWindow::on_actionApply_triggered()
+{
+    emit sigSaveParameter();
 }

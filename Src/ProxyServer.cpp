@@ -14,7 +14,6 @@ CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
 CProxyServer::~CProxyServer()
 {
     qDebug() << "CProxyServer::~CProxyServer()";
-    Stop();
 }
 
 CParameter* CProxyServer::Getparameter()
