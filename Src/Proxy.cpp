@@ -17,9 +17,9 @@ CProxy::CProxy(QTcpSocket* pSocket, CProxyServer* server, QObject *parent)
         check = connect(m_pSocket, SIGNAL(disconnected()),
                         this, SLOT(slotClose()));
         Q_ASSERT(check);
-        check = connect(m_pSocket, SIGNAL(destroyed()),
-                       this, SLOT(slotClose()));
-        Q_ASSERT(check);
+//        check = connect(m_pSocket, SIGNAL(destroyed()),
+//                       this, SLOT(slotClose()));
+//        Q_ASSERT(check);
         check = connect(m_pSocket, SIGNAL(error(QAbstractSocket::SocketError)),
                 this, SLOT(slotError(QAbstractSocket::SocketError)));
         Q_ASSERT(check);
