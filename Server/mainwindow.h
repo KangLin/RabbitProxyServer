@@ -9,6 +9,7 @@
 
 #include <QMainWindow>
 #include <QTabWidget>
+#include <QSharedPointer>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -51,7 +52,7 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
-    std::list<std::shared_ptr<CProxyServer> > m_Server;
+    std::list<QSharedPointer<CProxyServer> > m_Server;
     QTabWidget* m_pTabWidget;
 };
 #endif // MAINWINDOW_H

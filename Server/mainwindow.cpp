@@ -24,7 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
     
     ui->setupUi(this);
     
-    auto server = std::make_shared<CProxyServerSocks>(this);
+    auto server = QSharedPointer<CProxyServerSocks>(new CProxyServerSocks(this),
+                                                    &QObject::deleteLater);
     m_Server.push_back(server);
     
     on_actionLoad_triggered();
