@@ -25,6 +25,11 @@ protected Q_SLOTS:
     virtual void slotClose();
     virtual void slotError(QAbstractSocket::SocketError socketError);
     
+    virtual void slotPeerConnected() = 0;
+    virtual void slotPeerDisconnectd() = 0;
+    virtual void slotPeerError(int err, const QString &szErr) = 0;
+    virtual void slotPeerRead() = 0;
+
 protected:
     /**
      * @brief CheckBufferLength
@@ -36,12 +41,14 @@ protected:
     int CheckBufferLength(int nLength);
     int RemoveCommandBuffer(int nLength = -1);
 
+    virtual int CreatePeer();
+    virtual int SetPeerConnect();
+
     QByteArray m_cmdBuf;
 
     CProxyServer* m_pServer;
     QTcpSocket* m_pSocket;
     QSharedPointer<CPeerConnecter> m_pPeer;
-    virtual int CreatePeer();
 };
 
 #endif // CPROXY_H

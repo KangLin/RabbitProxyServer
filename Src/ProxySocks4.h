@@ -31,13 +31,12 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
     virtual void slotLookup(QHostInfo info);
-    virtual void slotPeerConnected();
-    virtual void slotPeerDisconnectd();
-    virtual void slotPeerError(int err, const QString &szErr);
-    virtual void slotPeerRead();
+    virtual void slotPeerConnected() override;
+    virtual void slotPeerDisconnectd() override;
+    virtual void slotPeerError(int err, const QString &szErr) override;
+    virtual void slotPeerRead() override;
 
 protected:
-    virtual int SetPeerConnect();
     virtual int CreatePeer() override;
 
 private:

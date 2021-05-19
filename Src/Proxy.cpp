@@ -107,3 +107,23 @@ int CProxy::CreatePeer()
     LOG_MODEL_ERROR("Socks5", "Make peer connect fail");
     return -1;
 }
+
+int CProxy::SetPeerConnect()
+{
+    if(!m_pPeer) return -1;
+    bool check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
+                    this, SLOT(slotPeerConnected()));
+    Q_ASSERT(check);
+    check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
+                    this, SLOT(slotPeerDisconnectd()));
+    Q_ASSERT(check);
+    check = connect(m_pPeer.get(),
+           SIGNAL(sigError(int, const QString&)),
+           this,
+           SLOT(slotPeerError(int, const QString&)));
+    Q_ASSERT(check);
+    check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
+                    this, SLOT(slotPeerRead()));
+    Q_ASSERT(check);
+    return 0;
+}
