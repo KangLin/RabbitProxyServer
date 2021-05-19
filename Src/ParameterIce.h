@@ -3,7 +3,7 @@
 
 #include "Parameter.h"
 
-class CParameterIce : public CParameter
+class RABBITPROXY_EXPORT CParameterIce : public CParameter
 {
     Q_OBJECT
     Q_PROPERTY(emIceServerClient IsIceServer READ GetIceServerClient WRITE SetIceServerClient)
