@@ -153,21 +153,20 @@ int CPeerConnecterIceClient::Connect(const QHostAddress &address, qint16 nPort)
 
 qint64 CPeerConnecterIceClient::Read(char *buf, qint64 nLen)
 {
-    if(!m_DataChannel) return -1;
+    if(!m_DataChannel || !m_DataChannel->isOpen()) return -1;
 
     return m_DataChannel->read(buf, nLen);
 }
 
 QByteArray CPeerConnecterIceClient::ReadAll()
 {
-    if(!m_DataChannel) return QByteArray();
+    if(!m_DataChannel || !m_DataChannel->isOpen()) return QByteArray();
     return m_DataChannel->readAll();
 }
 
 int CPeerConnecterIceClient::Write(const char *buf, qint64 nLen)
 {
-    if(!m_DataChannel)
-        return -1;
+    if(!m_DataChannel || !m_DataChannel->isOpen()) return -1;
     return m_DataChannel->write(buf, nLen);
 }
 
@@ -180,7 +179,6 @@ int CPeerConnecterIceClient::Close()
     {
         m_DataChannel->disconnect();
         m_DataChannel->close();
-        m_DataChannel.reset();
     }
 
     nRet = CPeerConnecter::Close();

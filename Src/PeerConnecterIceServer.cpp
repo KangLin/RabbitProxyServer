@@ -99,7 +99,6 @@ int CPeerConnecterIceServer::Close()
     {
         m_Peer->disconnect();
         m_Peer->Close();
-        m_Peer.reset();
     }
 
     return nRet;
