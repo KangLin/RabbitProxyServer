@@ -39,6 +39,7 @@ protected Q_SLOTS:
 
 protected:
     virtual int SetPeerConnect();
+    virtual int CreatePeer();
 
 protected:
     QSharedPointer<CPeerConnecter> m_pPeer;

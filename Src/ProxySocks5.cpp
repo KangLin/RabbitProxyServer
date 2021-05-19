@@ -520,25 +520,3 @@ int CProxySocks5::processBind()
     
     return nRet;
 }
-
-int CProxySocks5::CreatePeer()
-{
-#ifdef HAVE_ICE
-    CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
-    if(pPara->GetIce())
-    {
-        CProxyServerSocks* pServer = qobject_cast<CProxyServerSocks*>(m_pServer);
-        /*m_pPeer = std::make_shared<CPeerConnecterIceClient>(
-                    pServer, this);*/
-        m_pPeer = QSharedPointer<CPeerConnecterIceClient>(
-                    new CPeerConnecterIceClient(pServer, this),
-                    &QObject::deleteLater);
-    } else
-#endif
-        m_pPeer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
-                                                 &QObject::deleteLater);
-    if(m_pPeer)
-        return 0;
-    LOG_MODEL_ERROR("Socks5", "Make peer connect fail");
-    return -1;
-}

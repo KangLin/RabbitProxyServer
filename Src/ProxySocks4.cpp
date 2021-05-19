@@ -1,6 +1,11 @@
 //! @author Kang Lin(kl222@126.com)
 
 #include "ProxySocks4.h"
+#include "ProxyServerSocks.h"
+#include "ParameterSocks.h"
+#ifdef HAVE_ICE
+    #include "PeerConnecterIceClient.h"
+#endif
 #include "RabbitCommonLog.h"
 
 #include <QtEndian>
@@ -175,10 +180,9 @@ int CProxySocks4::processConnect()
     if(m_pPeer)
         Q_ASSERT(false);
     else
-        //TODO: add implement peer connecter
-        //m_pPeer = std::make_shared<CPeerConnecterIce>(this);
-        m_pPeer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
-                                                 &QObject::deleteLater); // std::make_shared<CPeerConnecter>(this);
+        if(CreatePeer())
+            return -1;
+
     foreach(auto add, m_HostAddress)
     {
         SetPeerConnect();
@@ -201,11 +205,9 @@ int CProxySocks4::processBind()
         Q_ASSERT(false);
     else
     {
-        //TODO: add implement peer connecter
-        //m_pPeer = std::make_shared<CPeerConnecterIce>(this);
-        m_pPeer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
-                                                 &QObject::deleteLater);
+        if(CreatePeer()) return -1;
     }
+
     bool bBind = false;
     foreach(auto add, m_HostAddress)
     {
@@ -309,6 +311,28 @@ void CProxySocks4::slotPeerRead()
         LOG_MODEL_ERROR("Socks4", "Forword peer to client fail[%d]: %s",
                         m_pSocket->error(),
                         m_pSocket->errorString().toStdString().c_str());
+}
+
+int CProxySocks4::CreatePeer()
+{
+#ifdef HAVE_ICE
+    CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
+    if(pPara->GetIce())
+    {
+        CProxyServerSocks* pServer = qobject_cast<CProxyServerSocks*>(m_pServer);
+        /*m_pPeer = std::make_shared<CPeerConnecterIceClient>(
+                    pServer, this);*/
+        m_pPeer = QSharedPointer<CPeerConnecterIceClient>(
+                    new CPeerConnecterIceClient(pServer, this),
+                    &QObject::deleteLater);
+    } else
+#endif
+        m_pPeer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
+                                                 &QObject::deleteLater);
+    if(m_pPeer)
+        return 0;
+    LOG_MODEL_ERROR("Socks5", "Make peer connect fail");
+    return -1;
 }
 
 int CProxySocks4::SetPeerConnect()

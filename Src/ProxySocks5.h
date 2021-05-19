@@ -36,7 +36,6 @@ private Q_SLOTS:
     virtual void slotPeerRead() override;
     
 private:
-    int CreatePeer();
     int processNegotiate();
     int processNegotiateReply(const QByteArray &data);
     int processAuthenticator();
