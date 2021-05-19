@@ -24,7 +24,7 @@ CProxySocks4::~CProxySocks4()
 
 void CProxySocks4::slotRead()
 {
-    LOG_MODEL_DEBUG("Socks4", "slotRead() command:0x%X", m_Status);
+    //LOG_MODEL_DEBUG("Socks4", "slotRead() command:0x%X", m_Status);
     int nRet = 0;
     switch (m_Status) {
     case emStatus::ClientRequest:
