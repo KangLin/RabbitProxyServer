@@ -41,6 +41,7 @@ void CProxy::slotRead()
 
 void CProxy::slotError(QAbstractSocket::SocketError socketError)
 {
+    qDebug() << "CProxy::slotError" << socketError;
     slotClose();
 }
 

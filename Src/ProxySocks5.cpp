@@ -435,8 +435,15 @@ void CProxySocks5::slotPeerError(int err, const QString &szErr)
 {
     LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerError():%d %s",
                     err, szErr.toStdString().c_str());
+    if(emStatus::Forward == m_Status)
+    {
+        slotClose();
+        return;
+    }
+
     switch (err) {
     case CPeerConnecter::emERROR::ConnectionRefused:
+
         processClientReply(REPLY_ConnectionRefused);
         return;
     case CPeerConnecter::emERROR::HostNotFound:
@@ -446,9 +453,9 @@ void CProxySocks5::slotPeerError(int err, const QString &szErr)
         processClientReply(REPLY_NotAllowdConnection);
         return;
     default:
+        slotClose();
         break;
     }
-    slotClose();
 }
 
 void CProxySocks5::slotPeerRead()
@@ -517,17 +524,17 @@ int CProxySocks5::processBind()
 int CProxySocks5::CreatePeer()
 {
 #ifdef HAVE_ICE
-        CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
-        if(pPara->GetIce())
-        {
-            CProxyServerSocks* pServer = qobject_cast<CProxyServerSocks*>(m_pServer);
-            m_pPeer = std::make_shared<CPeerConnecterIceClient>(
-                        pServer, this);
-        } else
+    CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
+    if(pPara->GetIce())
+    {
+        CProxyServerSocks* pServer = qobject_cast<CProxyServerSocks*>(m_pServer);
+        m_pPeer = std::make_shared<CPeerConnecterIceClient>(
+                    pServer, this);
+    } else
 #endif
-            m_pPeer = std::make_shared<CPeerConnecter>(this);
-        if(m_pPeer)
-            return 0;
-        LOG_MODEL_ERROR("Socks5", "Make peer connect fail");
-        return -1;
+        m_pPeer = std::make_shared<CPeerConnecter>(this);
+    if(m_pPeer)
+        return 0;
+    LOG_MODEL_ERROR("Socks5", "Make peer connect fail");
+    return -1;
 }

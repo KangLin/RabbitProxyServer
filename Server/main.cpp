@@ -70,6 +70,8 @@ int main(int argc, char *argv[])
         nRet = a.exec();
     }  catch (QException &e) {
         LOG_MODEL_ERROR("main", "application exception: %s", e.what());
+    } catch(...) {
+        LOG_MODEL_ERROR("main", "application exception");
     }
 
 #ifndef BUILD_QUIWidget

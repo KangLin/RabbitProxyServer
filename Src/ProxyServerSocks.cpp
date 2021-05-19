@@ -46,17 +46,19 @@ int CProxyServerSocks::Start()
                 LOG_MODEL_ERROR("ProxyServerSocks", "Open signal fail");
                 return -1;
             }
-            if((int)p->GetIceServerClient() & (int)CParameterSocks::emIceServerClient::Server)
+            if((int)p->GetIceServerClient()
+                    & (int)CParameterSocks::emIceServerClient::Server)
             {
                 bool check = connect(m_Signal.get(),
-                                     SIGNAL(sigOffer(const QString&, const QString&, const QString&,
-                                                     const QString&, const QString&)),
-                                     this,
-                                     SLOT(slotOffer(const QString&, const QString&, const QString&,
-                                                    const QString&, const QString&)));
+                 SIGNAL(sigOffer(const QString&, const QString&, const QString&,
+                                               const QString&, const QString&)),
+                 this,
+                  SLOT(slotOffer(const QString&, const QString&, const QString&,
+                                              const QString&, const QString&)));
                 Q_ASSERT(check);
             }
-            if((int)p->GetIceServerClient() & (int)CParameterSocks::emIceServerClient::Client)
+            if((int)p->GetIceServerClient()
+                    & (int)CParameterSocks::emIceServerClient::Client)
                 nRet = CProxyServer::Start();
         } else
             nRet = CProxyServer::Start();
@@ -186,9 +188,12 @@ void CProxyServerSocks::slotRead()
     }
     
     QByteArray d = pSocket->read(1);
+    pSocket->disconnect(this);
     if(d.isEmpty())
     {
         LOG_MODEL_DEBUG("ServerSocks", "readAll fail");
+        pSocket->close();
+        pSocket->deleteLater();
         return;
     }
     
@@ -219,8 +224,7 @@ void CProxyServerSocks::slotRead()
     default:
         LOG_MODEL_WARNING("ServerSocks", "Isn't support version: 0x%X", d.at(0));
         pSocket->close();
+        pSocket->deleteLater();
         break;
     }
-    
-    pSocket->disconnect(this);
 }

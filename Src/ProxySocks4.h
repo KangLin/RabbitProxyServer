@@ -43,11 +43,11 @@ protected:
     std::shared_ptr<CPeerConnecter> m_pPeer;
 
 private:
-    enum class emCommand {
+    enum class emStatus {
         ClientRequest,
         Forward
     };
-    enum emCommand m_Command;
+    enum emStatus m_Status;
     
     enum class emErrorCode {
         // request granted

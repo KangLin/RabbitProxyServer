@@ -7,7 +7,7 @@
 
 CProxySocks4::CProxySocks4(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
     : CProxy(pSocket, server, parent),
-      m_Command(emCommand::ClientRequest),
+      m_Status(emStatus::ClientRequest),
       m_nPort(0)
 {
 }
@@ -19,13 +19,13 @@ CProxySocks4::~CProxySocks4()
 
 void CProxySocks4::slotRead()
 {
-    LOG_MODEL_DEBUG("Socks4", "slotRead() command:0x%X", m_Command);
+    LOG_MODEL_DEBUG("Socks4", "slotRead() command:0x%X", m_Status);
     int nRet = 0;
-    switch (m_Command) {
-    case emCommand::ClientRequest:
+    switch (m_Status) {
+    case emStatus::ClientRequest:
         nRet = processClientRequest();
         break;
-    case emCommand::Forward:
+    case emStatus::Forward:
         if(m_pPeer && m_pSocket)
         {
             QByteArray d = m_pSocket->readAll();
@@ -140,7 +140,10 @@ void CProxySocks4::slotClose()
     {
         m_pPeer->disconnect();
         m_pPeer->Close();
-        m_pPeer.reset();
+
+        //如果立即删除，则在事件处理队列中的消息会出错。
+        //应该用 QObject::deleteLater() ,因为智能指针不会调用些函数。所以到CProxySocks4析构时再删除。
+        //m_pPeer.reset();
     }
 
     CProxy::slotClose();
@@ -235,21 +238,20 @@ int CProxySocks4::processBind()
 
     reply(emErrorCode::Ok);
 
-    m_Command = emCommand::Forward;
+    m_Status = emStatus::Forward;
 
     RemoveCommandBuffer();
     return nRet;
 }
 
-
 void CProxySocks4::slotPeerConnected()
 {
     LOG_MODEL_DEBUG("Socks4", "slotPeerConnected()");
-    if(emCommand::ClientRequest != m_Command)
+    if(emStatus::ClientRequest != m_Status)
         return;
 
     reply(emErrorCode::Ok);
-    m_Command = emCommand::Forward;
+    m_Status = emStatus::Forward;
     RemoveCommandBuffer();
     return;
 }
@@ -257,7 +259,7 @@ void CProxySocks4::slotPeerConnected()
 void CProxySocks4::slotPeerDisconnectd()
 {
     LOG_MODEL_DEBUG("Socks4", "slotPeerDisconnectd()");
-    if(emCommand::ClientRequest == m_Command)
+    if(emStatus::ClientRequest == m_Status)
         reply(emErrorCode::DoNotConnect);
 
     slotClose();
@@ -266,7 +268,13 @@ void CProxySocks4::slotPeerDisconnectd()
 void CProxySocks4::slotPeerError(int err, const QString &szErr)
 {
     LOG_MODEL_DEBUG("Socks4", "slotPeerError():%d %s", err, szErr.toStdString().c_str());
-    if(emCommand::ClientRequest == m_Command)
+    if(emStatus::Forward == m_Status)
+    {
+        slotClose();
+        return;
+    }
+
+    if(emStatus::ClientRequest == m_Status)
     {
         switch (err) {
         case CPeerConnecter::emERROR::ConnectionRefused:
@@ -288,21 +296,20 @@ void CProxySocks4::slotPeerError(int err, const QString &szErr)
 void CProxySocks4::slotPeerRead()
 {
     LOG_MODEL_DEBUG("Socks4", "slotPeerRead()");
-    if(m_pPeer)
-    {
-        QByteArray d = m_pPeer->ReadAll();
-        if(d.isEmpty())
-        {
-            LOG_MODEL_DEBUG("Socks4", "Peer read all is empty");
-            return;
-        }
+    if(!m_pPeer || !m_pSocket) return;
 
-        int nRet = m_pSocket->write(d.data(), d.length());
-        if(-1 == nRet)
-            LOG_MODEL_ERROR("Socks4", "Forword peer to client fail[%d]: %s",
-                            m_pSocket->error(),
-                            m_pSocket->errorString().toStdString().c_str());
+    QByteArray d = m_pPeer->ReadAll();
+    if(d.isEmpty())
+    {
+        LOG_MODEL_DEBUG("Socks4", "Peer read all is empty");
+        return;
     }
+
+    int nRet = m_pSocket->write(d.data(), d.length());
+    if(-1 == nRet)
+        LOG_MODEL_ERROR("Socks4", "Forword peer to client fail[%d]: %s",
+                        m_pSocket->error(),
+                        m_pSocket->errorString().toStdString().c_str());
 }
 
 int CProxySocks4::SetPeerConnect()
