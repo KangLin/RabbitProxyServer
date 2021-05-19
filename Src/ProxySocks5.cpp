@@ -458,26 +458,6 @@ void CProxySocks5::slotPeerError(int err, const QString &szErr)
     }
 }
 
-void CProxySocks5::slotPeerRead()
-{
-    //LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerRead()");
-    if(m_pPeer)
-    {
-        QByteArray d = m_pPeer->ReadAll();
-        if(d.isEmpty())
-        {
-            LOG_MODEL_DEBUG("Socks5", "Peer read all is empty");
-            return;
-        }
-        
-        int nRet = m_pSocket->write(d.data(), d.length());
-        if(-1 == nRet)
-            LOG_MODEL_ERROR("Socks5", "Forword peer to client fail[%d]: %s",
-                            m_pSocket->error(),
-                            m_pSocket->errorString().toStdString().c_str());
-    }
-}
-
 //TODO: There are not tested!
 int CProxySocks5::processBind()
 {

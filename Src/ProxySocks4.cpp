@@ -282,7 +282,7 @@ void CProxySocks4::slotPeerError(int err, const QString &szErr)
 
 void CProxySocks4::slotPeerRead()
 {
-    LOG_MODEL_DEBUG("Socks4", "slotPeerRead()");
+    //LOG_MODEL_DEBUG("Socks4", "slotPeerRead()");
     if(!m_pPeer || !m_pSocket) return;
 
     QByteArray d = m_pPeer->ReadAll();
