@@ -47,6 +47,9 @@ if(BUILD_TYPE STREQUAL "debug")
         )
 endif()
 LIST(APPEND RCC_FILES Resource/Resource.qrc)
+if(WIN32)
+    LIST(APPEND RCC_FILES Resource/App.rc)
+endif()
 
 # QtCreator supports the following variables for Android, which are identical to qmake Android variables.
 # Check http://doc.qt.io/qt-5/deployment-android.html for more information.
