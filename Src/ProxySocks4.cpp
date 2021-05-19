@@ -137,20 +137,6 @@ int CProxySocks4::onExecClientRequest()
     return nRet;
 }
 
-void CProxySocks4::slotClose()
-{
-    qDebug() << "CProxySocks4::slotClose()";
-
-    if(m_pPeer)
-    {
-        m_pPeer->disconnect();
-        m_pPeer->Close();
-        m_pPeer.clear();
-    }
-
-    CProxy::slotClose();
-}
-
 void CProxySocks4::slotLookup(QHostInfo info)
 {
     if (info.error() != QHostInfo::NoError) {
@@ -331,7 +317,7 @@ int CProxySocks4::CreatePeer()
                                                  &QObject::deleteLater);
     if(m_pPeer)
         return 0;
-    LOG_MODEL_ERROR("Socks5", "Make peer connect fail");
+    LOG_MODEL_ERROR("Socks4", "Make peer connect fail");
     return -1;
 }
 

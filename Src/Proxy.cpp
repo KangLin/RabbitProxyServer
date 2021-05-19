@@ -55,6 +55,14 @@ void CProxy::slotClose()
         m_pSocket->deleteLater();
         m_pSocket = nullptr;
     }
+
+    if(m_pPeer)
+    {
+        m_pPeer->disconnect();
+        m_pPeer->Close();
+        m_pPeer.clear();
+    }
+
     deleteLater();
 }
 
@@ -88,4 +96,14 @@ int CProxy::RemoveCommandBuffer(int nLength)
         m_cmdBuf.clear();
     }
     return 0;
+}
+
+int CProxy::CreatePeer()
+{
+    m_pPeer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
+                                             &QObject::deleteLater);
+    if(m_pPeer)
+        return 0;
+    LOG_MODEL_ERROR("Socks5", "Make peer connect fail");
+    return -1;
 }

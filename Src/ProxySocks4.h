@@ -30,7 +30,6 @@ public Q_SLOTS:
 #define VERSION_SOCK4 0x04 // socket4
 
 protected Q_SLOTS:
-    virtual void slotClose() override;
     virtual void slotLookup(QHostInfo info);
     virtual void slotPeerConnected();
     virtual void slotPeerDisconnectd();
@@ -39,10 +38,7 @@ protected Q_SLOTS:
 
 protected:
     virtual int SetPeerConnect();
-    virtual int CreatePeer();
-
-protected:
-    QSharedPointer<CPeerConnecter> m_pPeer;
+    virtual int CreatePeer() override;
 
 private:
     enum class emStatus {

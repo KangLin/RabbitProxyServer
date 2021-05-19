@@ -7,6 +7,8 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include <QSharedPointer>
+#include "PeerConnecter.h"
 #include "ProxyServer.h"
 
 class CProxy : public QObject
@@ -35,8 +37,11 @@ protected:
     int RemoveCommandBuffer(int nLength = -1);
 
     QByteArray m_cmdBuf;
-    QTcpSocket* m_pSocket;
+
     CProxyServer* m_pServer;
+    QTcpSocket* m_pSocket;
+    QSharedPointer<CPeerConnecter> m_pPeer;
+    virtual int CreatePeer();
 };
 
 #endif // CPROXY_H
