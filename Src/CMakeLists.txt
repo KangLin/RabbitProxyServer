@@ -11,6 +11,7 @@ set(INSTALL_HEAD_FILES
     ProxySocks5.h
     PeerConnecter.h
     Parameter.h
+    ParameterIce.h
     ParameterSocks.h
     )
 set(HEADER_FILES
@@ -25,6 +26,7 @@ set(SOURCE_FILES
     ProxySocks5.cpp
     PeerConnecter.cpp
     Parameter.cpp
+    ParameterIce.cpp
     ParameterSocks.cpp
     )
 set(SOURCE_UI_FILES
