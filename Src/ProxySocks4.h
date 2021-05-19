@@ -8,6 +8,7 @@
 #include <memory>
 #include <QTcpSocket>
 #include <QHostInfo>
+#include <QSharedPointer>
 
 /**
  * @brief The CProxySocket4 class
@@ -40,7 +41,7 @@ protected:
     virtual int SetPeerConnect();
 
 protected:
-    std::shared_ptr<CPeerConnecter> m_pPeer;
+    QSharedPointer<CPeerConnecter> m_pPeer;
 
 private:
     enum class emStatus {

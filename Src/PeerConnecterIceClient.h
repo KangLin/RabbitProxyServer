@@ -7,6 +7,7 @@
 
 #include "PeerConnecter.h"
 #include "DataChannelIce.h"
+#include <QSharedPointer>
 
 class CProxyServerSocks;
 class CPeerConnecterIceClient : public CPeerConnecter
@@ -44,7 +45,7 @@ private Q_SLOTS:
 
 protected:
     CProxyServerSocks* m_pServer;
-    std::shared_ptr<CDataChannelIce> m_DataChannel;
+    QSharedPointer<CDataChannelIce> m_DataChannel;
     QHostAddress m_peerAddress, m_bindAddress;
     quint16 m_nPeerPort, m_nBindPort;
     QString m_szError;

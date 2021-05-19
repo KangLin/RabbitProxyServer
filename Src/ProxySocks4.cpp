@@ -140,10 +140,7 @@ void CProxySocks4::slotClose()
     {
         m_pPeer->disconnect();
         m_pPeer->Close();
-
-        //如果立即删除，则在事件处理队列中的消息会出错。
-        //应该用 QObject::deleteLater() ,因为智能指针不会调用些函数。所以到CProxySocks4析构时再删除。
-        //m_pPeer.reset();
+        m_pPeer.clear();
     }
 
     CProxy::slotClose();
@@ -180,7 +177,8 @@ int CProxySocks4::processConnect()
     else
         //TODO: add implement peer connecter
         //m_pPeer = std::make_shared<CPeerConnecterIce>(this);
-        m_pPeer = std::make_shared<CPeerConnecter>(this);
+        m_pPeer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
+                                                 &QObject::deleteLater); // std::make_shared<CPeerConnecter>(this);
     foreach(auto add, m_HostAddress)
     {
         SetPeerConnect();
@@ -205,7 +203,8 @@ int CProxySocks4::processBind()
     {
         //TODO: add implement peer connecter
         //m_pPeer = std::make_shared<CPeerConnecterIce>(this);
-        m_pPeer = std::make_shared<CPeerConnecter>(this);
+        m_pPeer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
+                                                 &QObject::deleteLater);
     }
     bool bBind = false;
     foreach(auto add, m_HostAddress)

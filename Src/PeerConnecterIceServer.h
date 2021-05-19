@@ -49,7 +49,7 @@ private Q_SLOTS:
     virtual void slotPeerRead();
 
 private:
-    std::shared_ptr<CPeerConnecter> m_Peer;
+    QSharedPointer<CPeerConnecter> m_Peer;
 };
 
 #endif // CPEERCONNECTERICESERVER_H

@@ -99,6 +99,7 @@ int CPeerConnecterIceServer::Close()
     {
         m_Peer->disconnect();
         m_Peer->Close();
+        m_Peer.clear();
     }
 
     return nRet;
@@ -170,7 +171,8 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
     if(m_Peer)
         Q_ASSERT(false);
     else
-        m_Peer = std::make_shared<CPeerConnecter>(this);
+        m_Peer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
+                                                &QObject::deleteLater);
 
     if(!m_Peer)
     {
