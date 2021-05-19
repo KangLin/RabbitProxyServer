@@ -122,9 +122,9 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
                     channelId.toStdString().c_str(),
                     p->GetSignalUser().toStdString().c_str(),
                     p->GetPeerUser().toStdString().c_str());
-    std::shared_ptr<CPeerConnecterIceServer> ice
-            = std::make_shared<CPeerConnecterIceServer>(this, fromUser, toUser,
-                                                        channelId, type, sdp);
+    auto ice = QSharedPointer<CPeerConnecterIceServer>(
+                new CPeerConnecterIceServer(this, fromUser, toUser, channelId, type, sdp),
+                &QObject::deleteLater);
     bool check = connect(ice.get(), SIGNAL(sigDisconnected()),
                          this, SLOT(slotRemotePeerConnectServer()));
     Q_ASSERT(check);
@@ -158,7 +158,7 @@ void CProxyServerSocks::slotRemotePeerConnectServer()
                         pServer->GetPeerUser().toStdString().c_str(),
                         pServer->GetId().toStdString().c_str());
         QMutexLocker lock(&m_ConnectServerMutex);
-        std::shared_ptr<CPeerConnecterIceServer> svr = m_ConnectServer[pServer->GetPeerUser()][pServer->GetId()];
+        auto svr = m_ConnectServer[pServer->GetPeerUser()][pServer->GetId()];
         m_ConnectServer[pServer->GetPeerUser()].remove(pServer->GetId());
         if(svr)
         {

@@ -9,6 +9,7 @@
 
 #ifdef HAVE_ICE
     #include <QMutex>
+    #include <QSharedPointer>
     class CPeerConnecterIceServer;
     class CIceSignal;
 #endif
@@ -39,7 +40,7 @@ private Q_SLOTS:
 private:
     std::shared_ptr<CIceSignal> m_Signal;
     QMutex m_ConnectServerMutex;
-    QMap<QString, QMap<QString, std::shared_ptr<CPeerConnecterIceServer> > > m_ConnectServer;
+    QMap<QString, QMap<QString, QSharedPointer<CPeerConnecterIceServer> > > m_ConnectServer;
 #endif
 
 protected Q_SLOTS:
