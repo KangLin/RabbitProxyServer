@@ -21,9 +21,14 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     bool check = false;
-    
+
+    setWindowTitle(qApp->applicationDisplayName());
+
     ui->setupUi(this);
-    
+
+    CFrmUpdater updater;
+    ui->actionUpdate->setIcon(updater.windowIcon());
+
     auto server = QSharedPointer<CProxyServerSocks>(new CProxyServerSocks(this),
                                                     &QObject::deleteLater);
     m_Server.push_back(server);

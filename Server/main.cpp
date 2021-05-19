@@ -58,7 +58,7 @@ int main(int argc, char *argv[])
 #ifdef BUILD_QUIWidget
     QSharedPointer<QUIWidget> quiwidget(new QUIWidget(nullptr, true));
     //quiwidget.setPixmap(QUIWidget::Lab_Ico, ":/image/App");
-    //quiwidget.setTitle(a.applicationDisplayName());
+    quiwidget->setTitle(a.applicationDisplayName());
     quiwidget->setMainWidget(win);
     quiwidget->show();
 #else

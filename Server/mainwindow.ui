@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Proxy Server</string>
+   <string>Rabbit proxy server</string>
   </property>
   <property name="windowIcon">
    <iconset resource="Resource/Resource.qrc">
@@ -163,6 +163,10 @@
    </property>
   </action>
   <action name="actionAbout">
+   <property name="icon">
+    <iconset resource="Resource/Resource.qrc">
+     <normaloff>:/image/App</normaloff>:/image/App</iconset>
+   </property>
    <property name="text">
     <string>About</string>
    </property>

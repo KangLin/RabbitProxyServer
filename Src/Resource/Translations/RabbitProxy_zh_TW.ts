@@ -50,27 +50,27 @@
 <context>
     <name>CPeerConnecterIceClient</name>
     <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="68"/>
+        <location filename="../../PeerConnecterIceClient.cpp" line="70"/>
         <source>Data channel open fail</source>
         <translation>數據通道打開失敗</translation>
     </message>
     <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="131"/>
+        <location filename="../../PeerConnecterIceClient.cpp" line="133"/>
         <source>Signal don&apos;t open</source>
         <translation>信令通道沒打開</translation>
     </message>
     <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="143"/>
+        <location filename="../../PeerConnecterIceClient.cpp" line="145"/>
         <source>Please set peer user</source>
         <translation>請設置對端用戶</translation>
     </message>
     <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="229"/>
+        <location filename="../../PeerConnecterIceClient.cpp" line="230"/>
         <source>Don&apos;t support address type: %d</source>
         <translation>不支持地址類型:%d</translation>
     </message>
     <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="243"/>
+        <location filename="../../PeerConnecterIceClient.cpp" line="244"/>
         <source>Ice connect reply fail</source>
         <translation>Ice 連接響應失敗</translation>
     </message>
@@ -103,7 +103,7 @@
 <context>
     <name>CProxySocks5</name>
     <message>
-        <location filename="../../ProxySocks5.cpp" line="124"/>
+        <location filename="../../ProxySocks5.cpp" line="111"/>
         <source>Select authenticator: 0x%x</source>
         <translation type="unfinished">選擇驗證： 0x％x</translation>
     </message>

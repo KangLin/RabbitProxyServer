@@ -166,6 +166,10 @@
         <source>Load Style</source>
         <translation>加载样式</translation>
     </message>
+    <message>
+        <source>Rabbit proxy server</source>
+        <translation>玉兔代理服务器</translation>
+    </message>
 </context>
 <context>
     <name>QObject</name>
