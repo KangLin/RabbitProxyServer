@@ -62,6 +62,8 @@ build/
 *.opensdf
 *.vcxproj
 *vcxproj.*
+.vs/
+*.json
 
 # MinGW generated files
 *.Debug
