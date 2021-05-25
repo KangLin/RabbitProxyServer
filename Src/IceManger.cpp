@@ -51,12 +51,12 @@ std::shared_ptr<rtc::PeerConnection> CIceManger::GetPeerConnect(
         pc->onLocalDescription(
                     [=](rtc::Description description) {
             //LOG_MODEL_DEBUG("CDataChannelIce", "The thread id: 0x%X", QThread::currentThreadId());
-            /*
-        LOG_MODEL_DEBUG("DataChannel", "user:%s; peer:%s; channel:%s; onLocalDescription: %s",
-                        GetUser().toStdString().c_str(),
-                        GetPeerUser().toStdString().c_str(),
-                        GetChannelId().toStdString().c_str(),
-                        std::string(description).c_str());//*/
+            //*
+            LOG_MODEL_DEBUG("DataChannel", "user:%s; peer:%s; channel:%s; onLocalDescription: %s",
+                            channel->GetUser().toStdString().c_str(),
+                            channel->GetPeerUser().toStdString().c_str(),
+                            channel->GetChannelId().toStdString().c_str(),
+                            std::string(description).c_str());//*/
             // Send to the peer through the signal channel
             if(channel->GetPeerUser().isEmpty() || channel->GetChannelId().isEmpty())
                 LOG_MODEL_ERROR("DataChannel", "Please set peer user and channel id");
@@ -68,13 +68,13 @@ std::shared_ptr<rtc::PeerConnection> CIceManger::GetPeerConnect(
         pc->onLocalCandidate(
                     [=](rtc::Candidate candidate){
             //LOG_MODEL_DEBUG("CDataChannelIce", "The thread id: 0x%X", QThread::currentThreadId());
-            /*
-        LOG_MODEL_DEBUG("DataChannel", "user:%s; peer:%s; channel:%s; onLocalCandidate: %s, mid: %s",
-                        GetUser().toStdString().c_str(),
-                        GetPeerUser().toStdString().c_str(),
-                        GetChannelId().toStdString().c_str(),
-                        std::string(candidate).c_str(),
-                        candidate.mid().c_str());//*/
+            //*
+            LOG_MODEL_DEBUG("DataChannel", "user:%s; peer:%s; channel:%s; onLocalCandidate: %s, mid: %s",
+                            channel->GetUser().toStdString().c_str(),
+                            channel->GetPeerUser().toStdString().c_str(),
+                            channel->GetChannelId().toStdString().c_str(),
+                            std::string(candidate).c_str(),
+                            candidate.mid().c_str());//*/
             // Send to the peer through the signal channel
             if(channel->GetPeerUser().isEmpty() || channel->GetChannelId().isEmpty())
                 LOG_MODEL_ERROR("DataChannel", "Please set peer user and channel id");
@@ -83,6 +83,8 @@ std::shared_ptr<rtc::PeerConnection> CIceManger::GetPeerConnect(
                                  candidate);
         });
         pc->onDataChannel([=](std::shared_ptr<rtc::DataChannel> dc) {
+            LOG_MODEL_DEBUG("DataChannel", "From %s revice data channel",
+                            channel->GetPeerUser().toStdString().c_str());
             m_Channel[channel->GetChannelId()]->SetDataChannel(dc);
         });
     }
@@ -162,10 +164,10 @@ int CIceManger::SetSignal(std::shared_ptr<CIceSignal> signal)
 }
 
 void CIceManger::slotSignalReceiverCandiate(const QString& fromUser,
-                                                 const QString &toUser,
-                                                 const QString &channelId,
-                                                 const QString& mid,
-                                                 const QString& sdp)
+                                            const QString &toUser,
+                                            const QString &channelId,
+                                            const QString& mid,
+                                            const QString& sdp)
 {
     /*
     LOG_MODEL_DEBUG("CDataChannelIce",
@@ -187,10 +189,10 @@ void CIceManger::slotSignalReceiverCandiate(const QString& fromUser,
 }
 
 void CIceManger::slotSignalReceiverDescription(const QString& fromUser,
-                                                    const QString &toUser,
-                                                    const QString &channelId,
-                                                    const QString &type,
-                                                    const QString &sdp)
+                                               const QString &toUser,
+                                               const QString &channelId,
+                                               const QString &type,
+                                               const QString &sdp)
 {
     /*
     LOG_MODEL_DEBUG("CDataChannelIce",
@@ -205,8 +207,9 @@ void CIceManger::slotSignalReceiverDescription(const QString& fromUser,
     if(m_PeerConnections.end() == it)
         return;
     auto pc = m_PeerConnections[fromUser].pc;
-
-    rtc::Description des(sdp.toStdString(), type.toStdString());
     if(pc)
+    {
+        rtc::Description des(sdp.toStdString(), type.toStdString());
         pc->setRemoteDescription(des);
+    }
 }
