@@ -66,6 +66,8 @@ if(LibDataChannel_FOUND)
         IceSignal.h
         IceSignalWebSocket.h
         DataChannelIce.h
+        DataChannelIceChannel.h
+        IceManger.h
         )
     set(SOURCE_FILES
         ${SOURCE_FILES}
@@ -74,6 +76,8 @@ if(LibDataChannel_FOUND)
         IceSignal.cpp
         IceSignalWebSocket.cpp
         DataChannelIce.cpp
+        DataChannelIceChannel.cpp
+        IceManger.cpp
         )
     list(APPEND PROXY_DEFINITIONS HAVE_ICE)
 else()

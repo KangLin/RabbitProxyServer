@@ -8,6 +8,7 @@
 #include <QtEndian>
 #include "ProxyServerSocks.h"
 #include <QThread>
+#include "DataChannelIceChannel.h"
 
 CPeerConnecterIceClient::CPeerConnecterIceClient(CProxyServerSocks *pServer, QObject *parent)
     : CPeerConnecter(parent),
@@ -30,8 +31,11 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
                                                const QString &channelId,
                                                bool bData)
 {
-    m_DataChannel = QSharedPointer<CDataChannelIce>(
-                new CDataChannelIce(m_pServer->GetSignal(), this),
+//    m_DataChannel = QSharedPointer<CDataChannelIce>(
+//                new CDataChannelIce(m_pServer->GetSignal(), this),
+//                &QObject::deleteLater);
+    m_DataChannel = QSharedPointer<CDataChannelIceChannel>(
+                new CDataChannelIceChannel(m_pServer->GetSignal(), this),
                 &QObject::deleteLater);
     if(!m_DataChannel) return -1;
 
@@ -48,7 +52,7 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
     check = connect(m_DataChannel.get(), SIGNAL(readyRead()),
                     this, SLOT(slotDataChannelReadyRead()));
     Q_ASSERT(check);
-    CDataChannelIce* p = qobject_cast<CDataChannelIce*>(m_DataChannel.get());
+    CDataChannelIce* p = m_DataChannel.get();
     CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
     if(!(p && pPara)) return -1;
 
