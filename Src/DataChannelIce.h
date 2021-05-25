@@ -30,6 +30,8 @@ public:
     QString GetPeerUser();
     QString GetChannelId();
 
+    virtual int SetDataChannel(std::shared_ptr<rtc::DataChannel>);
+
 Q_SIGNALS:
     void sigConnected();
     void sigDisconnected();
@@ -52,11 +54,11 @@ public Q_SLOTS:
                                                const QString& type,
                                                const QString& sdp);
 
-private:
+protected:
     CDataChannelIce(QObject *parent = nullptr);
     int SetSignal(std::shared_ptr<CIceSignal> signal);
 
-    int CreateDataChannel(bool bData);
+    virtual int CreateDataChannel(bool bData);
 
     std::shared_ptr<CIceSignal> m_Signal;
     QString m_szUser;

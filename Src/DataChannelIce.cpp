@@ -89,6 +89,58 @@ int CDataChannelIce::SetConfigure(const rtc::Configuration &config)
     return 0;
 }
 
+int CDataChannelIce::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
+{
+//    LOG_MODEL_DEBUG("DataChannel", "onDataChannel: DataCannel label: %s",
+//                    dc->label().c_str());
+    Q_ASSERT(dc);
+    if(!dc) return -1;
+
+    m_dataChannel = dc;
+
+    dc->onOpen([this]() {
+        LOG_MODEL_DEBUG("DataChannel", "Open data channel from remote::user:%s;peer:%s;channelId:%s:lable:%s",
+                        GetUser().toStdString().c_str(),
+                        GetPeerUser().toStdString().c_str(),
+                        GetChannelId().toStdString().c_str(),
+                        m_dataChannel->label().c_str());
+        if(QIODevice::open(QIODevice::ReadWrite))
+            emit sigConnected();
+        else
+            LOG_MODEL_ERROR("DataChannel", "Open Device fail:user:%s;peer:%s;channelId:%d",
+                            GetUser().toStdString().c_str(),
+                            GetPeerUser().toStdString().c_str(),
+                            GetChannelId().toStdString().c_str());
+    });
+
+    dc->onClosed([this]() {
+        LOG_MODEL_DEBUG("DataChannel", "Close data channel from remote: %s",
+                        m_dataChannel->label().c_str());
+        emit this->sigDisconnected();
+    });
+
+    dc->onError([this](std::string error){
+        LOG_MODEL_ERROR("DataChannel", "Data channel error:%s", error.c_str());
+        emit sigError(-1, error.c_str());
+    });
+
+    dc->onMessage([dc, this](std::variant<rtc::binary, std::string> data) {
+//        if (std::holds_alternative<std::string>(data))
+//            LOG_MODEL_DEBUG("DataChannel", "From remote data: %s",
+//                            std::get<std::string>(data).c_str());
+//        else
+//            LOG_MODEL_DEBUG("DataChannel", "From remote Received, size=%d",
+//                            std::get<rtc::binary>(data).size());
+        m_MutexData.lock();
+        rtc::binary d = std::get<rtc::binary>(data);
+        m_data.append((char*)d.data(), d.size());
+        m_MutexData.unlock();
+        emit this->readyRead();
+    });
+
+    return 0;
+}
+
 int CDataChannelIce::CreateDataChannel(bool bData)
 {
     m_peerConnection = std::make_shared<rtc::PeerConnection>(m_Config);
@@ -135,89 +187,21 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         m_Signal->SendCandiate(m_szPeerUser, m_szChannelId, candidate);
     });
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
-        m_dataChannel = dc;
-
-//        LOG_MODEL_DEBUG("DataChannel", "onDataChannel: DataCannel label: %s",
-//                        dc->label().c_str());
-        dc->onOpen([this]() {
-            LOG_MODEL_DEBUG("DataChannel", "Open data channel from remote::user:%s;peer:%s;channelId:%s:lable:%s",
-                            GetUser().toStdString().c_str(),
-                            GetPeerUser().toStdString().c_str(),
+        if(dc->label().c_str() != GetChannelId())
+        {
+            LOG_MODEL_ERROR("DataChannel", "Channel label diffent: %s; %s",
                             GetChannelId().toStdString().c_str(),
-                            m_dataChannel->label().c_str());
-            if(QIODevice::open(QIODevice::ReadWrite))
-                emit sigConnected();
-            else
-                LOG_MODEL_ERROR("DataChannel", "Open Device fail:user:%s;peer:%s;channelId:%d",
-                                GetUser().toStdString().c_str(),
-                                GetPeerUser().toStdString().c_str(),
-                                GetChannelId().toStdString().c_str());
-        });
+                            dc->label().c_str());
+            return;
+        }
 
-        dc->onClosed([this]() {
-            LOG_MODEL_DEBUG("DataChannel", "Close data channel from remote: %s",
-                            m_dataChannel->label().c_str());
-            emit this->sigDisconnected();
-        });
-
-        dc->onError([this](std::string error){
-            LOG_MODEL_ERROR("DataChannel", "Data channel error:%s", error.c_str());
-            emit sigError(-1, error.c_str());
-        });
-
-        dc->onMessage([dc, this](std::variant<rtc::binary, std::string> data) {
-//            if (std::holds_alternative<std::string>(data))
-//                LOG_MODEL_DEBUG("DataChannel", "From remote data: %s",
-//                                std::get<std::string>(data).c_str());
-//            else
-//                LOG_MODEL_DEBUG("DataChannel", "From remote Received, size=%d",
-//                                std::get<rtc::binary>(data).size());
-            m_MutexData.lock();
-            rtc::binary d = std::get<rtc::binary>(data);
-            m_data.append((char*)d.data(), d.size());
-            m_MutexData.unlock();
-            emit this->readyRead();
-        });
+        SetDataChannel(dc);
     });
 
     if(bData)
     {
-        m_dataChannel = m_peerConnection->createDataChannel("data_" + GetChannelId().toStdString());
-        m_dataChannel->onOpen([this]() {
-            LOG_MODEL_DEBUG("DataChannel", "Data channel is open:user:%s;peer:%s;channelId:%s;lable:%s",
-                            GetUser().toStdString().c_str(),
-                            GetPeerUser().toStdString().c_str(),
-                            GetChannelId().toStdString().c_str(),
-                            m_dataChannel->label().c_str());
-            if(QIODevice::open(QIODevice::ReadWrite))
-                emit sigConnected();
-            else
-                LOG_MODEL_ERROR("DataChannel", "Open Device fail");
-
-        });
-        m_dataChannel->onClosed([this](){
-            LOG_MODEL_DEBUG("DataChannel", "Data channel is close:%s",
-                            m_dataChannel->label().c_str());
-            emit this->sigDisconnected();
-        });
-        m_dataChannel->onError([this](std::string error){
-            LOG_MODEL_ERROR("DataChannel", "Data channel error:%s", error.c_str());
-            emit sigError(-1, error.c_str());
-        });
-        m_dataChannel->onMessage([this](std::variant<rtc::binary, std::string> data) {
-//            if (std::holds_alternative<std::string>(data))
-//                LOG_MODEL_DEBUG("DataChannel", "data: %s",
-//                                std::get<std::string>(data).c_str());
-//            else
-//                LOG_MODEL_DEBUG("DataChannel", "Received, size=%d",
-//                                std::get<rtc::binary>(data).size());
-
-            m_MutexData.lock();
-            rtc::binary d = std::get<rtc::binary>(data);
-            m_data.append((char*)d.data(), d.size());
-            m_MutexData.unlock();
-            emit this->readyRead();
-        });
+        auto dc = m_peerConnection->createDataChannel(GetChannelId().toStdString());
+        SetDataChannel(dc);
     }
     return 0;
 }
