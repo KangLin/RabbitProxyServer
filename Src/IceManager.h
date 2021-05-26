@@ -4,15 +4,15 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QMutex>
-#include "rtc/rtc.hpp"
+
 #include "DataChannelIceChannel.h"
 
 class CIceManager : public QObject
 {
     Q_OBJECT
-public:
-    static CIceManager* Instance();
 
+public:
+    explicit CIceManager(QSharedPointer<CIceSignal> signal, QObject *parent = nullptr);
     std::shared_ptr<rtc::PeerConnection> GetPeerConnect(
             QSharedPointer<CIceSignal> signal,
             rtc::Configuration conf,
@@ -35,7 +35,6 @@ public Q_SLOTS:
                                                const QString& type,
                                                const QString& sdp);
 private:
-    explicit CIceManager(QObject *parent = nullptr);
     int SetSignal(QSharedPointer<CIceSignal> signal);
 
     QMutex m_mutexPeerConnection;
@@ -46,7 +45,6 @@ private:
     QMap<QString, strPeerConnection> m_PeerConnections;
 
     QMap<QString, CDataChannelIceChannel*> m_Channel;
-    bool m_bSignal;
 };
 
 #endif // CICEMANGER_H

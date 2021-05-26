@@ -3,8 +3,11 @@
 #include "IceManager.h"
 
 CDataChannelIceChannel::CDataChannelIceChannel(
-        QSharedPointer<CIceSignal> signal, QObject *parent)
-    : CDataChannelIce(signal, parent)
+        QSharedPointer<CIceSignal> signal,
+        QSharedPointer<CIceManager> iceManager,
+        QObject *parent)
+    : CDataChannelIce(signal, parent),
+      m_IceManager(iceManager)
 {
 }
 
@@ -30,23 +33,26 @@ void CDataChannelIceChannel::slotSignalReceiverDescription(const QString& fromUs
                                                            const QString& type,
                                                            const QString& sdp)
 {
-    CIceManager::Instance()->slotSignalReceiverDescription(fromUser,
-                                                          toUser,
-                                                          channelId,
-                                                          type,
-                                                          sdp);
+    if(m_IceManager)
+        m_IceManager->slotSignalReceiverDescription(fromUser,
+                                                toUser,
+                                                channelId,
+                                                type,
+                                                sdp);
 }
 
 int CDataChannelIceChannel::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
 {
-    CIceManager::Instance()->AddDataChannel(this);
+    Q_ASSERT(m_IceManager);
+    m_IceManager->AddDataChannel(this);
     return CDataChannelIce::SetDataChannel(dc);
 }
 
 int CDataChannelIceChannel::CreateDataChannel(bool bData)
 {
+    Q_ASSERT(m_IceManager);
     Q_ASSERT(!GetPeerUser().isEmpty());
-    auto pc = CIceManager::Instance()->GetPeerConnect(m_Signal, m_Config, this);
+    auto pc = m_IceManager->GetPeerConnect(m_Signal, m_Config, this);
 
     if(bData)
     {
@@ -61,7 +67,8 @@ void CDataChannelIceChannel::close()
 {
     m_Signal->disconnect(this);
 
-    CIceManager::Instance()->CloseDataChannel(this);
+    Q_ASSERT(m_IceManager);
+    m_IceManager->CloseDataChannel(this);
 
     if(m_dataChannel)
     {

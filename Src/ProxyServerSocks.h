@@ -10,8 +10,10 @@
 #ifdef HAVE_ICE
     #include <QMutex>
     #include <QSharedPointer>
+
     class CPeerConnecterIceServer;
     class CIceSignal;
+    class CIceManager;
 #endif
 
 class RABBITPROXY_EXPORT CProxyServerSocks : public CProxyServer
@@ -24,6 +26,7 @@ public:
 
 #ifdef HAVE_ICE
     QSharedPointer<CIceSignal> GetSignal();
+    QSharedPointer<CIceManager> GetIceManager();
 
 protected Q_SLOTS:
     virtual int Start();
@@ -39,6 +42,8 @@ private Q_SLOTS:
     void slotError(int nErr, const QString& szErr = QString());
 private:
     QSharedPointer<CIceSignal> m_Signal;
+    QSharedPointer<CIceManager> m_IceManager;
+
     QMutex m_ConnectServerMutex;
     QMap<QString, QMap<QString, QSharedPointer<CPeerConnecterIceServer> > > m_ConnectServer;
 #endif

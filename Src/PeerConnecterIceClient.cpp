@@ -31,12 +31,17 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
                                                const QString &channelId,
                                                bool bData)
 {
-//    m_DataChannel = QSharedPointer<CDataChannelIce>(
-//                new CDataChannelIce(m_pServer->GetSignal(), this),
-//                &QObject::deleteLater);
-    m_DataChannel = QSharedPointer<CDataChannelIceChannel>(
-                new CDataChannelIceChannel(m_pServer->GetSignal(), this),
+#if 0
+    m_DataChannel = QSharedPointer<CDataChannelIce>(
+                new CDataChannelIce(m_pServer->GetSignal(), this),
                 &QObject::deleteLater);
+#else
+    m_DataChannel = QSharedPointer<CDataChannelIceChannel>(
+                new CDataChannelIceChannel(m_pServer->GetSignal(),
+                                           m_pServer->GetIceManager(),
+                                           this),
+                &QObject::deleteLater);
+#endif
     if(!m_DataChannel) return -1;
 
     bool check = false;

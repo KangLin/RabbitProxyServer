@@ -7,6 +7,7 @@
 #ifdef HAVE_ICE
     #include "IceSignalWebSocket.h"
     #include "PeerConnecterIceServer.h"
+    #include "IceManager.h"
 #endif
 #include "RabbitCommonLog.h"
 
@@ -24,6 +25,11 @@ CProxyServerSocks::~CProxyServerSocks()
 QSharedPointer<CIceSignal> CProxyServerSocks::GetSignal()
 {
     return m_Signal;
+}
+
+QSharedPointer<CIceManager> CProxyServerSocks::GetIceManager()
+{
+    return m_IceManager;
 }
 
 int CProxyServerSocks::Start()
@@ -44,6 +50,11 @@ int CProxyServerSocks::Start()
                 LOG_MODEL_ERROR("ProxyServerSocks", "Open signal fail");
                 return -1;
             }
+
+            m_IceManager = QSharedPointer<CIceManager>(
+                        new CIceManager(GetSignal()),
+                        &QObject::deleteLater);
+
             if((int)p->GetIceServerClient()
                     & (int)CParameterSocks::emIceServerClient::Server)
             {
@@ -70,6 +81,8 @@ int CProxyServerSocks::Start()
 
 int CProxyServerSocks::Stop()
 {
+    m_IceManager.reset();
+
     if(m_Signal)
     {
         m_Signal->Close();

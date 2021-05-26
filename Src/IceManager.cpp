@@ -1,17 +1,10 @@
 #include "IceManager.h"
 #include "RabbitCommonLog.h"
 
-CIceManager::CIceManager(QObject *parent) : QObject(parent),
-    m_bSignal(false)
+CIceManager::CIceManager(QSharedPointer<CIceSignal> signal, QObject *parent)
+    : QObject(parent)
 {
-}
-
-CIceManager* CIceManager::Instance()
-{
-    CIceManager* p = nullptr;
-    if(p) return p;
-    p = new CIceManager();
-    return p;
+    SetSignal(signal);
 }
 
 std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
@@ -38,8 +31,6 @@ std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
         QMutexLocker lock(&m_mutexPeerConnection);
         m_PeerConnections[channel->GetPeerUser()] = {pc, 0};
 
-        SetSignal(signal);
-
         pc->onStateChange([](rtc::PeerConnection::State state) {
             LOG_MODEL_DEBUG("DataChannel", "PeerConnection State: %d", state);
         });
@@ -52,7 +43,7 @@ std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
                     [=](rtc::Description description) {
             //LOG_MODEL_DEBUG("CDataChannelIce", "The thread id: 0x%X", QThread::currentThreadId());
             //*
-            LOG_MODEL_DEBUG("DataChannel", "user:%s; peer:%s; channel:%s; onLocalDescription: %s",
+            LOG_MODEL_DEBUG("DataChannel", "onLocalDescription: user:%s; peer:%s; channel:%s; sdp: %s",
                             channel->GetUser().toStdString().c_str(),
                             channel->GetPeerUser().toStdString().c_str(),
                             channel->GetChannelId().toStdString().c_str(),
@@ -69,7 +60,7 @@ std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
                     [=](rtc::Candidate candidate){
             //LOG_MODEL_DEBUG("CDataChannelIce", "The thread id: 0x%X", QThread::currentThreadId());
             //*
-            LOG_MODEL_DEBUG("DataChannel", "user:%s; peer:%s; channel:%s; onLocalCandidate: %s, mid: %s",
+            LOG_MODEL_DEBUG("DataChannel", "onLocalCandidate: user:%s; peer:%s; channel:%s; candidate: %s, mid: %s",
                             channel->GetUser().toStdString().c_str(),
                             channel->GetPeerUser().toStdString().c_str(),
                             channel->GetChannelId().toStdString().c_str(),
@@ -83,7 +74,7 @@ std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
                                  candidate);
         });
         pc->onDataChannel([=](std::shared_ptr<rtc::DataChannel> dc) {
-            LOG_MODEL_DEBUG("DataChannel", "From %s revice data channel",
+            LOG_MODEL_DEBUG("DataChannel", "onDataChannel: From %s revice data channel",
                             channel->GetPeerUser().toStdString().c_str());
             m_Channel[channel->GetChannelId()]->SetDataChannel(dc);
         });
@@ -128,11 +119,9 @@ int CIceManager::CloseDataChannel(CDataChannelIceChannel *dc)
 int CIceManager::SetSignal(QSharedPointer<CIceSignal> signal)
 {
     bool check = false;
-    if(m_bSignal) return 0;
 
     if(signal)
     {
-        m_bSignal = true;
         check = connect(signal.get(),
                         SIGNAL(sigDescription(const QString&,
                                               const QString&,

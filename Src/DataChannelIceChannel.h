@@ -3,13 +3,16 @@
 
 #include "DataChannelIce.h"
 #include <QMap>
+#include <QSharedPointer>
 
+class CIceManager;
 class CDataChannelIceChannel : public CDataChannelIce
 {
     Q_OBJECT
 
 public:
     CDataChannelIceChannel(QSharedPointer<CIceSignal> signal,
+                           QSharedPointer<CIceManager> iceManager,
                            QObject *parent = nullptr);
 
     virtual int SetDataChannel(std::shared_ptr<rtc::DataChannel>) override;
@@ -26,6 +29,7 @@ private:
     virtual int SetSignal(QSharedPointer<CIceSignal> signal) override;
 
     QMap<QString, std::shared_ptr<rtc::PeerConnection> > m_sPeerConnections;
+    QSharedPointer<CIceManager> m_IceManager;
 };
 
 #endif // CDATACHANNELICECHANNEL_H
