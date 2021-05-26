@@ -1,20 +1,20 @@
-#include "IceManger.h"
+#include "IceManager.h"
 #include "RabbitCommonLog.h"
 
-CIceManger::CIceManger(QObject *parent) : QObject(parent),
+CIceManager::CIceManager(QObject *parent) : QObject(parent),
     m_bSignal(false)
 {
 }
 
-CIceManger* CIceManger::Instance()
+CIceManager* CIceManager::Instance()
 {
-    CIceManger* p = nullptr;
+    CIceManager* p = nullptr;
     if(p) return p;
-    p = new CIceManger();
+    p = new CIceManager();
     return p;
 }
 
-std::shared_ptr<rtc::PeerConnection> CIceManger::GetPeerConnect(
+std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
         std::shared_ptr<CIceSignal> signal,
         rtc::Configuration conf,
         CDataChannelIceChannel *channel)
@@ -92,7 +92,7 @@ std::shared_ptr<rtc::PeerConnection> CIceManger::GetPeerConnect(
     return pc;
 }
 
-int CIceManger::AddDataChannel(CDataChannelIceChannel *dc)
+int CIceManager::AddDataChannel(CDataChannelIceChannel *dc)
 {
     Q_ASSERT(dc);
     if(!dc) return -1;
@@ -111,7 +111,7 @@ int CIceManger::AddDataChannel(CDataChannelIceChannel *dc)
     return 0;
 }
 
-int CIceManger::CloseDataChannel(CDataChannelIceChannel *dc)
+int CIceManager::CloseDataChannel(CDataChannelIceChannel *dc)
 {
     m_Channel.remove(dc->GetChannelId());
     QMutexLocker lock(&m_mutexPeerConnection);
@@ -125,7 +125,7 @@ int CIceManger::CloseDataChannel(CDataChannelIceChannel *dc)
     return 0;
 }
 
-int CIceManger::SetSignal(std::shared_ptr<CIceSignal> signal)
+int CIceManager::SetSignal(std::shared_ptr<CIceSignal> signal)
 {
     bool check = false;
     if(m_bSignal) return 0;
@@ -163,7 +163,7 @@ int CIceManger::SetSignal(std::shared_ptr<CIceSignal> signal)
     return 0;
 }
 
-void CIceManger::slotSignalReceiverCandiate(const QString& fromUser,
+void CIceManager::slotSignalReceiverCandiate(const QString& fromUser,
                                             const QString &toUser,
                                             const QString &channelId,
                                             const QString& mid,
@@ -188,7 +188,7 @@ void CIceManger::slotSignalReceiverCandiate(const QString& fromUser,
     }
 }
 
-void CIceManger::slotSignalReceiverDescription(const QString& fromUser,
+void CIceManager::slotSignalReceiverDescription(const QString& fromUser,
                                                const QString &toUser,
                                                const QString &channelId,
                                                const QString &type,

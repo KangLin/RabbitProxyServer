@@ -1,6 +1,6 @@
 #include "DataChannelIceChannel.h"
 #include "RabbitCommonLog.h"
-#include "IceManger.h"
+#include "IceManager.h"
 
 CDataChannelIceChannel::CDataChannelIceChannel(
         std::shared_ptr<CIceSignal> signal, QObject *parent)
@@ -30,7 +30,7 @@ void CDataChannelIceChannel::slotSignalReceiverDescription(const QString& fromUs
                                                            const QString& type,
                                                            const QString& sdp)
 {
-    CIceManger::Instance()->slotSignalReceiverDescription(fromUser,
+    CIceManager::Instance()->slotSignalReceiverDescription(fromUser,
                                                           toUser,
                                                           channelId,
                                                           type,
@@ -39,14 +39,14 @@ void CDataChannelIceChannel::slotSignalReceiverDescription(const QString& fromUs
 
 int CDataChannelIceChannel::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
 {
-    CIceManger::Instance()->AddDataChannel(this);
+    CIceManager::Instance()->AddDataChannel(this);
     return CDataChannelIce::SetDataChannel(dc);
 }
 
 int CDataChannelIceChannel::CreateDataChannel(bool bData)
 {
     Q_ASSERT(!GetPeerUser().isEmpty());
-    auto pc = CIceManger::Instance()->GetPeerConnect(m_Signal, m_Config, this);
+    auto pc = CIceManager::Instance()->GetPeerConnect(m_Signal, m_Config, this);
 
     if(bData)
     {
@@ -61,7 +61,7 @@ void CDataChannelIceChannel::close()
 {
     m_Signal->disconnect(this);
 
-    CIceManger::Instance()->CloseDataChannel(this);
+    CIceManager::Instance()->CloseDataChannel(this);
 
     if(m_dataChannel)
     {

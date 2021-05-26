@@ -7,11 +7,11 @@
 #include "rtc/rtc.hpp"
 #include "DataChannelIceChannel.h"
 
-class CIceManger : public QObject
+class CIceManager : public QObject
 {
     Q_OBJECT
 public:
-    static CIceManger* Instance();
+    static CIceManager* Instance();
 
     std::shared_ptr<rtc::PeerConnection> GetPeerConnect(
             std::shared_ptr<CIceSignal> signal,
@@ -35,7 +35,7 @@ public Q_SLOTS:
                                                const QString& type,
                                                const QString& sdp);
 private:
-    explicit CIceManger(QObject *parent = nullptr);
+    explicit CIceManager(QObject *parent = nullptr);
     int SetSignal(std::shared_ptr<CIceSignal> signal);
 
     QMutex m_mutexPeerConnection;
