@@ -11,7 +11,7 @@
 CDataChannelIce::CDataChannelIce(QObject* parent) : QIODevice(parent)
 {}
 
-CDataChannelIce::CDataChannelIce(std::shared_ptr<CIceSignal> signal, QObject *parent)
+CDataChannelIce::CDataChannelIce(QSharedPointer<CIceSignal> signal, QObject *parent)
     : QIODevice(parent),
       m_Signal(signal)
 {
@@ -23,7 +23,7 @@ CDataChannelIce::~CDataChannelIce()
     qDebug() << "CDataChannel::~CDataChannel()";
 }
 
-int CDataChannelIce::SetSignal(std::shared_ptr<CIceSignal> signal)
+int CDataChannelIce::SetSignal(QSharedPointer<CIceSignal> signal)
 {
     bool check = false;
     m_Signal = signal;

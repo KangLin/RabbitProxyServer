@@ -3,12 +3,12 @@
 #include "IceManager.h"
 
 CDataChannelIceChannel::CDataChannelIceChannel(
-        std::shared_ptr<CIceSignal> signal, QObject *parent)
+        QSharedPointer<CIceSignal> signal, QObject *parent)
     : CDataChannelIce(signal, parent)
 {
 }
 
-int CDataChannelIceChannel::SetSignal(std::shared_ptr<CIceSignal> signal)
+int CDataChannelIceChannel::SetSignal(QSharedPointer<CIceSignal> signal)
 {
     bool check = false;
     if(!signal) return -1;

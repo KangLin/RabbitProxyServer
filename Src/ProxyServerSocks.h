@@ -23,7 +23,7 @@ public:
     virtual ~CProxyServerSocks();
 
 #ifdef HAVE_ICE
-    std::shared_ptr<CIceSignal> GetSignal();
+    QSharedPointer<CIceSignal> GetSignal();
 
 protected Q_SLOTS:
     virtual int Start();
@@ -38,7 +38,7 @@ private Q_SLOTS:
     void slotRemotePeerConnectServer();
     void slotError(int nErr, const QString& szErr = QString());
 private:
-    std::shared_ptr<CIceSignal> m_Signal;
+    QSharedPointer<CIceSignal> m_Signal;
     QMutex m_ConnectServerMutex;
     QMap<QString, QMap<QString, QSharedPointer<CPeerConnecterIceServer> > > m_ConnectServer;
 #endif

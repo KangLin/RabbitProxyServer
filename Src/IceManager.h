@@ -14,7 +14,7 @@ public:
     static CIceManager* Instance();
 
     std::shared_ptr<rtc::PeerConnection> GetPeerConnect(
-            std::shared_ptr<CIceSignal> signal,
+            QSharedPointer<CIceSignal> signal,
             rtc::Configuration conf,
             CDataChannelIceChannel *channel);
 
@@ -36,7 +36,7 @@ public Q_SLOTS:
                                                const QString& sdp);
 private:
     explicit CIceManager(QObject *parent = nullptr);
-    int SetSignal(std::shared_ptr<CIceSignal> signal);
+    int SetSignal(QSharedPointer<CIceSignal> signal);
 
     QMutex m_mutexPeerConnection;
     struct strPeerConnection{

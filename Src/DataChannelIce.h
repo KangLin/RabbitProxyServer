@@ -10,13 +10,14 @@
 #include <memory>
 #include <QIODevice>
 #include <QMutex>
+#include <QSharedPointer>
 
 class CDataChannelIce : public QIODevice
 {
     Q_OBJECT
 
 public:
-    explicit CDataChannelIce(std::shared_ptr<CIceSignal> signal,
+    explicit CDataChannelIce(QSharedPointer<CIceSignal> signal,
                           QObject *parent = nullptr);
     virtual ~CDataChannelIce();
 
@@ -56,11 +57,11 @@ public Q_SLOTS:
 
 protected:
     CDataChannelIce(QObject *parent = nullptr);
-    virtual int SetSignal(std::shared_ptr<CIceSignal> signal);
+    virtual int SetSignal(QSharedPointer<CIceSignal> signal);
 
     virtual int CreateDataChannel(bool bData);
 
-    std::shared_ptr<CIceSignal> m_Signal;
+    QSharedPointer<CIceSignal> m_Signal;
     QString m_szUser;
     QString m_szPeerUser;
     QString m_szChannelId;

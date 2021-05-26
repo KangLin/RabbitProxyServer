@@ -15,7 +15,7 @@ CIceManager* CIceManager::Instance()
 }
 
 std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
-        std::shared_ptr<CIceSignal> signal,
+        QSharedPointer<CIceSignal> signal,
         rtc::Configuration conf,
         CDataChannelIceChannel *channel)
 {
@@ -125,7 +125,7 @@ int CIceManager::CloseDataChannel(CDataChannelIceChannel *dc)
     return 0;
 }
 
-int CIceManager::SetSignal(std::shared_ptr<CIceSignal> signal)
+int CIceManager::SetSignal(QSharedPointer<CIceSignal> signal)
 {
     bool check = false;
     if(m_bSignal) return 0;

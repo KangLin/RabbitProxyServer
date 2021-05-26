@@ -13,10 +13,6 @@
 CProxyServerSocks::CProxyServerSocks(QObject *parent) : CProxyServer(parent)
 {
     m_pParameter.reset(new CParameterSocks(this));
-
-#ifdef HAVE_ICE
-    m_Signal = std::make_shared<CIceSignalWebSocket>();
-#endif
 }
 
 CProxyServerSocks::~CProxyServerSocks()
@@ -25,7 +21,7 @@ CProxyServerSocks::~CProxyServerSocks()
 }
 
 #ifdef HAVE_ICE
-std::shared_ptr<CIceSignal> CProxyServerSocks::GetSignal()
+QSharedPointer<CIceSignal> CProxyServerSocks::GetSignal()
 {
     return m_Signal;
 }
@@ -37,6 +33,8 @@ int CProxyServerSocks::Start()
         CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
         if(p->GetIce())
         {
+            m_Signal = QSharedPointer<CIceSignal>(new CIceSignalWebSocket(this),
+                                                  &QObject::deleteLater);
             nRet = m_Signal->Open(p->GetSignalServer().toStdString(),
                                   p->GetSignalPort(),
                                   p->GetSignalUser().toStdString(),
@@ -76,6 +74,7 @@ int CProxyServerSocks::Stop()
     {
         m_Signal->Close();
         m_Signal->disconnect(this);
+        m_Signal.reset();
     }
 
     m_ConnectServer.clear();
