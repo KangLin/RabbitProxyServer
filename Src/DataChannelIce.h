@@ -57,8 +57,8 @@ public Q_SLOTS:
 
 protected:
     CDataChannelIce(QObject *parent = nullptr);
-    virtual int SetSignal(QSharedPointer<CIceSignal> signal);
 
+    virtual int SetSignal(QSharedPointer<CIceSignal> signal);
     virtual int CreateDataChannel(bool bData);
 
     QSharedPointer<CIceSignal> m_Signal;

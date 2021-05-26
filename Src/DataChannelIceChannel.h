@@ -24,12 +24,14 @@ public Q_SLOTS:
                                                const QString& channelId,
                                                const QString& type,
                                                const QString& sdp) override;
-private:
+protected:
     virtual int CreateDataChannel(bool bData) override;
     virtual int SetSignal(QSharedPointer<CIceSignal> signal) override;
 
     QMap<QString, std::shared_ptr<rtc::PeerConnection> > m_sPeerConnections;
     QSharedPointer<CIceManager> m_IceManager;
+
+
 };
 
 #endif // CDATACHANNELICECHANNEL_H
