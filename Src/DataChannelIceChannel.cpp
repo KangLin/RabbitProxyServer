@@ -9,12 +9,15 @@ CDataChannelIceChannel::CDataChannelIceChannel(
     : CDataChannelIce(signal, parent),
       m_IceManager(iceManager)
 {
+    SetSignal(signal);
 }
 
 int CDataChannelIceChannel::SetSignal(QSharedPointer<CIceSignal> signal)
 {
     bool check = false;
     if(!signal) return -1;
+
+    signal.get()->disconnect(this);
     check = connect(signal.get(), SIGNAL(sigError(int, const QString&)),
                     this, SLOT(slotSignalError(int, const QString&)));
     Q_ASSERT(check);
