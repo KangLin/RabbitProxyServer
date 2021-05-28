@@ -15,15 +15,8 @@ public:
                            QSharedPointer<CIceManager> iceManager,
                            QObject *parent = nullptr);
 
-    virtual int SetDataChannel(std::shared_ptr<rtc::DataChannel>) override;
     virtual void close() override;
 
-public Q_SLOTS:
-    virtual void slotSignalReceiverDescription(const QString& fromUser,
-                                               const QString& toUser,
-                                               const QString& channelId,
-                                               const QString& type,
-                                               const QString& sdp) override;
 protected:
     virtual int CreateDataChannel(bool bData) override;
     virtual int SetSignal(QSharedPointer<CIceSignal> signal) override;
@@ -31,7 +24,7 @@ protected:
     QMap<QString, std::shared_ptr<rtc::PeerConnection> > m_sPeerConnections;
     QSharedPointer<CIceManager> m_IceManager;
 
-
+    bool m_bServer;
 };
 
 #endif // CDATACHANNELICECHANNEL_H

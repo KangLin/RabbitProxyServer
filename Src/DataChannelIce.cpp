@@ -99,7 +99,7 @@ int CDataChannelIce::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
     m_dataChannel = dc;
 
     dc->onOpen([this]() {
-        LOG_MODEL_DEBUG("DataChannel", "Open data channel from remote::user:%s;peer:%s;channelId:%s:lable:%s",
+        LOG_MODEL_DEBUG("DataChannel", "Open data channel user:%s;peer:%s;channelId:%s:lable:%s",
                         GetUser().toStdString().c_str(),
                         GetPeerUser().toStdString().c_str(),
                         GetChannelId().toStdString().c_str(),
@@ -114,7 +114,7 @@ int CDataChannelIce::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
     });
 
     dc->onClosed([this]() {
-        LOG_MODEL_DEBUG("DataChannel", "Close data channel from remote: %s",
+        LOG_MODEL_DEBUG("DataChannel", "Close data channel: %s",
                         m_dataChannel->label().c_str());
         emit this->sigDisconnected();
     });

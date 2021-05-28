@@ -16,10 +16,16 @@ class CPeerConnecterIceServer : public CPeerConnecterIceClient
 public:
     explicit CPeerConnecterIceServer(CProxyServerSocks* pServer,
                                      const QString& fromUser,
-                                     const QString &toUser,
-                                     const QString &channelId,
-                                     const QString &type,
-                                     const QString &sdp,
+                                     const QString& toUser,
+                                     const QString& channelId,
+                                     std::shared_ptr<rtc::DataChannel> dc);
+
+    explicit CPeerConnecterIceServer(CProxyServerSocks* pServer,
+                                     const QString& fromUser,
+                                     const QString& toUser,
+                                     const QString& channelId,
+                                     const QString& type,
+                                     const QString& sdp,
                                      QObject *parent = nullptr);
     virtual ~CPeerConnecterIceServer();
 

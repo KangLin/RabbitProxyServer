@@ -31,7 +31,7 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
                                                const QString &channelId,
                                                bool bData)
 {
-#if 0
+#if USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
     m_DataChannel = QSharedPointer<CDataChannelIce>(
                 new CDataChannelIce(m_pServer->GetSignal(), this),
                 &QObject::deleteLater);
@@ -157,7 +157,8 @@ int CPeerConnecterIceClient::Connect(const QHostAddress &address, qint16 nPort)
         return -2;
     }
     nRet = CreateDataChannel(pPara->GetPeerUser(), pPara->GetSignalUser(),
-                             pPara->GenerateChannelId(), true);
+                             pPara->GenerateChannelId(),
+                             true);
 
     return nRet;
 }

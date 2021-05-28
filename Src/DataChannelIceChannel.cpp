@@ -7,7 +7,8 @@ CDataChannelIceChannel::CDataChannelIceChannel(
         QSharedPointer<CIceManager> iceManager,
         QObject *parent)
     : CDataChannelIce(parent),
-      m_IceManager(iceManager)
+      m_IceManager(iceManager),
+      m_bServer(false)
 {
     SetSignal(signal);
 }
@@ -30,33 +31,13 @@ int CDataChannelIceChannel::SetSignal(QSharedPointer<CIceSignal> signal)
     return 0;
 }
 
-void CDataChannelIceChannel::slotSignalReceiverDescription(const QString& fromUser,
-                                                           const QString& toUser,
-                                                           const QString& channelId,
-                                                           const QString& type,
-                                                           const QString& sdp)
-{
-    if(m_IceManager)
-        m_IceManager->slotSignalReceiverDescription(fromUser,
-                                                toUser,
-                                                channelId,
-                                                type,
-                                                sdp);
-}
-
-int CDataChannelIceChannel::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
-{
-    Q_ASSERT(m_IceManager);
-    m_IceManager->AddDataChannel(this);
-    return CDataChannelIce::SetDataChannel(dc);
-}
-
 int CDataChannelIceChannel::CreateDataChannel(bool bData)
 {
     Q_ASSERT(m_IceManager);
     Q_ASSERT(!GetPeerUser().isEmpty());
     auto pc = m_IceManager->GetPeerConnect(m_Signal, m_Config, this);
 
+    m_bServer = !bData;
     if(bData)
     {
         auto dc = pc->createDataChannel(GetChannelId().toStdString());
@@ -71,7 +52,7 @@ void CDataChannelIceChannel::close()
     m_Signal->disconnect(this);
 
     Q_ASSERT(m_IceManager);
-    m_IceManager->CloseDataChannel(this);
+    m_IceManager->CloseDataChannel(this, m_bServer);
 
     if(m_dataChannel)
     {

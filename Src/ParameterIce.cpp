@@ -184,5 +184,5 @@ QString CParameterIce::GenerateChannelId()
     std::string r = std::to_string(m_nChannelId++);
     //LOG_MODEL_DEBUG("CParameterIce", "channel id:%s", r.c_str());
     m.unlock();
-    return r.c_str();
+    return GetSignalUser() + r.c_str();
 }

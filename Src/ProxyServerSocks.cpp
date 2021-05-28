@@ -52,18 +52,28 @@ int CProxyServerSocks::Start()
             }
 
             m_IceManager = QSharedPointer<CIceManager>(
-                        new CIceManager(GetSignal()),
+                        new CIceManager(this),
                         &QObject::deleteLater);
 
             if((int)p->GetIceServerClient()
                     & (int)CParameterSocks::emIceServerClient::Server)
             {
-                bool check = connect(m_Signal.get(),
+                bool check = false;
+#if USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
+                check = connect(m_Signal.get(),
                  SIGNAL(sigOffer(const QString&, const QString&, const QString&,
                                                const QString&, const QString&)),
                  this,
                   SLOT(slotOffer(const QString&, const QString&, const QString&,
                                               const QString&, const QString&)));
+#else
+                check = connect(m_Signal.get(),
+                 SIGNAL(sigOffer(const QString&, const QString&, const QString&,
+                                               const QString&, const QString&)),
+                 m_IceManager.get(),
+                  SLOT(slotOffer(const QString&, const QString&, const QString&,
+                                              const QString&, const QString&)));
+#endif
                 Q_ASSERT(check);
             }
             if((int)p->GetIceServerClient()
