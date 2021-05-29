@@ -21,7 +21,7 @@ public:
             CDataChannelIceChannel *channel);
 
     int CloseDataChannel(CDataChannelIceChannel* dc, bool bServer);
-
+    
 private Q_SLOTS:
     virtual void slotSignalReceiverCandiate(const QString& fromUser,
                                             const QString& toUser,
@@ -40,6 +40,16 @@ public Q_SLOTS:
                            const QString& channelId,
                            const QString& type,
                            const QString& sdp);
+
+Q_SIGNALS:
+    void sigReceiverDataChannel(const QString& peer,
+                                const QString& user,
+                                const QString& channelId);
+public Q_SLOTS:
+void slotReceiverDataChannel(const QString& peer,
+                             const QString& user,
+                             const QString& channelId);
+
 private:
     int SetSignal(QSharedPointer<CIceSignal> signal);
     int SetPeerConnection(QSharedPointer<CIceSignal> signal,
@@ -50,10 +60,14 @@ private:
                        CDataChannelIceChannel* channel = nullptr);
 
     QMutex m_mutexPeerConnection;
+    struct strServer {
+        std::shared_ptr<rtc::DataChannel> dc;
+        QSharedPointer<CPeerConnecterIceServer> server;
+    };
     struct strPeerConnection{
         std::shared_ptr<rtc::PeerConnection> pc;
         QVector<QString> channel;
-        QMap<QString, QSharedPointer<CPeerConnecterIceServer> > server;
+        QMap<QString, strServer> server;
     };
     QMap<QString, strPeerConnection> m_PeerConnections;
 

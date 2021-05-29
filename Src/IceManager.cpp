@@ -9,6 +9,9 @@ CIceManager::CIceManager(CProxyServerSocks *pServer)
       m_pServer(pServer)
 {
     SetSignal(pServer->GetSignal());
+    bool check = connect(this, SIGNAL(sigReceiverDataChannel(const QString&, const QString&, const QString&)),
+                         this, SLOT(slotReceiverDataChannel(const QString&, const QString&, const QString&)));
+    Q_ASSERT(check);
 }
 
 int CIceManager::SetPeerConnection(QSharedPointer<CIceSignal> signal,
@@ -75,12 +78,8 @@ int CIceManager::SetPeerConnection(QSharedPointer<CIceSignal> signal,
             {
                 it->channel.push_back(dc->label().c_str());
             } else {
-                QSharedPointer<CPeerConnecterIceServer> s
-                        = QSharedPointer<CPeerConnecterIceServer>(
-                            new CPeerConnecterIceServer(m_pServer, peer, user,
-                                                        dc->label().c_str(),
-                                                        dc));
-                it->server[peer] = s;
+                it->server[dc->label().c_str()] = {dc};
+                emit sigReceiverDataChannel(peer, user, dc->label().c_str());
             }
         }
     }
@@ -294,4 +293,26 @@ void CIceManager::slotOffer(const QString& fromUser,
         pc->setRemoteDescription(des);
     }
 
+}
+
+void CIceManager::slotReceiverDataChannel(const QString &peer, const QString &user, const QString& channleId)
+{
+    LOG_MODEL_DEBUG("CIceManger",
+                    "CIceManager::slotReceiverDataChannel: peer:%s;channel:%s",
+                    peer.toStdString().c_str(), channleId.toStdString().c_str());
+    auto it = m_PeerConnections.find(peer);
+    if(m_PeerConnections.end() != it)
+    {
+        auto itServer = it->server.find(channleId);
+        if(it->server.end() != itServer)
+        {
+            QSharedPointer<CPeerConnecterIceServer> s
+                    = QSharedPointer<CPeerConnecterIceServer>(
+                        new CPeerConnecterIceServer(m_pServer, peer, user,
+                                                    itServer->dc->label().c_str(),
+                                                    itServer->dc),
+                        &QObject::deleteLater);
+            itServer->server = s;
+        }
+    }
 }
