@@ -17,8 +17,6 @@ CPeerConnecterIceClient::CPeerConnecterIceClient(CProxyServerSocks *pServer, QOb
       m_nBindPort(0),
       m_Status(CONNECT)
 {
-    LOG_MODEL_DEBUG("CPeerConnecterIceClient", "Current thread id: 0x%X",
-                    QThread::currentThread());
 }
 
 CPeerConnecterIceClient::~CPeerConnecterIceClient()
