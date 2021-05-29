@@ -59,7 +59,9 @@ protected:
 #pragma pack(push)
 #pragma pack(1)
 
-    /*
+    /**
+      @brief Custom client request protol
+      
       +----+-----+-------+------+----------+----------+
       |VER | CMD |  RSV  | ATYP | DST.PORT | DST.ADDR |
       +----+-----+-------+------+----------+----------+
@@ -92,7 +94,9 @@ protected:
         } ip;
     };
 
-    /*
+    /**
+      @brief Custom client reply protol
+      
         +----+-----+-------+------+----------+----------+
         |VER | REP |  RSV  | ATYP | BND.PORT | BND.ADDR |
         +----+-----+-------+------+----------+----------+

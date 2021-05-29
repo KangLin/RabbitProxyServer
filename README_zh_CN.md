@@ -1,14 +1,23 @@
 ## 玉兔代理服务器
 作者: 康林(kl222@126.com)
 
-- [:us: 英语](README.md)
+- 项目位置：[https://github.com/KangLin/RabbitProxyServer](https://github.com/KangLin/RabbitProxyServer)
+- 语言
+  + [:us: 英语](README.md)
 
 ### 简介
 
-本软件实现多种协议代理服务功能。
+因为工作原因，需要经常从一个内网远程控制另一个内网中的主机。例如下图中：网络1中的电脑1访问网络2中的服务器或电脑2。
 
-- 特色功能：可以基于互连网访问内网中的主机。详见：https://github.com/KangLin/RabbitRemoteControl/issues/7
-  
+![网络拓朴图](Documents/Image/network.svg)
+
+在网上没有查找到相关的开源软件。
+所以着手写了[玉兔远程控制](https://github.com/KangLin/RabbitRemoteControl)。在写的过
+程遇到了两个内网互相访问的问题，详见：https://github.com/KangLin/RabbitRemoteControl/issues/7 。
+
+在网上查找相关的代理软件，只有有公网IP的代理服务器，并没有无公网IP的代理服务器。所以写了本软件，
+以解决两个无公网IP的内网互相访问的问题。并且本软件实现[多种协议](#支持的协议)代理服务功能。
+
 ### 支持的协议
 
 - Socks 代理协议
@@ -27,6 +36,8 @@
   + [ ] [Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing](https://datatracker.ietf.org/doc/html/rfc7230)
   + [ ] Tunneling TCP based protocols through Web proxy servers: https://datatracker.ietf.org/doc/html/draft-luotonen-web-proxy-tunneling-01
   + [ ] [Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content](https://datatracker.ietf.org/doc/html/rfc7231#section-4.3.6)
+- 自定义协议
+  + [x] 用于ICE的自定义协议：[Src/PeerConnecterIceClient.h](Src/PeerConnecterIceClient.h#L63)
   
 ### 参考文档
 

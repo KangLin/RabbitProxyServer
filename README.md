@@ -2,14 +2,22 @@
 
 Author: Kang Lin (kl222@126.com)
 
-- [:cn: Chinese](README_zh_CN.md)
+- Project position: [https://github.com/KangLin/RabbitProxyServer](https://github.com/KangLin/RabbitProxyServer)
+- Language:
+  + [:cn: Chinese](README_zh_CN.md)
 
 ### Introduction
 
-This software implements multiple protocol proxy service functions.
+Due to work reasons, it is often necessary to remotely control a host in another intranet from one intranet. For example, in the following figure: Computer 1 in network 1 accesses the server or computer 2 in network 2.
 
-- Featured function: can access the host in the intranet based on the Internet.
-  See: https://github.com/KangLin/RabbitRemoteControl/issues/7
+![Network Topology](Documents/Image/network_en.svg)
+
+No relevant open source software was found on the Internet.
+So I wrote [Rabbit Remote Control](https://github.com/KangLin/RabbitRemoteControl). Have been writing
+Cheng encountered a problem of mutual access between two intranets. For details, please see: [https://github.com/KangLin/RabbitRemoteControl/issues/7](https://github.com/KangLin/RabbitRemoteControl/issues/7).
+
+Searching for related proxy software on the Internet, there are only proxy servers with public IPs, and no proxy servers without public IPs. So I wrote this software,
+In order to solve the problem of mutual access between two internal networks without public IP. And this software implements [multiple protocols](#Supported-protocols) proxy service function.
 
 ### Supported protocols
 
@@ -29,7 +37,9 @@ This software implements multiple protocol proxy service functions.
   + [ ] [Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing](https://datatracker.ietf.org/doc/html/rfc7230)
   + [ ] Tunneling TCP based protocols through Web proxy servers: https://datatracker.ietf.org/doc/html/draft-luotonen-web-proxy-tunneling-01
   + [ ] [Hypertext Transfer Protocol (HTTP/1.1): Semantics and Content](https://datatracker.ietf.org/doc/html/rfc7231#section-4.3.6)
-
+- Custom protocol
+    + [x] Custom protocol for ICE：[Src/PeerConnecterIceClient.h](Src/PeerConnecterIceClient.h#L63)
+    
 ### Development
 #### Dependent
 ##### Tools

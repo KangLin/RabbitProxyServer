@@ -133,11 +133,10 @@ int CIceManager::CloseDataChannel(CDataChannelIceChannel *dc, bool bServer)
     if(m_PeerConnections.end() == it)
         return -1;
     if(bServer)
-    {
         it->channel.removeOne(dc->GetChannelId());
-    } else {
+    else
         it->server.remove(dc->GetChannelId());
-    }
+    
     if(it->channel.isEmpty() && it->server.isEmpty())
         m_PeerConnections.remove(dc->GetPeerUser());
     return 0;
@@ -259,7 +258,14 @@ void CIceManager::slotOffer(const QString& fromUser,
     auto it = m_PeerConnections.find(fromUser);
     if(m_PeerConnections.end() != it)
     {
-        //TODO: clean old
+        // clean old
+        foreach(auto itServer, it->server)
+        {
+            if(itServer.dc)
+                itServer.dc->close();
+            if(itServer.server)
+                itServer.server->Close();
+        }
     }
 
     rtc::Configuration config;
