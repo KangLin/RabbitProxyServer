@@ -78,7 +78,7 @@ int CIceManager::SetPeerConnection(QSharedPointer<CIceSignal> signal,
             {
                 it->channel.push_back(dc->label().c_str());
             } else {
-                it->server[dc->label().c_str()] = {dc};
+                it->server[dc->label().c_str()] = {dc, nullptr};
                 emit sigReceiverDataChannel(peer, user, dc->label().c_str());
             }
         }

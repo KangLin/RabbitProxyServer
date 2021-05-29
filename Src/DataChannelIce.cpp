@@ -238,8 +238,24 @@ void CDataChannelIce::close()
 
 qint64 CDataChannelIce::writeData(const char *data, qint64 len)
 {
-    if(!m_dataChannel || m_dataChannel->isClosed() || !isOpen()) return -1;
+    if(!m_dataChannel)
+    {
+        LOG_MODEL_ERROR("CDataChannelIce", "m_dataChannel is nullptr");
+        return -1;
+    }
 
+    if(m_dataChannel->isClosed())
+    {
+        LOG_MODEL_ERROR("CDataChannelIce", "m_dataChannel->isClosed()");
+        return -1;
+    }
+    
+    if(!isOpen())
+    {
+        LOG_MODEL_ERROR("CDataChannelIce", "The data channel isn't open");
+        return -1;
+    }
+    
     bool bSend = false;
 
     if(0 == len)
