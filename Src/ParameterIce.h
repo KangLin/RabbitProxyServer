@@ -18,7 +18,12 @@ class RABBITPROXY_EXPORT CParameterIce : public CParameter
     Q_PROPERTY(QString SignalPassord READ GetSignalPassword WRITE SetSignalPassword)
     Q_PROPERTY(QString TurnUser READ GetTurnUser WRITE SetTurnUser)
     Q_PROPERTY(QString TurnPassword READ GetTurnPassword WRITE SetTurnPassword)
-
+#ifdef _DEBUG
+    Q_PROPERTY(bool OnePeerConnectionToOneDataChannel
+               READ GetOnePeerConnectionToOneDataChannel
+               WRITE SetOnePeerConnectionToOneDataChannel)
+#endif
+    
 public:
     CParameterIce(QObject *parent = nullptr);
     virtual ~CParameterIce();
@@ -55,7 +60,11 @@ public:
     void SetTurnUser(const QString& user);
     QString GetTurnPassword();
     void SetTurnPassword(const QString& password);
-
+#ifdef _DEBUG
+    bool GetOnePeerConnectionToOneDataChannel();
+    void SetOnePeerConnectionToOneDataChannel(bool bOne);
+#endif
+    
     QString GenerateChannelId();
 
 private:
@@ -72,7 +81,9 @@ private:
     quint16 m_nTurnPort;
     QString m_szTurnUser;
     QString m_szTurnPassword;
-
+#ifdef _DEBUG
+    bool m_bOnePeerConnectionToOneDataChannel;
+#endif
     quint64 m_nChannelId;
 };
 

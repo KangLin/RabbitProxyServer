@@ -29,16 +29,32 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
                                                const QString &channelId,
                                                bool bData)
 {
-#if USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
+    CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
+    if(!pPara) return -1;
+    
+#ifdef _DEBUG
+    if(pPara->GetOnePeerConnectionToOneDataChannel())
+        m_DataChannel = QSharedPointer<CDataChannelIce>(
+                    new CDataChannelIce(m_pServer->GetSignal(), this),
+                    &QObject::deleteLater);
+    else
+        m_DataChannel = QSharedPointer<CDataChannelIceChannel>(
+                    new CDataChannelIceChannel(m_pServer->GetSignal(),
+                                               m_pServer->GetIceManager(),
+                                               this),
+                    &QObject::deleteLater);
+#else
+    #if USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
     m_DataChannel = QSharedPointer<CDataChannelIce>(
                 new CDataChannelIce(m_pServer->GetSignal(), this),
                 &QObject::deleteLater);
-#else
+    #else
     m_DataChannel = QSharedPointer<CDataChannelIceChannel>(
                 new CDataChannelIceChannel(m_pServer->GetSignal(),
                                            m_pServer->GetIceManager(),
                                            this),
                 &QObject::deleteLater);
+    #endif
 #endif
     if(!m_DataChannel) return -1;
 
@@ -55,9 +71,9 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
     check = connect(m_DataChannel.get(), SIGNAL(readyRead()),
                     this, SLOT(slotDataChannelReadyRead()));
     Q_ASSERT(check);
+    
     CDataChannelIce* p = m_DataChannel.get();
-    CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
-    if(!(p && pPara)) return -1;
+    if(!p) return -1;
 
     rtc::Configuration config;
     if(!pPara->GetStunServer().isEmpty() && pPara->GetStunPort())

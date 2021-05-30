@@ -5,9 +5,9 @@
 #include "ParameterSocks.h"
 
 #ifdef HAVE_ICE
-    #include "IceSignalWebSocket.h"
-    #include "PeerConnecterIceServer.h"
-    #include "IceManager.h"
+#include "IceSignalWebSocket.h"
+#include "PeerConnecterIceServer.h"
+#include "IceManager.h"
 #endif
 #include "RabbitCommonLog.h"
 
@@ -50,29 +50,70 @@ int CProxyServerSocks::Start()
                 LOG_MODEL_ERROR("ProxyServerSocks", "Open signal fail");
                 return -1;
             }
-
+            
             m_IceManager = QSharedPointer<CIceManager>(
                         new CIceManager(this),
                         &QObject::deleteLater);
-
+            
             if((int)p->GetIceServerClient()
                     & (int)CParameterSocks::emIceServerClient::Server)
             {
                 bool check = false;
+#ifdef _DEBUG
+                if(p->GetOnePeerConnectionToOneDataChannel())
+                    check = connect(m_Signal.get(),
+                                    SIGNAL(sigOffer(const QString&,
+                                                    const QString&,
+                                                    const QString&,
+                                                    const QString&,
+                                                    const QString&)),
+                                    this,
+                                    SLOT(slotOffer(const QString&,
+                                                   const QString&,
+                                                   const QString&,
+                                                   const QString&,
+                                                   const QString&)));
+                else
+                    check = connect(m_Signal.get(),
+                                    SIGNAL(sigOffer(const QString&,
+                                                    const QString&,
+                                                    const QString&,
+                                                    const QString&,
+                                                    const QString&)),
+                                    m_IceManager.get(),
+                                    SLOT(slotOffer(const QString&,
+                                                   const QString&,
+                                                   const QString&,
+                                                   const QString&,
+                                                   const QString&)));
+#else
 #if USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
                 check = connect(m_Signal.get(),
-                 SIGNAL(sigOffer(const QString&, const QString&, const QString&,
-                                               const QString&, const QString&)),
-                 this,
-                  SLOT(slotOffer(const QString&, const QString&, const QString&,
-                                              const QString&, const QString&)));
+                                SIGNAL(sigOffer(const QString&,
+                                                const QString&,
+                                                const QString&,
+                                                const QString&,
+                                                const QString&)),
+                                this,
+                                SLOT(slotOffer(const QString&,
+                                               const QString&,
+                                               const QString&,
+                                               const QString&,
+                                               const QString&)));
 #else
                 check = connect(m_Signal.get(),
-                 SIGNAL(sigOffer(const QString&, const QString&, const QString&,
-                                               const QString&, const QString&)),
-                 m_IceManager.get(),
-                  SLOT(slotOffer(const QString&, const QString&, const QString&,
-                                              const QString&, const QString&)));
+                                SIGNAL(sigOffer(const QString&,
+                                                const QString&,
+                                                const QString&,
+                                                const QString&,
+                                                const QString&)),
+                                m_IceManager.get(),
+                                SLOT(slotOffer(const QString&,
+                                               const QString&,
+                                               const QString&,
+                                               const QString&,
+                                               const QString&)));
+#endif
 #endif
                 Q_ASSERT(check);
             }
@@ -85,24 +126,24 @@ int CProxyServerSocks::Start()
         LOG_MODEL_ERROR("CProxyServerSocks", e.what());
         nRet = -1;
     }
-
+    
     return nRet;
 }
 
 int CProxyServerSocks::Stop()
 {
     m_IceManager.reset();
-
+    
     if(m_Signal)
     {
         m_Signal->Close();
         m_Signal->disconnect(this);
         m_Signal.reset();
     }
-
+    
     m_ConnectServer.clear();
-
-
+    
+    
     return CProxyServer::Stop();
 }
 
@@ -113,7 +154,7 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
                                   const QString &sdp)
 {
     CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
-
+    
     if(!p->GetPeerUser().isEmpty() && p->GetPeerUser() != fromUser
             && p->GetSignalUser() != toUser)
     {
@@ -125,7 +166,7 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
                         p->GetPeerUser().toStdString().c_str());
         return;
     }
-
+    
     QMutexLocker lock(&m_ConnectServerMutex);
     if(m_ConnectServer[fromUser][channelId])
     {
@@ -137,7 +178,7 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
                         p->GetPeerUser().toStdString().c_str());
         return;
     }
-
+    
     LOG_MODEL_DEBUG("ProxyServerSocks", "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
                     fromUser.toStdString().c_str(),
                     toUser.toStdString().c_str(),
@@ -153,7 +194,7 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
     check = connect(ice.get(), SIGNAL(sigError(int, const QString&)),
                     this, SLOT(slotError(int, const QString&)));
     Q_ASSERT(check);
-
+    
     m_ConnectServer[fromUser][channelId] = ice;
 }
 
@@ -174,7 +215,7 @@ void CProxyServerSocks::slotRemotePeerConnectServer()
         {
             return;
         }
-
+        
         LOG_MODEL_DEBUG("CProxyServerSocks",
                         "CProxyServerSocks::slotRemotePeerConnectServer(), peer:%s;id:%s",
                         pServer->GetPeerUser().toStdString().c_str(),
@@ -196,7 +237,7 @@ void CProxyServerSocks::slotRemotePeerConnectServer()
 void CProxyServerSocks::onAccecpt(QTcpSocket* pSocket)
 {
     bool check = connect(pSocket, SIGNAL(readyRead()),
-                    this, SLOT(slotRead()));
+                         this, SLOT(slotRead()));
     Q_ASSERT(check);
 }
 

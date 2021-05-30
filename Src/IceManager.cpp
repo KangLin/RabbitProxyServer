@@ -9,9 +9,6 @@ CIceManager::CIceManager(CProxyServerSocks *pServer)
       m_pServer(pServer)
 {
     SetSignal(pServer->GetSignal());
-    bool check = connect(this, SIGNAL(sigReceiverDataChannel(const QString&, const QString&, const QString&)),
-                         this, SLOT(slotReceiverDataChannel(const QString&, const QString&, const QString&)));
-    Q_ASSERT(check);
 }
 
 int CIceManager::SetPeerConnection(QSharedPointer<CIceSignal> signal,
@@ -175,6 +172,17 @@ int CIceManager::SetSignal(QSharedPointer<CIceSignal> signal)
                                                         const QString&)));
         Q_ASSERT(check);
     }
+    
+    check = connect(this,
+                    SIGNAL(sigReceiverDataChannel(const QString&,
+                                                  const QString&,
+                                                  const QString&)),
+                    this,
+                    SLOT(slotReceiverDataChannel(const QString&,
+                                                 const QString&,
+                                                 const QString&)));
+    Q_ASSERT(check);
+    
     return 0;
 }
 
