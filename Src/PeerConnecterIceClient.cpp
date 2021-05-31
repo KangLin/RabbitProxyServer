@@ -100,9 +100,6 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
 
 void CPeerConnecterIceClient::slotDataChannelConnected()
 {
-    LOG_MODEL_DEBUG("CPeerConnecterIceClient",
-                    "slotDataChannelConnected Current thread id: 0x%X",
-                    QThread::currentThread());
     strClientRequst requst = {0, 1, 0, 1, qToBigEndian(m_nPeerPort), {0}};
     qint64 nLen = 6;
     if(m_peerAddress.protocol() == QAbstractSocket::IPv6Protocol)
@@ -118,7 +115,15 @@ void CPeerConnecterIceClient::slotDataChannelConnected()
         requst.ip.v4 = qToBigEndian(m_peerAddress.toIPv4Address());
     }
     if(m_DataChannel)
+    {
+        LOG_MODEL_DEBUG("CPeerConnecterIceClient",
+                        "slotDataChannelConnected peer:%s;channel:%s;ip:%s;port:%d",
+                        m_DataChannel->GetPeerUser().toStdString().c_str(),
+                        m_DataChannel->GetChannelId().toStdString().c_str(),
+                        m_peerAddress.toString().toStdString().c_str(),
+                        m_nPeerPort);
         m_DataChannel->write(reinterpret_cast<const char*>(&requst), nLen);
+    }
 }
 
 void CPeerConnecterIceClient::slotDataChannelDisconnected()
@@ -238,6 +243,8 @@ int CPeerConnecterIceClient::OnConnectionReply()
     }
 
     QByteArray data = m_DataChannel->readAll();
+//    if(data.size() < 10)
+//        Q_ASSERT(false);
     strReply* pReply = reinterpret_cast<strReply*>(data.data());
     if(emERROR::Success == pReply->rep)
     {

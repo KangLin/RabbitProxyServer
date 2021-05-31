@@ -95,15 +95,12 @@ int CPeerConnecterIceServer::Write(const char *buf, qint64 nLen)
 int CPeerConnecterIceServer::Close()
 {
     LOG_MODEL_DEBUG("CPeerConnecterIceServer",
-                    "Close threadid:0x%X;peer:%s;id:%s",
-                    QThread::currentThread(),
+                    "Close: peer:%s;id:%s",
                     GetPeerUser().toStdString().c_str(),
                     GetId().toStdString().c_str());
     int nRet = 0;
 
     nRet = CPeerConnecterIceClient::Close();
-    LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Close end thread:0x%X;",
-                    QThread::currentThread());
 
     if(m_Peer)
     {
@@ -227,7 +224,7 @@ int CPeerConnecterIceServer::Reply(int nError, const QString& szError)
             reply.atyp = 0x04;
             memcpy(reply.ip.v6, m_bindAddress.toIPv6Address().c, 16);
         } else {
-            nLen += 2;
+            nLen += 4;
             reply.atyp = 0x01;
             reply.ip.v4 = qToBigEndian(m_bindAddress.toIPv4Address());
         }

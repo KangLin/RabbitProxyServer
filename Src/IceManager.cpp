@@ -126,6 +126,12 @@ std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
 
 int CIceManager::CloseDataChannel(CDataChannelIceChannel *dc, bool bServer)
 {
+    LOG_MODEL_DEBUG("CIceManger",
+                    "CloseDataChannel: user:%s;peer:%s;id:%s",
+                    dc->GetUser().toStdString().c_str(),
+                    dc->GetPeerUser().toStdString().c_str(),
+                    dc->GetChannelId().toStdString().c_str()
+                    );
     auto it = m_PeerConnections.find(dc->GetPeerUser());
     if(m_PeerConnections.end() == it)
         return -1;
