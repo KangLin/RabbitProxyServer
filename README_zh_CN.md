@@ -18,6 +18,14 @@
 在网上查找相关的代理软件，只有有公网IP的代理服务器，并没有无公网IP的代理服务器。所以写了本软件，
 以解决两个无公网IP的内网互相访问的问题。并且本软件实现[多种协议](#支持的协议)代理服务功能。
 
+### 捐赠
+本软件如果对你有用，或者你喜欢它，请你捐赠，支持作者。谢谢！
+
+[![捐赠](https://gitee.com/kl222/RabbitCommon/raw/master/Src/Resource/image/Contribute.png "捐赠")](https://gitee.com/kl222/RabbitCommon/raw/master/Src/Resource/image/Contribute.png "捐赠")
+
+如果不能显示，请打开：
+https://gitee.com/kl222/RabbitCommon/raw/master/Src/Resource/image/Contribute.png
+
 ### 支持的协议
 
 - Socks 代理协议

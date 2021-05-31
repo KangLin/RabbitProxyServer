@@ -266,6 +266,12 @@ void CIceManager::slotOffer(const QString& fromUser,
     auto it = m_PeerConnections.find(fromUser);
     if(m_PeerConnections.end() != it)
     {
+        LOG_MODEL_DEBUG("ProxyServerSocks", "clean old peer connection: fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+                        fromUser.toStdString().c_str(),
+                        toUser.toStdString().c_str(),
+                        channelId.toStdString().c_str(),
+                        p->GetSignalUser().toStdString().c_str(),
+                        p->GetPeerUser().toStdString().c_str());
         // clean old
         foreach(auto itServer, it->server)
         {

@@ -19,6 +19,14 @@ Cheng encountered a problem of mutual access between two intranets. For details,
 Searching for related proxy software on the Internet, there are only proxy servers with public IPs, and no proxy servers without public IPs. So I wrote this software,
 In order to solve the problem of mutual access between two internal networks without public IP. And this software implements [multiple protocols](#Supported-protocols) proxy service function.
 
+### Donation
+If this software is useful to you, or you like it, please donate and support the author. Thank you!
+
+[![donation](https://github.com/KangLin/RabbitCommon/raw/master/Src/Resource/image/Contribute.png "donation")](https://github.com/KangLin/RabbitCommon/raw/master/Src/Resource/image/Contribute.png "donation")
+
+If it cannot be displayed, please open:
+https://gitee.com/kl222/RabbitCommon/raw/master/Src/Resource/image/Contribute.png
+
 ### Supported protocols
 
 - Socks protocol
