@@ -259,6 +259,7 @@ int CProxySocks5::processClientRequest()
         m_Client.nLen += 3 + nLen;
         if(CheckBufferLength(m_Client.nLen))
             return ERROR_CONTINUE_READ;
+        m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 7 + nLen);
         char* pAdd = m_cmdBuf.data() + sizeof(strClientRequstHead) + 1;
         std::string szAddress(pAdd, nLen);
         LOG_MODEL_DEBUG("Socks5", "Look up domain: %s", szAddress.c_str());
