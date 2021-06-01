@@ -28,9 +28,6 @@ int CIceManager::SetPeerConnection(QSharedPointer<CIceSignal> signal,
     });
     pc->onLocalDescription(
                 [=](rtc::Description description) {
-        LOG_MODEL_DEBUG("CIceManger",
-                        "onLocalDescription: The thread id: 0x%X",
-                        QThread::currentThreadId());
         /*
         LOG_MODEL_DEBUG("CIceManger", "onLocalDescription: user:%s; peer:%s; channel:%s; sdp: %s",
                         user.toStdString().c_str(),
@@ -47,9 +44,6 @@ int CIceManager::SetPeerConnection(QSharedPointer<CIceSignal> signal,
     });
     pc->onLocalCandidate(
                 [=](rtc::Candidate candidate){
-        LOG_MODEL_DEBUG("CIceManger",
-                        "onLocalCandidate: The thread id: 0x%X",
-                        QThread::currentThreadId());
         /*
         LOG_MODEL_DEBUG("CIceManger", "onLocalCandidate: user:%s; peer:%s; channel:%s; candidate: %s, mid: %s",
                         user.toStdString().c_str(),

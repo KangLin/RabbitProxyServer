@@ -8,9 +8,6 @@ CParameterIce::CParameterIce(QObject *parent) : CParameter(parent),
     m_nSignalPort(80),
     m_nStunPort(3478),
     m_nTurnPort(3478),
-    #ifdef _DEBUG
-    m_bOnePeerConnectionToOneDataChannel(true),
-    #endif
     m_nChannelId(0)
 {}
 
@@ -35,9 +32,7 @@ int CParameterIce::Save(QSettings &set)
     set.setValue(Name() + "Ice/Turn/Port", m_nTurnPort);
     set.setValue(Name() + "Ice/Turn/User", m_szTurnUser);
     set.setValue(Name() + "Ice/Turn/Password", m_szTurnPassword);
-    #ifdef _DEBUG
-    set.setValue(Name() + "Ice/OnePeerConnectionToOneDataChannel", m_bOnePeerConnectionToOneDataChannel);
-    #endif
+
     return 0;
 }
 
@@ -57,11 +52,7 @@ int CParameterIce::Load(QSettings &set)
     m_nTurnPort = set.value(Name() + "Ice/Turn/Port", m_nTurnPort).toUInt();
     m_szTurnUser = set.value(Name() + "Ice/Turn/User", m_szTurnUser).toString();
     m_szTurnPassword = set.value(Name() + "Ice/Turn/Password", m_szTurnPassword).toString();
-    #ifdef _DEBUG
-    m_bOnePeerConnectionToOneDataChannel = set.value(Name()
-                                 + "Ice/OnePeerConnectionToOneDataChannel",
-                                 m_bOnePeerConnectionToOneDataChannel).toBool();
-    #endif
+
     return 0;
 }
 
@@ -185,18 +176,6 @@ void CParameterIce::SetTurnPassword(const QString &password)
 {
     m_szTurnPassword = password;
 }
-
-#ifdef _DEBUG
-bool CParameterIce::GetOnePeerConnectionToOneDataChannel()
-{
-    return m_bOnePeerConnectionToOneDataChannel;
-}
-
-void CParameterIce::SetOnePeerConnectionToOneDataChannel(bool bOne)
-{
-    m_bOnePeerConnectionToOneDataChannel = bOne;
-}
-#endif
 
 QString CParameterIce::GenerateChannelId()
 {

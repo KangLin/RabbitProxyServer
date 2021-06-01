@@ -59,34 +59,6 @@ int CProxyServerSocks::Start()
                     & (int)CParameterSocks::emIceServerClient::Server)
             {
                 bool check = false;
-#ifdef _DEBUG
-                if(p->GetOnePeerConnectionToOneDataChannel())
-                    check = connect(m_Signal.get(),
-                                    SIGNAL(sigOffer(const QString&,
-                                                    const QString&,
-                                                    const QString&,
-                                                    const QString&,
-                                                    const QString&)),
-                                    this,
-                                    SLOT(slotOffer(const QString&,
-                                                   const QString&,
-                                                   const QString&,
-                                                   const QString&,
-                                                   const QString&)));
-                else
-                    check = connect(m_Signal.get(),
-                                    SIGNAL(sigOffer(const QString&,
-                                                    const QString&,
-                                                    const QString&,
-                                                    const QString&,
-                                                    const QString&)),
-                                    m_IceManager.get(),
-                                    SLOT(slotOffer(const QString&,
-                                                   const QString&,
-                                                   const QString&,
-                                                   const QString&,
-                                                   const QString&)));
-#else
 #if USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
                 check = connect(m_Signal.get(),
                                 SIGNAL(sigOffer(const QString&,
@@ -114,7 +86,7 @@ int CProxyServerSocks::Start()
                                                const QString&,
                                                const QString&)));
 #endif
-#endif
+
                 Q_ASSERT(check);
             }
             if((int)p->GetIceServerClient()

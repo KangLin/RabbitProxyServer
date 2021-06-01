@@ -249,7 +249,10 @@ qint64 CDataChannelIce::writeData(const char *data, qint64 len)
 
     if(m_dataChannel->isClosed())
     {
-        LOG_MODEL_ERROR("CDataChannelIce", "m_dataChannel->isClosed()");
+        LOG_MODEL_ERROR("CDataChannelIce",
+                        "m_dataChannel->isClosed():peer:%s;channel:%s",
+                        GetPeerUser().toStdString().c_str(),
+                        GetChannelId().toStdString().c_str());
         return -1;
     }
     
