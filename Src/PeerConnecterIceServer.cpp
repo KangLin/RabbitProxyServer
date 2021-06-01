@@ -133,13 +133,13 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
         return -1;
     }
 
-    QByteArray data = m_DataChannel->readAll();
-    if(data.isEmpty())
+    m_Buffer.append(m_DataChannel->readAll());
+    if(m_Buffer.isEmpty())
     {
         LOG_MODEL_ERROR("PeerConnecterIce", "Data channel read fail");
         return -1;
     }
-    pRequst = reinterpret_cast<strClientRequst*>(data.data());
+    pRequst = reinterpret_cast<strClientRequst*>(m_Buffer.data());
 
     if(pRequst->version != 0)
     {
@@ -161,12 +161,14 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
     {
     case 0x01:
     {
+        if(CheckBufferLength(10)) return -1;
         qint32 add = qFromBigEndian(pRequst->ip.v4);
         m_peerAddress.setAddress(add);
         break;
     }
     case 0x04:
     {
+        if(CheckBufferLength(22)) return -1;
         m_peerAddress.setAddress(pRequst->ip.v6);
         break;
     }

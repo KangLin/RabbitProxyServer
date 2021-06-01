@@ -146,6 +146,17 @@ protected:
     };
 
 #pragma pack(pop)
+
+protected:
+    QByteArray m_Buffer;
+    /**
+     * @brief CheckBufferLength
+     * @param nLength
+     * @return:
+     *     0: If has nLength
+     *   > 0:
+     */
+    int CheckBufferLength(int nLength);
 };
 
 #endif // CPEERCONNECTERICECLIENT_H

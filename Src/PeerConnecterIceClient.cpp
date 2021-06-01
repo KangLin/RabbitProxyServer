@@ -138,9 +138,7 @@ void CPeerConnecterIceClient::slotDataChannelError(int nErr, const QString& szEr
 
 void CPeerConnecterIceClient::slotDataChannelReadyRead()
 {
-    LOG_MODEL_DEBUG("CPeerConnecterIceClient",
-                    "slotDataChannelReadyRead Current thread id: 0x%X",
-                    QThread::currentThread());
+    LOG_MODEL_DEBUG("CPeerConnecterIceClient", "slotDataChannelReadyRead");
     if(!m_DataChannel) return;
 
     if(CONNECT == m_Status)
@@ -232,6 +230,18 @@ QString CPeerConnecterIceClient::ErrorString()
     return m_szError;
 }
 
+int CPeerConnecterIceClient::CheckBufferLength(int nLength)
+{
+    int nRet = nLength - m_Buffer.size();
+    if(nRet > 0)
+    {
+        LOG_MODEL_DEBUG("CPeerConnecterIceClient",
+            "CheckBufferLength %d < %d", m_Buffer.size(), nLength);
+        return nRet;
+    }
+    return 0;
+}
+
 int CPeerConnecterIceClient::OnConnectionReply()
 {
     int nRet = 0;
@@ -242,19 +252,19 @@ int CPeerConnecterIceClient::OnConnectionReply()
         return -1;
     }
 
-    QByteArray data = m_DataChannel->readAll();
-//    if(data.size() < 10)
-//        Q_ASSERT(false);
-    strReply* pReply = reinterpret_cast<strReply*>(data.data());
+    m_Buffer.append(m_DataChannel->readAll());
+    strReply* pReply = reinterpret_cast<strReply*>(m_Buffer.data());
     if(emERROR::Success == pReply->rep)
     {
         m_nBindPort = qFromBigEndian(pReply->port);
         switch (pReply->atyp)
         {
         case 0x01: //IPV4
+            if(CheckBufferLength(10)) return -1;
             m_bindAddress.setAddress(qFromBigEndian(pReply->ip.v4));
             break;
         case 0x04: // IPV6
+            if(CheckBufferLength(22)) return -1;
             m_bindAddress.setAddress(pReply->ip.v6);
             break;
         default:
@@ -269,6 +279,7 @@ int CPeerConnecterIceClient::OnConnectionReply()
                         "CPeerConnecterIceClient::OnConnectionReply(): ip:%s;port:%d",
                         m_bindAddress.toString().toStdString().c_str(), m_nBindPort);
         m_Status = FORWORD;
+        m_Buffer.clear();
         emit sigConnected();
     }
     else
