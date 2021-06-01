@@ -275,8 +275,8 @@ void CIceManager::slotOffer(const QString& fromUser,
         // clean old
         foreach(auto itServer, it->server)
         {
-            if(itServer.dc)
-                itServer.dc->close();
+//            if(itServer.dc)
+//                itServer.dc->close();
             if(itServer.server)
                 itServer.server->Close();
         }
