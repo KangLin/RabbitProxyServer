@@ -59,22 +59,19 @@ else()
     endif()
 endif()
 if(LibDataChannel_FOUND)
-    set(INSTALL_HEAD_FILES
-        ${INSTALL_HEAD_FILES}
+    list(APPEND INSTALL_HEAD_FILES
         PeerConnecterIceClient.h
         PeerConnecterIceServer.h
         IceSignal.h
-        IceSignalWebSocket.h
         DataChannelIce.h
         DataChannelIceChannel.h
-        IceManager.h
         )
-    set(SOURCE_FILES
-        ${SOURCE_FILES}
+    list(APPEND HEADER_FILES
+        IceManager.h)
+    list(APPEND SOURCE_FILES
         PeerConnecterIceClient.cpp
         PeerConnecterIceServer.cpp
         IceSignal.cpp
-        IceSignalWebSocket.cpp
         DataChannelIce.cpp
         DataChannelIceChannel.cpp
         IceManager.cpp
@@ -83,6 +80,20 @@ if(LibDataChannel_FOUND)
     option(USE_ONE_PEERCONNECTION_ONE_DATACHANNEL "Use one peer connect to one data channel" ON)
     if(USE_ONE_PEERCONNECTION_ONE_DATACHANNEL)
         list(APPEND PROXY_DEFINITIONS USE_ONE_PEERCONNECTION_ONE_DATACHANNEL)
+    endif()
+
+    find_package(nlohmann_json)
+    if(nlohmann_json_FOUND)
+        list(APPEND _LibDataChannel_LIBS nlohmann_json::nlohmann_json)
+        list(APPEND HEADER_FILES IceSignalWebSocket.h)
+        list(APPEND SOURCE_FILES IceSignalWebSocket.cpp)
+    endif()
+
+    find_package(QXmpp)
+    if(QXmpp_FOUND)
+        list(APPEND _LibDataChannel_LIBS QXmpp::QXmpp)
+        list(APPEND HEADER_FILES IceSignalQxmpp.h)
+        list(APPEND SOURCE_FILES IceSignalQxmpp.cpp)
     endif()
 else()
     message(AUTHOR_WARNING "Please install libdatachannel from https://github.com/paullouisageneau/libdatachannel")
