@@ -26,7 +26,7 @@ public:
     virtual int Close() override;
     virtual QHostAddress LocalAddress() override;
     virtual qint16 LocalPort() override;
-    virtual QString ErrorString();
+    virtual QString ErrorString() override;
 
 protected:
     int CreateDataChannel(const QString& peer,
