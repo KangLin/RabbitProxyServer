@@ -32,11 +32,12 @@ set(SOURCE_FILES
 set(SOURCE_UI_FILES
     )
 
-set(_LibDataChannel_LIBS RabbitCommon ${QT_LIBRARIES})
+set(_PROXY_LIBS RabbitCommon ${QT_LIBRARIES})
 set(_LibDataChannel_DIR ${LibDataChannel_DIR})
 find_package(LibDataChannel)
 if(LibDataChannel_FOUND)
-    list(APPEND _LibDataChannel_LIBS LibDatachannel::datachannel)
+    find_package(Threads)
+    list(APPEND _PROXY_LIBS LibDatachannel::datachannel)
 else()
     find_path(_LibDataChannel_INCLUDE_DIRS
         NAMES "rtc/rtc.hpp"
@@ -51,7 +52,7 @@ else()
         PATH_SUFFIXES lib
         )
     if(_LibDataChannel_LIB)
-        list(APPEND _LibDataChannel_LIBS ${_LibDataChannel_LIB})
+        list(APPEND _PROXY_LIBS ${_LibDataChannel_LIB})
     endif()
     if(_LibDataChannel_INCLUDE_DIRS AND _LibDataChannel_LIB)
         set(LibDataChannel_FOUND TRUE)
@@ -84,20 +85,22 @@ if(LibDataChannel_FOUND)
 
     find_package(nlohmann_json)
     if(nlohmann_json_FOUND)
-        list(APPEND _LibDataChannel_LIBS nlohmann_json::nlohmann_json)
+        list(APPEND _PROXY_LIBS nlohmann_json::nlohmann_json)
         list(APPEND HEADER_FILES IceSignalWebSocket.h)
         list(APPEND SOURCE_FILES IceSignalWebSocket.cpp)
     endif()
 
     find_package(QXmpp)
     if(QXmpp_FOUND)
-        list(APPEND _LibDataChannel_LIBS QXmpp::QXmpp)
+        list(APPEND _PROXY_LIBS QXmpp::QXmpp)
         list(APPEND HEADER_FILES IceSignalQxmpp.h)
         list(APPEND SOURCE_FILES IceSignalQxmpp.cpp)
     endif()
 else()
     message(AUTHOR_WARNING "Please install libdatachannel from https://github.com/paullouisageneau/libdatachannel")
 endif()
+
+message("LIBS:${_PROXY_LIBS}")
 
 #翻译
 GENERATED_QT_TRANSLATIONS(SOURCES ${SOURCE_FILES} ${SOURCE_UI_FILES} ${HEADER_FILES}
@@ -120,5 +123,5 @@ ADD_TARGET(NAME ${PROJECT_NAME}
         ${_LibDataChannel_INCLUDE_DIRS}
     PRIVATE_DEFINITIONS ${PROXY_PRIVATE_DEFINITIONS}
     DEFINITIONS ${PROXY_DEFINITIONS}
-    LIBS ${_LibDataChannel_LIBS}
+    LIBS ${_PROXY_LIBS}
     VERSION ${BUILD_VERSION})
