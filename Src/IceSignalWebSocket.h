@@ -17,7 +17,7 @@ public:
 
     virtual int Open(const std::string& szServer, quint16 nPort,
                      const std::string &user = std::string(),
-                     const std::string &password = std::string());
+                     const std::string &password = std::string()) override;
     int Open(const std::string &szUrl,
              const std::string &user = std::string(),
              const std::string &password = std::string());
@@ -27,11 +27,11 @@ public:
     virtual int SendDescription(const QString& toUser,
                                 const QString& channelId,
                                 const rtc::Description& description,
-                                const QString& fromUser = QString());
+                                const QString& fromUser = QString()) override;
     virtual int SendCandiate(const QString& toUser,
                              const QString& channelId,
                              const rtc::Candidate& candidate,
-                             const QString& fromUser = QString());
+                             const QString& fromUser = QString()) override;
 
     virtual int Write(const char* buf, int nLen) override;
     virtual int Read(char* buf, int nLen) override;

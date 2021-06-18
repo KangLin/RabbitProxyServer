@@ -190,6 +190,11 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         m_Signal->SendCandiate(m_szPeerUser, m_szChannelId, candidate);
     });
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
+        LOG_MODEL_INFO("DataChannel", "Open data channel: user:%s; peer:%s; channel:%s; lable:%s",
+                       GetUser().toStdString().c_str(),
+                       GetPeerUser().toStdString().c_str(),
+                       GetChannelId().toStdString().c_str(),
+                       dc->label().c_str());
         if(dc->label().c_str() != GetChannelId())
         {
             LOG_MODEL_ERROR("DataChannel", "Channel label diffent: %s; %s",
@@ -204,6 +209,11 @@ int CDataChannelIce::CreateDataChannel(bool bData)
     if(bData)
     {
         auto dc = m_peerConnection->createDataChannel(GetChannelId().toStdString());
+        LOG_MODEL_INFO("DataChannel", "Create data channel: user:%s; peer:%s; channel:%s",
+                       GetUser().toStdString().c_str(),
+                       GetPeerUser().toStdString().c_str(),
+                       GetChannelId().toStdString().c_str()
+                       );
         SetDataChannel(dc);
     }
     return 0;

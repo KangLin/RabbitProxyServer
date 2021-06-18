@@ -6,6 +6,7 @@
 
 #ifdef HAVE_ICE
 #include "IceSignalWebSocket.h"
+#include "IceSignalQxmpp.h"
 #include "PeerConnecterIceServer.h"
 #include "IceManager.h"
 #endif
@@ -39,7 +40,7 @@ int CProxyServerSocks::Start()
         CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
         if(p->GetIce())
         {
-            m_Signal = QSharedPointer<CIceSignal>(new CIceSignalWebSocket(this),
+            m_Signal = QSharedPointer<CIceSignal>(new CIceSignalQxmpp(this), //new CIceSignalWebSocket(this),
                                                   &QObject::deleteLater);
             nRet = m_Signal->Open(p->GetSignalServer().toStdString(),
                                   p->GetSignalPort(),

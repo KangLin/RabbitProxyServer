@@ -93,8 +93,14 @@ if(LibDataChannel_FOUND)
     find_package(QXmpp)
     if(QXmpp_FOUND)
         list(APPEND _PROXY_LIBS QXmpp::QXmpp)
-        list(APPEND HEADER_FILES IceSignalQxmpp.h)
-        list(APPEND SOURCE_FILES IceSignalQxmpp.cpp)
+        list(APPEND HEADER_FILES
+            IceSignalQxmpp.h
+            IceSignalQXmppManager.h
+            IceSignalQXmppIq.h)
+        list(APPEND SOURCE_FILES
+            IceSignalQxmpp.cpp
+            IceSignalQXmppManager.cpp
+            IceSignalQXmppIq.cpp)
     endif()
 else()
     message(AUTHOR_WARNING "Please install libdatachannel from https://github.com/paullouisageneau/libdatachannel")
