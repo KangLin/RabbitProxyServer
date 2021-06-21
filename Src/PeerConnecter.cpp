@@ -29,14 +29,14 @@ int CPeerConnecter::InitSignals()
     return 0;
 }
 
-int CPeerConnecter::Connect(const QHostAddress &address, qint16 nPort)
+int CPeerConnecter::Connect(const QHostAddress &address, quint16 nPort)
 {
     InitSignals();
     m_Socket.connectToHost(address, nPort);
     return 0;
 }
 
-int CPeerConnecter::Bind(const QHostAddress &address, qint16 nPort)
+int CPeerConnecter::Bind(const QHostAddress &address, quint16 nPort)
 {
     InitSignals();
     bool bBind = false;
@@ -46,7 +46,7 @@ int CPeerConnecter::Bind(const QHostAddress &address, qint16 nPort)
     return -1;
 }
 
-int CPeerConnecter::Bind(qint16 nPort)
+int CPeerConnecter::Bind(quint16 nPort)
 {
     bool bBind = false;
     bBind = m_Socket.bind(nPort);

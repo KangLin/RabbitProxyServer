@@ -126,7 +126,7 @@ void CPeerConnecterIceClient::slotDataChannelError(int nErr, const QString& szEr
 
 void CPeerConnecterIceClient::slotDataChannelReadyRead()
 {
-    LOG_MODEL_DEBUG("CPeerConnecterIceClient", "slotDataChannelReadyRead");
+    //LOG_MODEL_DEBUG("CPeerConnecterIceClient", "slotDataChannelReadyRead");
     if(!m_DataChannel) return;
 
     if(CONNECT == m_Status)
@@ -138,7 +138,7 @@ void CPeerConnecterIceClient::slotDataChannelReadyRead()
     emit sigReadyRead();
 }
 
-int CPeerConnecterIceClient::Connect(const QHostAddress &address, qint16 nPort)
+int CPeerConnecterIceClient::Connect(const QHostAddress &address, quint16 nPort)
 {
     int nRet = 0;
 

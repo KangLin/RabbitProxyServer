@@ -217,6 +217,7 @@ int CProxySocks5::processAuthenticatorUserPassword(QString szUser, QString szPas
     return -1;
 }
 
+// @see https://www.ietf.org/rfc/rfc1928.txt
 int CProxySocks5::processClientRequest()
 {
     int nRet = 0;
@@ -252,6 +253,8 @@ int CProxySocks5::processClientRequest()
     }
     case AddressTypeDomain: //Domain
     {
+        //TODO: Add ICE pass domain to peer
+        
         m_Client.nLen = sizeof(strClientRequstHead);
         if(CheckBufferLength(m_Client.nLen + 2))
             return ERROR_CONTINUE_READ;
@@ -259,7 +262,7 @@ int CProxySocks5::processClientRequest()
         m_Client.nLen += 3 + nLen;
         if(CheckBufferLength(m_Client.nLen))
             return ERROR_CONTINUE_READ;
-        m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 7 + nLen);
+        m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 5 + nLen);
         char* pAdd = m_cmdBuf.data() + sizeof(strClientRequstHead) + 1;
         std::string szAddress(pAdd, nLen);
         LOG_MODEL_DEBUG("Socks5", "Look up domain: %s", szAddress.c_str());

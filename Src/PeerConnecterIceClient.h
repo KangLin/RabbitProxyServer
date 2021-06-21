@@ -19,7 +19,7 @@ public:
     virtual ~CPeerConnecterIceClient();
 
 public:
-    virtual int Connect(const QHostAddress &address, qint16 nPort) override;
+    virtual int Connect(const QHostAddress &address, quint16 nPort) override;
     virtual qint64 Read(char *buf, qint64 nLen) override;
     virtual QByteArray ReadAll() override;
     virtual int Write(const char *buf, qint64 nLen) override;
