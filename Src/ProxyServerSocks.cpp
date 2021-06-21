@@ -27,12 +27,12 @@ QSharedPointer<CIceSignal> CProxyServerSocks::GetSignal()
 {
     return m_Signal;
 }
-
+#ifndef USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
 QSharedPointer<CIceManager> CProxyServerSocks::GetIceManager()
 {
     return m_IceManager;
 }
-
+#endif
 int CProxyServerSocks::Start()
 {
     int nRet = 0;
@@ -52,9 +52,11 @@ int CProxyServerSocks::Start()
                 return -1;
             }
             
+#ifndef USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
             m_IceManager = QSharedPointer<CIceManager>(
                         new CIceManager(this),
                         &QObject::deleteLater);
+#endif
             
             if((int)p->GetIceServerClient()
                     & (int)CParameterSocks::emIceServerClient::Server)
@@ -105,8 +107,9 @@ int CProxyServerSocks::Start()
 
 int CProxyServerSocks::Stop()
 {
+#ifndef USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
     m_IceManager.reset();
-    
+#endif
     if(m_Signal)
     {
         m_Signal->Close();

@@ -56,10 +56,11 @@ bool CIceSignalQxmpp::IsOpen()
 
 bool CIceSignalQxmpp::proecssIq(CIceSignalQXmppIq iq)
 {
+    /*
     LOG_MODEL_DEBUG("CIceSignalQxmpp", "from:%s;to:%s;type:%s",
                     iq.from().toStdString().c_str(),
                     iq.to().toStdString().c_str(),
-                    iq.SignalType().toStdString().c_str());
+                    iq.SignalType().toStdString().c_str());//*/
     if(iq.SignalType() == "offer")
     {
         /*

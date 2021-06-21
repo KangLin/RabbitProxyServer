@@ -177,13 +177,21 @@ qint64 CPeerConnecterIceClient::Read(char *buf, qint64 nLen)
 
 QByteArray CPeerConnecterIceClient::ReadAll()
 {
-    if(!m_DataChannel || !m_DataChannel->isOpen()) return QByteArray();
+    if(!m_DataChannel || !m_DataChannel->isOpen())
+    {
+        LOG_MODEL_ERROR("CPeerConnecterIceClient", "CPeerConnecterIceClient::ReadAll(): Data channel is not open");
+        return QByteArray();
+    }
     return m_DataChannel->readAll();
 }
 
 int CPeerConnecterIceClient::Write(const char *buf, qint64 nLen)
 {
-    if(!m_DataChannel || !m_DataChannel->isOpen()) return -1;
+    if(!m_DataChannel || !m_DataChannel->isOpen())
+    {
+        LOG_MODEL_ERROR("CPeerConnecterIceClient", "CPeerConnecterIceClient::Write: Data channel is not open");
+        return -1;
+    }
     return m_DataChannel->write(buf, nLen);
 }
 

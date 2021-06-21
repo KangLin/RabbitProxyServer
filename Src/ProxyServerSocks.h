@@ -26,8 +26,9 @@ public:
 
 #ifdef HAVE_ICE
     QSharedPointer<CIceSignal> GetSignal();
+#ifndef USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
     QSharedPointer<CIceManager> GetIceManager();
-
+#endif
 protected Q_SLOTS:
     virtual int Start();
     virtual int Stop();
@@ -42,8 +43,9 @@ private Q_SLOTS:
     void slotError(int nErr, const QString& szErr = QString());
 private:
     QSharedPointer<CIceSignal> m_Signal;
+#ifndef USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
     QSharedPointer<CIceManager> m_IceManager;
-
+#endif
     QMutex m_ConnectServerMutex;
     QMap<QString, QMap<QString, QSharedPointer<CPeerConnecterIceServer> > > m_ConnectServer;
 #endif
