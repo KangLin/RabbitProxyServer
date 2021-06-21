@@ -26,6 +26,7 @@ public:
     };
 
     virtual int Connect(const QHostAddress &address, quint16 nPort);
+    virtual int Connect(const QString& address, quint16 nPort);
     virtual int Bind(const QHostAddress &address, quint16 nPort = 0);
     virtual int Bind(quint16 nPort = 0);
     virtual qint64 Read(char* buf, qint64 nLen);

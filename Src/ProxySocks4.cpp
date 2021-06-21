@@ -25,10 +25,10 @@ CProxySocks4::~CProxySocks4()
 void CProxySocks4::slotRead()
 {
     //LOG_MODEL_DEBUG("Socks4", "slotRead() command:0x%X", m_Status);
-    int nRet = 0;
+    
     switch (m_Status) {
     case emStatus::ClientRequest:
-        nRet = processClientRequest();
+        processClientRequest();
         break;
     case emStatus::Forward:
         if(m_pPeer && m_pSocket)
@@ -105,14 +105,16 @@ int CProxySocks4::processClientRequest()
             return reply(emErrorCode::Rejected);
         }
         char *pDomain = m_cmdBuf.data() + nLen;
-        std::string szAddress(pDomain);
-        LOG_MODEL_DEBUG("Socks4", "Look up domain: %s", szAddress.c_str());
-        QHostInfo::lookupHost(szAddress.c_str(), this, SLOT(slotLookup(QHostInfo)));
+        m_HostAddress = pDomain;
+        
+//        std::string szAddress(pDomain);
+//        LOG_MODEL_DEBUG("Socks4", "Look up domain: %s", szAddress.c_str());
+//        QHostInfo::lookupHost(szAddress.c_str(), this, SLOT(slotLookup(QHostInfo)));
         return 0;
     }
 
     // Is v4
-    m_HostAddress.push_back(QHostAddress(add));
+    m_HostAddress = QHostAddress(add).toString();
 
     return onExecClientRequest();
 }
@@ -148,15 +150,17 @@ void CProxySocks4::slotLookup(QHostInfo info)
 
     const auto addresses = info.addresses();
     for (const QHostAddress &address : addresses)
+    {   
         qDebug() << "Found address:" << address.toString();
+        m_HostAddress = address.toString();
+        break;
+    }
 
-    m_HostAddress = addresses;
     onExecClientRequest();
 }
 
 int CProxySocks4::processConnect()
 {
-    int nRet = 0;
     if(m_HostAddress.isEmpty())
     {
         LOG_MODEL_ERROR("Socks4", "The host is empty");
@@ -169,21 +173,18 @@ int CProxySocks4::processConnect()
         if(CreatePeer())
             return -1;
 
-    foreach(auto add, m_HostAddress)
-    {
-        SetPeerConnect();
-
-        m_pPeer->Connect(add, m_nPort);
-        LOG_MODEL_DEBUG("Socks4", "Connect to: %s:%d",
-                        add.toString().toStdString().c_str(),
-                        m_nPort);
-
-        return 0;
-    }
-
-    return nRet;
+    
+    SetPeerConnect();
+    
+    m_pPeer->Connect(m_HostAddress, m_nPort);
+    LOG_MODEL_DEBUG("Socks4", "Connect to: %s:%d",
+                    m_HostAddress.toStdString().c_str(),
+                    m_nPort);
+    
+    return 0;
 }
 
+//TODO: test it!
 int CProxySocks4::processBind()
 {
     int nRet = 0;
@@ -195,24 +196,14 @@ int CProxySocks4::processBind()
     }
 
     bool bBind = false;
-    foreach(auto add, m_HostAddress)
-    {
-        bBind = m_pPeer->Bind(add, m_nPort);
-        if(bBind)
-        {
-            break;
-        }
-    }
-
+    if(m_HostAddress.isEmpty())
+        bBind = m_pPeer->Bind(m_nPort);
+     else
+        bBind = m_pPeer->Bind(QHostAddress(m_HostAddress), m_nPort);
+    
     if(!bBind)
     {
-        if(m_HostAddress.isEmpty())
-        {
-            bBind = m_pPeer->Bind(m_nPort);
-        }
-        else{
-            bBind = m_pPeer->Bind();
-        }
+        bBind = m_pPeer->Bind();
     }
 
     if(!bBind)
@@ -237,6 +228,9 @@ void CProxySocks4::slotPeerConnected()
     if(emStatus::ClientRequest != m_Status)
         return;
 
+    LOG_MODEL_INFO("Socks4", "Peer connected to: %s:%d",
+                   m_HostAddress.toStdString().c_str(),
+                   m_nPort);
     reply(emErrorCode::Ok);
     m_Status = emStatus::Forward;
     RemoveCommandBuffer();
@@ -245,7 +239,9 @@ void CProxySocks4::slotPeerConnected()
 
 void CProxySocks4::slotPeerDisconnectd()
 {
-    LOG_MODEL_DEBUG("Socks4", "slotPeerDisconnectd()");
+    LOG_MODEL_INFO("Socks4", "Peer disconnected to: %s:%d",
+                   m_HostAddress.toStdString().c_str(),
+                   m_nPort);
     if(emStatus::ClientRequest == m_Status)
         reply(emErrorCode::DoNotConnect);
 
@@ -254,7 +250,11 @@ void CProxySocks4::slotPeerDisconnectd()
 
 void CProxySocks4::slotPeerError(int err, const QString &szErr)
 {
-    LOG_MODEL_DEBUG("Socks4", "slotPeerError():%d %s", err, szErr.toStdString().c_str());
+    LOG_MODEL_ERROR("Socks4", "Peer: %s:%d. Error:%d %s",
+                    m_HostAddress.toStdString().c_str(),
+                    m_nPort,
+                    err,
+                    szErr.toStdString().c_str());
     if(emStatus::Forward == m_Status)
     {
         slotClose();

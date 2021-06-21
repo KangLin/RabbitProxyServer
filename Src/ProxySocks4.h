@@ -76,7 +76,7 @@ private:
     };
 #pragma pack(pop)
     
-    QList<QHostAddress> m_HostAddress;
+    QString m_HostAddress;
     quint16 m_nPort;
     QString m_szUser;
 

@@ -176,7 +176,7 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
 
 void CProxyServerSocks::slotError(int err, const QString& szErr)
 {
-    LOG_MODEL_DEBUG("CProxyServerSocks", "CProxyServerSocks::slotError: %d;%s",
+    LOG_MODEL_ERROR("CProxyServerSocks", "CProxyServerSocks::slotError: %d;%s",
                     err, szErr.toStdString().c_str());
     slotRemotePeerConnectServer();
 }
