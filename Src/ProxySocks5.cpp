@@ -480,28 +480,27 @@ int CProxySocks5::processBind()
             return -1;
     }
     bool bBind = false;
-    if(m_Client.szHost.isEmpty())
-        bBind = m_pPeer->Bind(m_Client.nPort);
+    QHostAddress add;
+    if(!m_Client.szHost.isEmpty() && add.setAddress(m_Client.szHost))
+        bBind = m_pPeer->Bind(add, m_Client.nPort);
     else
-    {
-        bBind = m_pPeer->Bind(QHostAddress(m_Client.szHost), m_Client.nPort);
-    }
-
+        bBind = m_pPeer->Bind(m_Client.nPort);
+    
     if(!bBind)
         bBind = m_pPeer->Bind();
-    
+
     if(!bBind)
     {
         processClientReply(REPLY_GeneralServerFailure);
         return nRet;
     }
-    
+
     LOG_MODEL_INFO("Socks5", "Bind:%s:%d",
                    m_Client.szHost.toStdString().c_str(), m_Client.nPort);
-    
+
     SetPeerConnect();
-    
+
     processClientReply(REPLY_Succeeded);
-    
+
     return nRet;
 }

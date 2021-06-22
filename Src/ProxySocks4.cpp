@@ -196,15 +196,14 @@ int CProxySocks4::processBind()
     }
 
     bool bBind = false;
-    if(m_HostAddress.isEmpty())
+    QHostAddress add;
+    if(!m_HostAddress.isEmpty() && add.setAddress(m_HostAddress))
+        bBind = m_pPeer->Bind(add, m_nPort);
+    else
         bBind = m_pPeer->Bind(m_nPort);
-     else
-        bBind = m_pPeer->Bind(QHostAddress(m_HostAddress), m_nPort);
     
     if(!bBind)
-    {
         bBind = m_pPeer->Bind();
-    }
 
     if(!bBind)
     {
