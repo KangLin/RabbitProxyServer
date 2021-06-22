@@ -36,7 +36,6 @@ jobs:
         pacman -S --noconfirm mingw-w64-x86_64-make
         pacman -S --noconfirm mingw-w64-x86_64-gcc
         pacman -S --noconfirm mingw-w64-x86_64-qt5
-        pacman -S --noconfirm mingw-w64-x86_64-libvncserver
         pacman -S --noconfirm mingw-w64-x86_64-cyrus-sasl
 
     - name: Create Build Environment
