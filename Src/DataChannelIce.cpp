@@ -134,8 +134,14 @@ int CDataChannelIce::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
 //        else
 //            LOG_MODEL_DEBUG("DataChannel", "From remote Received, size=%d",
 //                            std::get<rtc::binary>(data).size());
-        m_MutexData.lock();
+        
         rtc::binary d = std::get<rtc::binary>(data);
+        if(d.size() <= 0)
+        {
+            LOG_MODEL_DEBUG("DataChannel", "onMessage size is zero");
+            return;
+        }
+        m_MutexData.lock();
         m_data.append((char*)d.data(), d.size());
         m_MutexData.unlock();
         emit this->readyRead();
