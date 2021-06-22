@@ -95,6 +95,18 @@
         <source>Set parameters</source>
         <translation>设置参数</translation>
     </message>
+    <message>
+        <source>Domain:</source>
+        <translation>域名:</translation>
+    </message>
+    <message>
+        <source>Resource:</source>
+        <translation>资源:</translation>
+    </message>
+    <message>
+        <source>One peer connection to one data channel</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>

@@ -55,7 +55,7 @@ public:
     void SetTurnUser(const QString& user);
     QString GetTurnPassword();
     void SetTurnPassword(const QString& password);
-    
+        
     QString GenerateChannelId();
 
 private:
@@ -72,8 +72,8 @@ private:
     quint16 m_nTurnPort;
     QString m_szTurnUser;
     QString m_szTurnPassword;
-
-    quint64 m_nChannelId;
+    
+    quint64 m_nChannelId;  
 };
 
 #endif // CPARAMETERICE_H

@@ -5,11 +5,18 @@
 #include "ParameterSocks.h"
 
 #ifdef HAVE_ICE
+#ifdef HAVE_WebSocket
 #include "IceSignalWebSocket.h"
-#include "IceSignalQxmpp.h"
+#endif
 #include "PeerConnecterIceServer.h"
 #include "IceManager.h"
+
+#ifdef HAVE_QXMPP
+#include "IceSignalQxmpp.h"
 #endif
+
+#endif
+
 #include "RabbitCommonLog.h"
 
 CProxyServerSocks::CProxyServerSocks(QObject *parent) : CProxyServer(parent)
@@ -40,8 +47,16 @@ int CProxyServerSocks::Start()
         CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
         if(p->GetIce())
         {
-            m_Signal = QSharedPointer<CIceSignal>(new CIceSignalQxmpp(this), //new CIceSignalWebSocket(this),
+#ifdef HAVE_QXMPP
+            m_Signal = QSharedPointer<CIceSignal>(
+                        new CIceSignalQxmpp(this),
+                        &QObject::deleteLater);
+#elif HAVE_WebSocket
+            m_Signal = QSharedPointer<CIceSignal>(new CIceSignalWebSocket(this),
                                                   &QObject::deleteLater);
+#else
+    #error "The signal muse has qxmpp or wetsocket"
+#endif
             nRet = m_Signal->Open(p->GetSignalServer().toStdString(),
                                   p->GetSignalPort(),
                                   p->GetSignalUser().toStdString(),

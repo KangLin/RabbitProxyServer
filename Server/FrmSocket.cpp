@@ -53,6 +53,7 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
     ui->spTurnPort->setValue(m_pPara->GetTurnPort());
     ui->leTurnUser->setText(m_pPara->GetTurnUser());
     ui->leTurnPassword->setText(m_pPara->GetTurnPassword());
+
 }
 
 CFrmSocket::~CFrmSocket()
@@ -68,7 +69,7 @@ void CFrmSocket::slotAccept()
 #endif
     m_pPara->SetV4(ui->cbEnableV4->isChecked());
     m_pPara->SetV5(ui->cbEnableV5->isChecked());
-    
+
     QVector<unsigned char> method;
     if(ui->cbNoAuthentication->isChecked())
         method << CParameterSocks::AUTHENTICATOR_NO;

@@ -16,13 +16,13 @@ QString CIceSignalQXmppIq::ns()
 
 bool CIceSignalQXmppIq::isIceSignalIq(const QDomElement &element)
 {
-    QDomElement domElement = element.firstChildElement("DataChannel");
+    QDomElement domElement = element.firstChildElement("query");
     return (domElement.namespaceURI() == ns());
 }
 
 void CIceSignalQXmppIq::parseElementFromChild(const QDomElement &element)
 {
-    QDomElement dataChannelElement = element.firstChildElement("DataChannel");
+    QDomElement dataChannelElement = element.firstChildElement("query");
     if(dataChannelElement.isNull())
     {
         LOG_MODEL_ERROR("CIceSignalQXmppManager", "webrtcElement is null");
@@ -41,7 +41,7 @@ void CIceSignalQXmppIq::parseElementFromChild(const QDomElement &element)
 
 void CIceSignalQXmppIq::toXmlElementFromChild(QXmlStreamWriter *writer) const
 {
-    writer->writeStartElement("DataChannel");
+    writer->writeStartElement("query");
     writer->writeAttribute("xmlns", ns());
     writer->writeAttribute("channelid", ChannelId());
     writer->writeAttribute("type", SignalType());

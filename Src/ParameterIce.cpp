@@ -32,7 +32,7 @@ int CParameterIce::Save(QSettings &set)
     set.setValue(Name() + "Ice/Turn/Port", m_nTurnPort);
     set.setValue(Name() + "Ice/Turn/User", m_szTurnUser);
     set.setValue(Name() + "Ice/Turn/Password", m_szTurnPassword);
-
+    
     return 0;
 }
 
@@ -52,7 +52,7 @@ int CParameterIce::Load(QSettings &set)
     m_nTurnPort = set.value(Name() + "Ice/Turn/Port", m_nTurnPort).toUInt();
     m_szTurnUser = set.value(Name() + "Ice/Turn/User", m_szTurnUser).toString();
     m_szTurnPassword = set.value(Name() + "Ice/Turn/Password", m_szTurnPassword).toString();
-
+    
     return 0;
 }
 
@@ -184,5 +184,6 @@ QString CParameterIce::GenerateChannelId()
     std::string r = std::to_string(m_nChannelId++);
     //LOG_MODEL_DEBUG("CParameterIce", "channel id:%s", r.c_str());
     m.unlock();
-    return GetSignalUser() + r.c_str();
+    return QString("c_") + r.c_str();
 }
+

@@ -2,7 +2,6 @@
 
 #include "IceSignalQxmpp.h"
 #include "RabbitCommonLog.h"
-#include "QXmppCall.h"
 #include "QXmppUtils.h"
 
 int g_CIceSignalQXmppIq = qRegisterMetaType<CIceSignalQXmppIq>("CIceSignalQXmppIq");
@@ -13,7 +12,7 @@ CIceSignalQxmpp::CIceSignalQxmpp(QObject *parent)
 {
     bool check = false;
 
-    //m_Client.logger()->setLoggingType(QXmppLogger::StdoutLogging);
+    m_Client.logger()->setLoggingType(QXmppLogger::StdoutLogging);
     m_Client.addExtension(&m_Manager);
 
     check = connect(&m_Client, SIGNAL(connected()),
@@ -36,9 +35,13 @@ int CIceSignalQxmpp::Open(const std::string &szServer, quint16 nPort, const std:
     QXmppConfiguration conf;
     conf.setHost(szServer.c_str());
     conf.setPort(nPort);
-    conf.setUser(user.c_str());
+    conf.setJid(user.c_str());
     conf.setPassword(password.c_str());
-    conf.setDomain("RabbitIm.com");
+    /*
+    conf.setUser(QXmppUtils::jidToUser(user.c_str()));
+    conf.setDomain(QXmppUtils::jidToDomain(user.c_str()));
+    conf.setResource(QXmppUtils::jidToResource(user.c_str()));
+    //*/
     m_Client.connectToServer(conf);
     return 0;
 }
@@ -67,8 +70,8 @@ bool CIceSignalQxmpp::proecssIq(CIceSignalQXmppIq iq)
         LOG_MODEL_DEBUG("CIceSignalQxmpp", "type:%s; sdp:%s",
                         iq.SignalType().toStdString().c_str(),
                         iq.Description().toStdString().c_str());//*/
-        emit sigOffer(QXmppUtils::jidToUser(iq.from()),
-                      QXmppUtils::jidToUser(iq.to()),
+        emit sigOffer(iq.from(),
+                      iq.to(),
                       iq.ChannelId(),
                       iq.SignalType(),
                       iq.Description());
@@ -77,8 +80,8 @@ bool CIceSignalQxmpp::proecssIq(CIceSignalQXmppIq iq)
         LOG_MODEL_DEBUG("CIceSignalQxmpp", "type:%s; sdp:%s",
                         iq.SignalType().toStdString().c_str(),
                         iq.Description().toStdString().c_str());//*/
-        emit sigDescription(QXmppUtils::jidToUser(iq.from()),
-                            QXmppUtils::jidToUser(iq.to()),
+        emit sigDescription(iq.from(),
+                            iq.to(),
                             iq.ChannelId(),
                             iq.SignalType(),
                             iq.Description());
@@ -88,8 +91,8 @@ bool CIceSignalQxmpp::proecssIq(CIceSignalQXmppIq iq)
                         iq.SignalType().toStdString().c_str(),
                         iq.mid().toStdString().c_str(),
                         iq.Candiate().toStdString().c_str());//*/
-        emit sigCandiate(QXmppUtils::jidToUser(iq.from()),
-                         QXmppUtils::jidToUser(iq.to()),
+        emit sigCandiate(iq.from(),
+                         iq.to(),
                          iq.ChannelId(),
                          iq.mid(),
                          iq.Candiate());
@@ -108,7 +111,7 @@ int CIceSignalQxmpp::SendDescription(const QString &toUser,
 {
     CIceSignalQXmppIq iq;
     iq.setType(QXmppIq::Set);
-    iq.setTo(toUser + domain());
+    iq.setTo(toUser);
     iq.setChannelId(channelId);
     iq.setSignalType(description.typeString().c_str());
     iq.setDescription(std::string(description).c_str());
@@ -123,7 +126,7 @@ int CIceSignalQxmpp::SendCandiate(const QString &toUser,
 {
     CIceSignalQXmppIq iq;
     iq.setType(QXmppIq::Set);
-    iq.setTo(toUser + domain());
+    iq.setTo(toUser);
     iq.setChannelId(channelId);
     iq.setSignalType("candidate");
     iq.setMid(candidate.mid().c_str());
@@ -135,11 +138,6 @@ int CIceSignalQxmpp::SendCandiate(const QString &toUser,
 void CIceSignalQxmpp::slotSendPackage(CIceSignalQXmppIq iq)
 {
     m_Manager.sendPacket(iq);
-}
-
-QString CIceSignalQxmpp::domain()
-{
-    return "@RabbitIm.com/QXmpp";
 }
 
 int CIceSignalQxmpp::Write(const char *buf, int nLen)

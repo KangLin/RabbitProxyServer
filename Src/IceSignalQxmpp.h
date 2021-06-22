@@ -43,7 +43,6 @@ Q_SIGNALS:
 private:
     QXmppClient m_Client;
     CIceSignalQXmppManager m_Manager;
-    QString domain();
 };
 
 #endif // CICESIGNALQXMPP_H

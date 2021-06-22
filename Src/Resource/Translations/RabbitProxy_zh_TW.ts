@@ -4,12 +4,12 @@
 <context>
     <name>CDataChannelIce</name>
     <message>
-        <location filename="../../DataChannelIce.cpp" line="308"/>
+        <location filename="../../DataChannelIce.cpp" line="330"/>
         <source>Signal disconnected</source>
         <translation>信令通道斷開</translation>
     </message>
     <message>
-        <location filename="../../DataChannelIce.cpp" line="361"/>
+        <location filename="../../DataChannelIce.cpp" line="383"/>
         <source>Signal error: %1</source>
         <translation>信令錯誤：%1</translation>
     </message>
@@ -50,27 +50,22 @@
 <context>
     <name>CPeerConnecterIceClient</name>
     <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="70"/>
+        <location filename="../../PeerConnecterIceClient.cpp" line="81"/>
         <source>Data channel open fail</source>
         <translation>數據通道打開失敗</translation>
     </message>
     <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="133"/>
+        <location filename="../../PeerConnecterIceClient.cpp" line="155"/>
         <source>Signal don&apos;t open</source>
         <translation>信令通道沒打開</translation>
     </message>
     <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="145"/>
+        <location filename="../../PeerConnecterIceClient.cpp" line="167"/>
         <source>Please set peer user</source>
         <translation>請設置對端用戶</translation>
     </message>
     <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="230"/>
-        <source>Don&apos;t support address type: %d</source>
-        <translation>不支持地址類型:%d</translation>
-    </message>
-    <message>
-        <location filename="../../PeerConnecterIceClient.cpp" line="244"/>
+        <location filename="../../PeerConnecterIceClient.cpp" line="276"/>
         <source>Ice connect reply fail</source>
         <translation>Ice 連接響應失敗</translation>
     </message>
@@ -94,18 +89,11 @@
     </message>
 </context>
 <context>
-    <name>CProxySocket</name>
-    <message>
-        <source>Select authenticator: 0x%x</source>
-        <translation type="vanished">選擇驗證： 0x％x</translation>
-    </message>
-</context>
-<context>
     <name>CProxySocks5</name>
     <message>
         <location filename="../../ProxySocks5.cpp" line="111"/>
         <source>Select authenticator: 0x%x</source>
-        <translation type="unfinished">選擇驗證： 0x％x</translation>
+        <translation>選擇驗證： 0x％x</translation>
     </message>
 </context>
 </TS>

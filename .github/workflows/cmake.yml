@@ -9,7 +9,7 @@ jobs:
     strategy:
       matrix:
         BUILD_TYPE: [Release, Debug]
-        include 
+        include:
           - os: windows-latest
             triplet: x64-windows
             qt_version: 5.12.10
@@ -90,13 +90,24 @@ jobs:
         # Any extra arguments to append to the back
         #extra: # optional
 
+    - name: build qxmpp
+      working-directory: ${{env.SOURCE_DIR}}
+      run: |
+        git clone -b v1.4.0 "https://github.com/qxmpp-project/qxmpp.git"
+        cd ${{env.SOURCE_DIR}}/qxmpp
+        cmake -E make_directory build
+        cd build
+        cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_TYPE }} -DCMAKE_INSTALL_PREFIX=${{ env.INSTALL_DIR }} 
+        cmake --build . --config ${{ matrix.BUILD_TYPE }}
+        cmake --build . --config ${{ matrix.BUILD_TYPE }} --target install
+    
     - name: build RabbitProxyServer
       env:
         RabbitCommon_DIR: ${{env.SOURCE_DIR}}/RabbitCommon
       run: |
         cmake -E make_directory ${{github.workspace}}/build
         cd ${{github.workspace}}/build
-        cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_TYPE }} -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/build/install -DCMAKE_PREFIX_PATH=${{ env.INSTALL_DIR }} -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake
+        cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_TYPE }} -DQXmpp_DIR=${{ env.INSTALL_DIR }}/lib/cmake/qxmpp -DCMAKE_INSTALL_PREFIX=${{ github.workspace }}/build/install -DCMAKE_PREFIX_PATH=${{ env.INSTALL_DIR }} -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake
         cmake --build . --config ${{ matrix.BUILD_TYPE }}
         cmake --build . --config ${{ matrix.BUILD_TYPE }} --target install
 
