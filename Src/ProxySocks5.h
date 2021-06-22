@@ -107,7 +107,7 @@ private:
 
     struct strClientRequst {
         strClientRequstHead* pHead;
-        QList<QHostAddress> szHost;
+        QString szHost;
         quint16 nPort;
         int nLen; //整个请求的长度
     };

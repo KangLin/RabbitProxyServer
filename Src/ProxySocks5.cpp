@@ -166,9 +166,10 @@ int CProxySocks5::processAuthenticator()
             return ERROR_CONTINUE_READ;
         std::string szUser(m_cmdBuf.data() + 2, nUser);
         std::string szPassword(m_cmdBuf.data() + nUser + 3, nPassword);
+        /*
         qDebug() << m_cmdBuf;
         LOG_MODEL_DEBUG("Socks5", "User[%d]: %s; Password[%d]: %s",
-                        nUser, szUser.c_str(), nPassword, szPassword.c_str());
+                        nUser, szUser.c_str(), nPassword, szPassword.c_str());//*/
         nRet = processAuthenticatorUserPassword(QString(szUser.c_str()),
                                                 QString(szPassword.c_str()));
         replyAuthenticatorUserPassword(nRet);
@@ -245,11 +246,11 @@ int CProxySocks5::processClientRequest()
         if(CheckBufferLength(m_Client.nLen))
             return ERROR_CONTINUE_READ;
         QHostAddress add(qFromBigEndian<quint32>(m_cmdBuf.data() + 4));
-        m_Client.szHost.push_back(add);
+        m_Client.szHost = add.toString();
         m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 8);
         LOG_MODEL_DEBUG("Socks5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
                         m_Client.nPort);
-        return processExecClientRequest();
+        break;
     }
     case AddressTypeDomain: //Domain
     {
@@ -265,27 +266,29 @@ int CProxySocks5::processClientRequest()
         m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 5 + nLen);
         char* pAdd = m_cmdBuf.data() + sizeof(strClientRequstHead) + 1;
         std::string szAddress(pAdd, nLen);
-        LOG_MODEL_DEBUG("Socks5", "Look up domain: %s", szAddress.c_str());
-        QHostInfo::lookupHost(szAddress.c_str(), this, SLOT(slotLookup(QHostInfo)));
-        m_Status = emStatus::LookUp;
+        m_Client.szHost = szAddress.c_str();
+        
+//        LOG_MODEL_DEBUG("Socks5", "Look up domain: %s", szAddress.c_str());
+//        QHostInfo::lookupHost(szAddress.c_str(), this, SLOT(slotLookup(QHostInfo)));
+//        m_Status = emStatus::LookUp;
         break;
     }
     case AddressTypeIpv6: //IPV6
     {
+        //TODO: Test it!
         if(CheckBufferLength(sizeof(strClientRequstHead) + 18)) //16 + 2 
             return ERROR_CONTINUE_READ;
         QHostAddress add((quint8*)(m_cmdBuf.data() + 4));
-        m_Client.szHost.push_back(add);
+        m_Client.szHost = add.toString();
         m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 20);
         LOG_MODEL_DEBUG("Socks5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
                         m_Client.nPort);
-        return processExecClientRequest();
     }
     default:
         return processClientReply(REPLY_AddressTypeNotSupported);
     }
 
-    return nRet;
+    return processExecClientRequest();
 }
 
 void CProxySocks5::slotLookup(QHostInfo info)
@@ -295,12 +298,15 @@ void CProxySocks5::slotLookup(QHostInfo info)
         processClientReply(REPLY_NetworkUnreachable);
         return;
     }
-    
+
     const auto addresses = info.addresses();
     for (const QHostAddress &address : addresses)
+    {
+        m_Client.szHost = address.toString();
         qDebug() << "Found address:" << address.toString();
-    
-    m_Client.szHost = addresses;
+        break;
+    }
+
     processExecClientRequest();
 }
 
@@ -346,7 +352,7 @@ int CProxySocks5::processClientReply(char rep)
         switch (reply.addressType) {
         case AddressTypeIpv4:
         {
-            LOG_MODEL_DEBUG("Socks5", "IP: %s:%d",
+            LOG_MODEL_DEBUG("Socks5", "Reply IP: %s:%d",
                             add.toString().toStdString().c_str(), nPort);
             quint32 d = qToBigEndian(add.toIPv4Address());
             memcpy(buf.get() + sizeof(strClientRequstReplyHead), &d, 4);
@@ -408,21 +414,18 @@ int CProxySocks5::processConnect()
         if(CreatePeer())
             return -1;
     }
-    foreach(auto add, m_Client.szHost)
-    {
-        SetPeerConnect();
 
-        m_pPeer->Connect(add, m_Client.nPort);
+    SetPeerConnect();
 
-        return 0;
-    }
+    m_pPeer->Connect(m_Client.szHost, m_Client.nPort);
 
     return 0;
 }
 
 void CProxySocks5::slotPeerConnected()
 {
-    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerConnected()");
+    LOG_MODEL_INFO("Socks5", "Peer connected: %s:%d",
+                   m_Client.szHost.toStdString().c_str(), m_Client.nPort);
     processClientReply(REPLY_Succeeded);
     m_Status = emStatus::Forward;
     RemoveCommandBuffer(m_Client.nLen);
@@ -431,14 +434,16 @@ void CProxySocks5::slotPeerConnected()
 
 void CProxySocks5::slotPeerDisconnectd()
 {
-    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerDisconnectd()");
+    LOG_MODEL_INFO("Socks5", "Peer disconnected: %s:%d",
+                   m_Client.szHost.toStdString().c_str(), m_Client.nPort);
     slotClose();
 }
 
 void CProxySocks5::slotPeerError(int err, const QString &szErr)
 {
-    LOG_MODEL_DEBUG("Socks5", "CProxySocks::slotPeerError():%d %s",
-                    err, szErr.toStdString().c_str());
+    LOG_MODEL_ERROR("Socks5", "Peer: %s:%d; error: %d %s",
+                   m_Client.szHost.toStdString().c_str(), m_Client.nPort,
+                   err, szErr.toStdString().c_str());
     if(emStatus::Forward == m_Status)
     {
         slotClose();
@@ -475,28 +480,24 @@ int CProxySocks5::processBind()
             return -1;
     }
     bool bBind = false;
-    foreach(auto add, m_Client.szHost)
+    if(m_Client.szHost.isEmpty())
+        bBind = m_pPeer->Bind(m_Client.nPort);
+    else
     {
-        bBind = m_pPeer->Bind(add, m_Client.nPort);
-        if(bBind) break;
+        bBind = m_pPeer->Bind(QHostAddress(m_Client.szHost), m_Client.nPort);
     }
 
     if(!bBind)
-    {
-        if(m_Client.szHost.isEmpty())
-        {
-            bBind = m_pPeer->Bind(m_Client.nPort);
-        }
-        else{
-            bBind = m_pPeer->Bind();
-        }
-    }
+        bBind = m_pPeer->Bind();
     
     if(!bBind)
     {
         processClientReply(REPLY_GeneralServerFailure);
         return nRet;
     }
+    
+    LOG_MODEL_INFO("Socks5", "Bind:%s:%d",
+                   m_Client.szHost.toStdString().c_str(), m_Client.nPort);
     
     SetPeerConnect();
     
