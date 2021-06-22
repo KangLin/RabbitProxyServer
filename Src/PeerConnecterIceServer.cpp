@@ -114,7 +114,7 @@ int CPeerConnecterIceServer::Close()
 
 QHostAddress CPeerConnecterIceServer::LocalAddress()
 {
-    return m_bindAddress;
+    return QHostAddress(m_bindAddress);
 }
 
 qint16 CPeerConnecterIceServer::LocalPort()
@@ -139,6 +139,9 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
         LOG_MODEL_ERROR("PeerConnecterIce", "Data channel read fail");
         return -1;
     }
+    
+    if(CheckBufferLength(sizeof (strClientRequst))) return -1;
+    
     pRequst = reinterpret_cast<strClientRequst*>(m_Buffer.data());
 
     if(pRequst->version != 0)
@@ -157,25 +160,9 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
 
     m_nPeerPort = qFromBigEndian(pRequst->port);
 
-    switch(pRequst->atyp)
-    {
-    case 0x01:
-    {
-        if(CheckBufferLength(10)) return -1;
-        qint32 add = qFromBigEndian(pRequst->ip.v4);
-        m_peerAddress.setAddress(add);
-        break;
-    }
-    case 0x04:
-    {
-        if(CheckBufferLength(22)) return -1;
-        m_peerAddress.setAddress(pRequst->ip.v6);
-        break;
-    }
-    default:
-        LOG_MODEL_DEBUG("PeerConnecterIce", "The address type [0x%x] isn't support",
-                        pRequst->atyp);
-    }
+    if(CheckBufferLength(sizeof (strClientRequst) + pRequst->len)) return -1;
+
+    m_peerAddress = pRequst->host;
 
     if(m_Peer)
         Q_ASSERT(false);
@@ -203,7 +190,7 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
     Q_ASSERT(check);
 
     LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Connect to peer: ip:%s; port:%d",
-                    m_peerAddress.toString().toStdString().c_str(),
+                    m_peerAddress.toStdString().c_str(),
                     m_nPeerPort);
     nRet = m_Peer->Connect(m_peerAddress, m_nPeerPort);
     return nRet;
@@ -213,25 +200,20 @@ int CPeerConnecterIceServer::Reply(int nError, const QString& szError)
 {
     Q_UNUSED(szError)
     if(!m_DataChannel) return -1;
-    int nLen = 6;
-    strReply reply;
-    memset(&reply, 0, sizeof(strReply));
-    reply.rep = nError;
+    int nLen = sizeof(strReply) + m_bindAddress.toStdString().size();
+    QSharedPointer<char> buf(new char[nLen]);
+    strReply* pReply = reinterpret_cast<strReply*>(buf.data());
+    memset(pReply, 0, nLen);
+    pReply->rep = nError;
     if(0 == nError)
     {
-        reply.port = qToBigEndian(m_nBindPort);
-        if(m_bindAddress.protocol() == QAbstractSocket::IPv6Protocol)
-        {
-            nLen += 16;
-            reply.atyp = 0x04;
-            memcpy(reply.ip.v6, m_bindAddress.toIPv6Address().c, 16);
-        } else {
-            nLen += 4;
-            reply.atyp = 0x01;
-            reply.ip.v4 = qToBigEndian(m_bindAddress.toIPv4Address());
-        }
+        pReply->port = qToBigEndian(m_nBindPort);
+        if(!m_bindAddress.isEmpty())
+            memcpy(pReply->host, m_bindAddress.toStdString().c_str(),
+                   m_bindAddress.toStdString().size());
+        LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Reply bind: %s:%d", pReply->host, pReply->port);
     }
-    m_DataChannel->write(reinterpret_cast<char*>(&reply), nLen);
+    m_DataChannel->write(reinterpret_cast<char*>(pReply), nLen);
     return 0;
 }
 
@@ -244,12 +226,12 @@ void CPeerConnecterIceServer::slotPeerConnected()
         return;
     }
     m_nBindPort = m_Peer->LocalPort();
-    m_bindAddress = m_Peer->LocalAddress();
+    m_bindAddress = m_Peer->LocalAddress().toString();
     m_Status = FORWORD;
     Reply(emERROR::Success);
     LOG_MODEL_DEBUG("CPeerConnecterIceServer",
                     "Peer connected success: binIP:%s;bindPort:%d",
-                    m_bindAddress.toString().toStdString().c_str(), m_nBindPort);
+                    m_bindAddress.toStdString().c_str(), m_nBindPort);
 }
 
 void CPeerConnecterIceServer::slotPeerDisconnectd()

@@ -29,13 +29,6 @@ int CPeerConnecter::InitSignals()
     return 0;
 }
 
-int CPeerConnecter::Connect(const QHostAddress &address, quint16 nPort)
-{
-    InitSignals();
-    m_Socket.connectToHost(address, nPort);
-    return 0;
-}
-
 int CPeerConnecter::Connect(const QString &address, quint16 nPort)
 {
     InitSignals();

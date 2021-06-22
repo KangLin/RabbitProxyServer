@@ -88,39 +88,47 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
 
 void CPeerConnecterIceClient::slotDataChannelConnected()
 {
-    strClientRequst requst = {0, 1, 0, 1, qToBigEndian(m_nPeerPort), {0}};
-    qint64 nLen = 6;
-    if(m_peerAddress.protocol() == QAbstractSocket::IPv6Protocol)
-    {
-        requst.atyp = 0x04;
-        nLen += 16;
-        memcpy(requst.ip.v6, m_peerAddress.toIPv6Address().c, 16);
-    }
-    else
-    {
-        requst.atyp = 0x01;
-        nLen += 4;
-        requst.ip.v4 = qToBigEndian(m_peerAddress.toIPv4Address());
-    }
+    int nLen = sizeof (strClientRequst) + m_peerAddress.toStdString().size();
+    QSharedPointer<char> buf(new char[nLen]);
+    memset(buf.data(), 0, nLen);
+    strClientRequst* requst = reinterpret_cast<strClientRequst*>(buf.data());
+    requst->version = 0;
+    requst->command = 1; //Connect
+    requst->port = qToBigEndian(m_nPeerPort);
+    requst->len = m_peerAddress.size();
+    memcpy(requst->host, m_peerAddress.toStdString().c_str(), m_peerAddress.toStdString().size());
     if(m_DataChannel)
     {
-        LOG_MODEL_DEBUG("CPeerConnecterIceClient",
-                        "slotDataChannelConnected peer:%s;channel:%s;ip:%s;port:%d",
+        LOG_MODEL_INFO("CPeerConnecterIceClient",
+                        "Data channel connected: peer:%s;channel:%s;ip:%s;port:%d",
                         m_DataChannel->GetPeerUser().toStdString().c_str(),
                         m_DataChannel->GetChannelId().toStdString().c_str(),
-                        m_peerAddress.toString().toStdString().c_str(),
+                        m_peerAddress.toStdString().c_str(),
                         m_nPeerPort);
-        m_DataChannel->write(reinterpret_cast<const char*>(&requst), nLen);
+        m_DataChannel->write(buf.data(), nLen);
     }
 }
 
 void CPeerConnecterIceClient::slotDataChannelDisconnected()
 {
+    LOG_MODEL_INFO("CPeerConnecterIceClient",
+                    "Data channel disconnected: peer:%s;channel:%s;ip:%s;port:%d",
+                    m_DataChannel->GetPeerUser().toStdString().c_str(),
+                    m_DataChannel->GetChannelId().toStdString().c_str(),
+                    m_peerAddress.toStdString().c_str(),
+                    m_nPeerPort);
     emit sigDisconnected();
 }
 
 void CPeerConnecterIceClient::slotDataChannelError(int nErr, const QString& szErr)
 {
+    LOG_MODEL_ERROR("CPeerConnecterIceClient",
+                    "Data channel error: %d %s; peer:%s;channel:%s;ip:%s;port:%d",
+                    nErr, szErr.toStdString().c_str(),
+                    m_DataChannel->GetPeerUser().toStdString().c_str(),
+                    m_DataChannel->GetChannelId().toStdString().c_str(),
+                    m_peerAddress.toStdString().c_str(),
+                    m_nPeerPort);
     emit sigError(nErr, szErr);
 }
 
@@ -138,7 +146,7 @@ void CPeerConnecterIceClient::slotDataChannelReadyRead()
     emit sigReadyRead();
 }
 
-int CPeerConnecterIceClient::Connect(const QHostAddress &address, quint16 nPort)
+int CPeerConnecterIceClient::Connect(const QString &address, quint16 nPort)
 {
     int nRet = 0;
 
@@ -213,7 +221,7 @@ int CPeerConnecterIceClient::Close()
 
 QHostAddress CPeerConnecterIceClient::LocalAddress()
 {
-    return m_bindAddress;
+    return QHostAddress(m_bindAddress);
 }
 
 qint16 CPeerConnecterIceClient::LocalPort()
@@ -249,31 +257,17 @@ int CPeerConnecterIceClient::OnConnectionReply()
     }
 
     m_Buffer.append(m_DataChannel->readAll());
+    if(CheckBufferLength(sizeof(strClientRequst))) return -1;
+    
     strReply* pReply = reinterpret_cast<strReply*>(m_Buffer.data());
     if(emERROR::Success == pReply->rep)
     {
+        if(CheckBufferLength(sizeof(strClientRequst) + pReply->len)) return -1;
         m_nBindPort = qFromBigEndian(pReply->port);
-        switch (pReply->atyp)
-        {
-        case 0x01: //IPV4
-            if(CheckBufferLength(10)) return -1;
-            m_bindAddress.setAddress(qFromBigEndian(pReply->ip.v4));
-            break;
-        case 0x04: // IPV6
-            if(CheckBufferLength(22)) return -1;
-            m_bindAddress.setAddress(pReply->ip.v6);
-            break;
-        default:
-            m_szError = tr("Don't support address type: %d").arg(pReply->atyp);
-            LOG_MODEL_ERROR("PeerConnecterIce",
-                            m_szError.toStdString().c_str());
-            emit sigError(emERROR::HostNotFound, m_szError);
-            return -1;
-        }
-
+        m_bindAddress = pReply->host;
         LOG_MODEL_DEBUG("CPeerConnecterIceClient",
                         "CPeerConnecterIceClient::OnConnectionReply(): ip:%s;port:%d",
-                        m_bindAddress.toString().toStdString().c_str(), m_nBindPort);
+                        m_bindAddress.toStdString().c_str(), m_nBindPort);
         m_Status = FORWORD;
         m_Buffer.clear();
         emit sigConnected();

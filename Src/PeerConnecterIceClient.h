@@ -19,7 +19,7 @@ public:
     virtual ~CPeerConnecterIceClient();
 
 public:
-    virtual int Connect(const QHostAddress &address, quint16 nPort) override;
+    virtual int Connect(const QString& address, quint16 nPort) override;
     virtual qint64 Read(char *buf, qint64 nLen) override;
     virtual QByteArray ReadAll() override;
     virtual int Write(const char *buf, qint64 nLen) override;
@@ -46,7 +46,7 @@ private Q_SLOTS:
 protected:
     CProxyServerSocks* m_pServer;
     QSharedPointer<CDataChannelIce> m_DataChannel;
-    QHostAddress m_peerAddress, m_bindAddress;
+    QString m_peerAddress, m_bindAddress;
     quint16 m_nPeerPort, m_nBindPort;
     QString m_szError;
 
@@ -62,22 +62,17 @@ protected:
     /**
       @brief Custom client request protol
       
-      +----+-----+-------+------+----------+----------+
-      |VER | CMD |  RSV  | ATYP | DST.PORT | DST.ADDR |
-      +----+-----+-------+------+----------+----------+
-      | 1  |  1  | X'00' |  1   |     2    | Variable |
-      +----+-----+-------+------+----------+----------+
+      +----+-----+-----------+----------+
+      |VER | CMD |  DST.PORT | DST.ADDR |
+      +----+-----+-------+------+--------
+      | 1  |  1  |      2    | Variable |
+      +----+-----+-----------+----------+
 
       o  VER    protocol version: X'0'
       o  CMD
          o  CONNECT X'01'
          o  BIND X'02'
          o  UDP ASSOCIATE X'03'
-      o  RSV    RESERVED
-      o  ATYP   address type of following address
-         o  IP V4 address: X'01'
-         o  DOMAINNAME: X'03'
-         o  IP V6 address: X'04'
       o  DST.PORT desired destination port in network octet
          order
       o  DST.ADDR       desired destination address
@@ -85,23 +80,19 @@ protected:
     struct strClientRequst {
         char version;
         char command;
-        char reserved;
-        char atyp;
         quint16 port;
-        union {
-          quint32 v4;
-          char v6[16];
-        } ip;
+        char len;
+        char host[0];
     };
 
     /**
       @brief Custom client reply protol
       
-        +----+-----+-------+------+----------+----------+
-        |VER | REP |  RSV  | ATYP | BND.PORT | BND.ADDR |
-        +----+-----+-------+------+----------+----------+
-        | 1  |  1  | X'00' |  1   |     2    | Variable |
-        +----+-----+-------+------+----------+----------+
+        +----+-----+-----------+----------+
+        |VER | REP |  BND.PORT | BND.ADDR |
+        +----+-----+-------+------+--------
+        | 1  |  1  |      2    | Variable |
+        +----+-----+-----------+----------+
 
      Where:
 
@@ -136,13 +127,9 @@ protected:
     struct strReply {
         char version;
         char rep;
-        char sv;
-        char atyp;
         quint16 port;
-        union {
-          quint32 v4;
-          char v6[16];
-        } ip;
+        char len;
+        char host[0];
     };
 
 #pragma pack(pop)
