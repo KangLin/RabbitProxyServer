@@ -336,7 +336,7 @@ void CDataChannelIce::slotSignalReceiverCandiate(const QString& fromUser,
                                                  const QString& mid,
                                                  const QString& sdp)
 {
-    /*
+    //*
     LOG_MODEL_DEBUG("CDataChannelIce",
                     "slotSignalReceiverCandiate fromUser:%s; toUser:%s; channelId:%s; mid:%s; sdp:%s",
                     fromUser.toStdString().c_str(),
@@ -359,7 +359,7 @@ void CDataChannelIce::slotSignalReceiverDescription(const QString& fromUser,
                                                     const QString &type,
                                                     const QString &sdp)
 {
-    /*
+    //*
     LOG_MODEL_DEBUG("CDataChannelIce",
                     "slotSignalReceiverDescription fromUser:%s; toUser:%s; channelId:%s; type:%s; sdp:%s",
                     fromUser.toStdString().c_str(),

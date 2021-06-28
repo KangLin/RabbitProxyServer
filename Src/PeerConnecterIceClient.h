@@ -135,6 +135,7 @@ protected:
 #pragma pack(pop)
 
 protected:
+    #define ERROR_CONTINUE_READ 1
     QByteArray m_Buffer;
     /**
      * @brief CheckBufferLength

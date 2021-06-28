@@ -257,12 +257,12 @@ int CPeerConnecterIceClient::OnConnectionReply()
     }
 
     m_Buffer.append(m_DataChannel->readAll());
-    if(CheckBufferLength(sizeof(strClientRequst))) return -1;
+    if(CheckBufferLength(sizeof(strClientRequst))) return ERROR_CONTINUE_READ;
     
     strReply* pReply = reinterpret_cast<strReply*>(m_Buffer.data());
     if(emERROR::Success == pReply->rep)
     {
-        if(CheckBufferLength(sizeof(strClientRequst) + pReply->len)) return -1;
+        if(CheckBufferLength(sizeof(strClientRequst) + pReply->len)) return ERROR_CONTINUE_READ;
         m_nBindPort = qFromBigEndian(pReply->port);
         m_bindAddress = pReply->host;
         LOG_MODEL_DEBUG("CPeerConnecterIceClient",

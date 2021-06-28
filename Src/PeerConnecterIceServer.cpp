@@ -54,7 +54,7 @@ void CPeerConnecterIceServer::slotDataChannelReadyRead()
 {
     if(CONNECT == m_Status)
     {
-        if(OnReciveConnectRequst())
+        if(OnReciveConnectRequst() < 0)
             emit sigError(-1, "Recive connect reply error");
         return;
     }
@@ -134,13 +134,8 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
     }
 
     m_Buffer.append(m_DataChannel->readAll());
-    if(m_Buffer.isEmpty())
-    {
-        LOG_MODEL_ERROR("PeerConnecterIce", "Data channel read fail");
-        return -1;
-    }
     
-    if(CheckBufferLength(sizeof (strClientRequst))) return -1;
+    if(CheckBufferLength(sizeof (strClientRequst))) return ERROR_CONTINUE_READ;
     
     pRequst = reinterpret_cast<strClientRequst*>(m_Buffer.data());
 
@@ -160,7 +155,7 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
 
     m_nPeerPort = qFromBigEndian(pRequst->port);
 
-    if(CheckBufferLength(sizeof (strClientRequst) + pRequst->len)) return -1;
+    if(CheckBufferLength(sizeof (strClientRequst) + pRequst->len)) return ERROR_CONTINUE_READ;
 
     m_peerAddress = pRequst->host;
 
