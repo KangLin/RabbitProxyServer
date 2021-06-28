@@ -203,11 +203,12 @@ int CPeerConnecterIceServer::Reply(int nError, const QString& szError)
     if(0 == nError)
     {
         pReply->port = qToBigEndian(m_nBindPort);
-        pReply->len = nLen;
+        pReply->len = m_bindAddress.toStdString().size();
         if(!m_bindAddress.isEmpty())
             memcpy(pReply->host, m_bindAddress.toStdString().c_str(),
                    m_bindAddress.toStdString().size());
-        LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Reply bind: %s:%d", pReply->host, pReply->port);
+        LOG_MODEL_DEBUG("CPeerConnecterIceServer", "Reply bind[%d]: %s:%d",
+                       pReply->len, pReply->host, qFromBigEndian(pReply->port));
     }
     m_DataChannel->write(reinterpret_cast<char*>(pReply), nLen);
     return 0;
