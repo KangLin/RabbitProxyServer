@@ -287,7 +287,7 @@ void CProxySocks4::slotPeerRead()
     QByteArray d = m_pPeer->ReadAll();
     if(d.isEmpty())
     {
-        LOG_MODEL_DEBUG("Socks4", "Peer read all is empty");
+        //LOG_MODEL_DEBUG("Socks4", "Peer read all is empty");
         return;
     }
 
