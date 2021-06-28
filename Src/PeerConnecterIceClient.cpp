@@ -264,7 +264,8 @@ int CPeerConnecterIceClient::OnConnectionReply()
     {
         if(CheckBufferLength(sizeof(strClientRequst) + pReply->len)) return ERROR_CONTINUE_READ;
         m_nBindPort = qFromBigEndian(pReply->port);
-        m_bindAddress = pReply->host;
+        std::string add(pReply->host, pReply->len);
+        m_bindAddress = add.c_str();
         LOG_MODEL_DEBUG("CPeerConnecterIceClient",
                         "CPeerConnecterIceClient::OnConnectionReply(): ip:%s;port:%d",
                         m_bindAddress.toStdString().c_str(), m_nBindPort);

@@ -12,7 +12,7 @@ CIceSignalQxmpp::CIceSignalQxmpp(QObject *parent)
 {
     bool check = false;
 
-    m_Client.logger()->setLoggingType(QXmppLogger::StdoutLogging);
+    //m_Client.logger()->setLoggingType(QXmppLogger::StdoutLogging);
     m_Client.addExtension(&m_Manager);
 
     check = connect(&m_Client, SIGNAL(connected()),
