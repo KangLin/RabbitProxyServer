@@ -210,6 +210,15 @@ int CDataChannelIce::CreateDataChannel(bool bData)
         }
 
         SetDataChannel(dc);
+
+        if(QIODevice::open(QIODevice::ReadWrite))
+            emit sigConnected();
+        else
+            LOG_MODEL_ERROR("DataChannel", "Open Device fail:user:%s;peer:%s;channelId:%d",
+                            GetUser().toStdString().c_str(),
+                            GetPeerUser().toStdString().c_str(),
+                            GetChannelId().toStdString().c_str());
+
     });
 
     if(bData)
