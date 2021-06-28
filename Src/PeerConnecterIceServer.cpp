@@ -203,6 +203,7 @@ int CPeerConnecterIceServer::Reply(int nError, const QString& szError)
     if(0 == nError)
     {
         pReply->port = qToBigEndian(m_nBindPort);
+        pReply->len = nLen;
         if(!m_bindAddress.isEmpty())
             memcpy(pReply->host, m_bindAddress.toStdString().c_str(),
                    m_bindAddress.toStdString().size());
