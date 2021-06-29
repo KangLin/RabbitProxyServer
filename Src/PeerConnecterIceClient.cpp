@@ -221,7 +221,7 @@ QHostAddress CPeerConnecterIceClient::LocalAddress()
     return QHostAddress(m_bindAddress);
 }
 
-qint16 CPeerConnecterIceClient::LocalPort()
+quint16 CPeerConnecterIceClient::LocalPort()
 {
     return m_nBindPort;
 }

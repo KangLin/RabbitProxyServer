@@ -35,7 +35,7 @@ public:
     virtual int Write(const char *buf, qint64 nLen) override;
     virtual int Close() override;
     virtual QHostAddress LocalAddress() override;
-    virtual qint16 LocalPort() override;
+    virtual quint16 LocalPort() override;
 
     QString GetPeerUser();
     QString GetId();

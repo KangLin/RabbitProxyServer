@@ -110,7 +110,7 @@ QHostAddress CPeerConnecter::LocalAddress()
     return m_Socket.localAddress();
 }
 
-qint16 CPeerConnecter::LocalPort()
+quint16 CPeerConnecter::LocalPort()
 {
     return m_Socket.localPort();
 }

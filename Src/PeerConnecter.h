@@ -35,7 +35,7 @@ public:
     virtual int Error();
     virtual QString ErrorString();
     virtual QHostAddress LocalAddress();
-    virtual qint16 LocalPort();
+    virtual quint16 LocalPort();
     
 Q_SIGNALS:
     void sigConnected();
