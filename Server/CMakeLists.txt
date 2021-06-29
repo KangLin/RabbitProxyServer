@@ -72,13 +72,13 @@ ADD_TARGET(NAME ${PROJECT_NAME}
     SOURCE_FILES ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} ${RCC_FILES}
     PRIVATE_LIBS RabbitProxy ${QT_LIBRARIES})
 
-#if(WIN32)
-#    install(FILES Resource/Image/App.ico
-#        DESTINATION .
-#            COMPONENT Runtime)
-#endif()
+if(WIN32)
+    install(FILES Resource/Image/App.ico
+        DESTINATION .
+            COMPONENT Runtime)
+endif()
 #if(UNIX AND NOT ANDROID)
-#    INSTALL(FILES ${CMAKE_SOURCE_DIR}/debian/RabbitRemoteControl.desktop
+#    INSTALL(FILES ${CMAKE_SOURCE_DIR}/debian/RabbitProxyServer.desktop
 #        DESTINATION share/applications
 #            COMPONENT Runtime)
 #    INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resource/Image/App.png
