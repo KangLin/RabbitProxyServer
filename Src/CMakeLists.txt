@@ -105,6 +105,7 @@ if(LibDataChannel_FOUND)
             IceSignalQxmpp.cpp
             IceSignalQXmppManager.cpp
             IceSignalQXmppIq.cpp)
+        INSTALL_TARGETS(TARGETS QXmpp::QXmpp)
     endif()
 else()
     message(AUTHOR_WARNING "Please install libdatachannel from https://github.com/paullouisageneau/libdatachannel")
