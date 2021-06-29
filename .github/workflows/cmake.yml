@@ -36,9 +36,8 @@ jobs:
         cmake -E make_directory ${{env.SOURCE_DIR}}
         cmake -E make_directory ${{env.TOOSL_DIR}}
         cmake -E make_directory ${{env.INSTALL_DIR}}
-      
+
     - name: run-vcpkg
-      working-directory: ${{env.SOURCE_DIR}}
       # You may pin to the exact commit or the version.
       # uses: lukka/run-vcpkg@a1b6a0046a28c09f4bcc8caa9eecec9a8e512152
       uses: lukka/run-vcpkg@v6.1
