@@ -173,6 +173,13 @@ int CProxySocks5::processAuthenticator()
         nRet = processAuthenticatorUserPassword(QString(szUser.c_str()),
                                                 QString(szPassword.c_str()));
         replyAuthenticatorUserPassword(nRet);
+        if(!nRet)
+        {
+            //TODO: test it!
+            LOG_MODEL_ERROR("Socks5", "Authenticator User Password fail");
+            slotClose();
+            return nRet;
+        }
         
         int nLen = 3 + nUser + nPassword;
 
