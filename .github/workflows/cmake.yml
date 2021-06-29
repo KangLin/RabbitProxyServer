@@ -38,6 +38,7 @@ jobs:
         cmake -E make_directory ${{env.INSTALL_DIR}}
       
     - name: run-vcpkg
+      working-directory: ${{env.SOURCE_DIR}}
       # You may pin to the exact commit or the version.
       # uses: lukka/run-vcpkg@a1b6a0046a28c09f4bcc8caa9eecec9a8e512152
       uses: lukka/run-vcpkg@v6.1
@@ -94,7 +95,7 @@ jobs:
       working-directory: ${{env.SOURCE_DIR}}
       run: |
         git clone -b v1.4.0 "https://github.com/qxmpp-project/qxmpp.git"
-        cd ${{env.SOURCE_DIR}}/qxmpp
+        cd qxmpp
         cmake -E make_directory build
         cd build
         cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=${{ matrix.BUILD_TYPE }} -DCMAKE_INSTALL_PREFIX=${{ env.INSTALL_DIR }} 
@@ -116,7 +117,7 @@ jobs:
       shell: cmd
       run: |
         makensis ${{github.workspace}}/build/Install.nsi
-        ${{github.workspace}}/build/install/bin/RabbitProxyServerApp.exe -f "${{github.workspace}}/build/update_windows.xml" --pf RabbitProxyServer-Setup-v0.0.7.exe -m "v0.0.7"
+        ${{github.workspace}}/build/install/bin/RabbitProxyServer.exe -f "${{github.workspace}}/build/update_windows.xml" --pf RabbitProxyServer-Setup-v0.0.7.exe -m "v0.0.7"
       if: ${{ matrix.os == 'windows-latest' &&  matrix.BUILD_TYPE == 'Release' }}
 
     - name: update 
