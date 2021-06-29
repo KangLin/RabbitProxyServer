@@ -328,8 +328,17 @@ qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
     if(m_data.size() == n)
         m_data.clear();
     else
+    {   
         m_data.remove(0, n);
+        LOG_MODEL_WARNING("DataChannelIce", "Remain data:%d", m_data.size());
+        //emit readyRead();
+    }
     return n;
+}
+
+qint64 CDataChannelIce::bytesAvailable() const
+{
+    return m_data.size();
 }
 
 bool CDataChannelIce::isSequential() const

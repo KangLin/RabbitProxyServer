@@ -70,10 +70,13 @@ protected:
     QByteArray m_data;
     QMutex m_MutexData;
 
+    // QIODevice interface
 protected:
     bool isSequential() const;
     qint64 writeData(const char *data, qint64 len);
     qint64 readData(char *data, qint64 maxlen);
+public:
+    virtual qint64 bytesAvailable() const override;
 };
 
 #endif // CDATACHANNELICE_H
