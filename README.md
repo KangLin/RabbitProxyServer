@@ -14,8 +14,9 @@ Due to work reasons, it is often necessary to remotely control a host in another
 ![Network Topology](Documents/Image/network_en.svg)
 
 No relevant open source software was found on the Internet.
-So I wrote [Rabbit Remote Control](https://github.com/KangLin/RabbitRemoteControl). Have been writing
-Cheng encountered a problem of mutual access between two intranets. For details, please see: [https://github.com/KangLin/RabbitRemoteControl/issues/7](https://github.com/KangLin/RabbitRemoteControl/issues/7).
+So I wrote [Rabbit Remote Control](https://github.com/KangLin/RabbitRemoteControl). 
+In the process of writing, I encountered a problem of mutual access between two intranets.
+For details, please see: https://github.com/KangLin/RabbitRemoteControl/issues/7.
 
 Searching for related proxy software on the Internet, there are only proxy servers with public IPs, and no proxy servers without public IPs. So I wrote this software,
 In order to solve the problem of mutual access between two internal networks without public IP. And this software implements [multiple protocols](#Supported-protocols) proxy service function.
