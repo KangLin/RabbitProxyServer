@@ -2,7 +2,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "RabbitProxyServer"
-!define PRODUCT_APP_NAME "RabbitProxyServerApp"
+!define PRODUCT_APP_NAME "RabbitProxyServer"
 !define PRODUCT_VERSION "v0.0.7"
 !define PRODUCT_PUBLISHER "KangLin studio"
 !define PRODUCT_WEB_SITE "https://github.com/KangLin/${PRODUCT_NAME}"
