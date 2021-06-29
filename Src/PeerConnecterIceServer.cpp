@@ -156,8 +156,8 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
     m_nPeerPort = qFromBigEndian(pRequst->port);
 
     if(CheckBufferLength(sizeof (strClientRequst) + pRequst->len)) return ERROR_CONTINUE_READ;
-
-    m_peerAddress = pRequst->host;
+    std::string add(pRequst->host, pRequst->len);
+    m_peerAddress = add.c_str();
 
     if(m_Peer)
         Q_ASSERT(false);

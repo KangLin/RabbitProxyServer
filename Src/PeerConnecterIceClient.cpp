@@ -60,9 +60,6 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
                     this, SLOT(slotDataChannelReadyRead()));
     Q_ASSERT(check);
     
-    CDataChannelIce* p = m_DataChannel.get();
-    if(!p) return -1;
-
     rtc::Configuration config;
     if(!pPara->GetStunServer().isEmpty() && pPara->GetStunPort())
         config.iceServers.push_back(
@@ -95,7 +92,7 @@ void CPeerConnecterIceClient::slotDataChannelConnected()
     requst->version = 0;
     requst->command = 1; //Connect
     requst->port = qToBigEndian(m_nPeerPort);
-    requst->len = m_peerAddress.size();
+    requst->len = m_peerAddress.toStdString().size();
     memcpy(requst->host, m_peerAddress.toStdString().c_str(), m_peerAddress.toStdString().size());
     if(m_DataChannel)
     {

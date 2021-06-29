@@ -261,8 +261,6 @@ int CProxySocks5::processClientRequest()
     }
     case AddressTypeDomain: //Domain
     {
-        //TODO: Add ICE pass domain to peer
-        
         m_Client.nLen = sizeof(strClientRequstHead);
         if(CheckBufferLength(m_Client.nLen + 2))
             return ERROR_CONTINUE_READ;
@@ -275,7 +273,7 @@ int CProxySocks5::processClientRequest()
         std::string szAddress(pAdd, nLen);
         m_Client.szHost = szAddress.c_str();
         
-//        LOG_MODEL_DEBUG("Socks5", "Look up domain: %s", szAddress.c_str());
+        LOG_MODEL_DEBUG("Socks5", "Domain: %s", szAddress.c_str());
 //        QHostInfo::lookupHost(szAddress.c_str(), this, SLOT(slotLookup(QHostInfo)));
 //        m_Status = emStatus::LookUp;
         break;
@@ -288,7 +286,7 @@ int CProxySocks5::processClientRequest()
         QHostAddress add((quint8*)(m_cmdBuf.data() + 4));
         m_Client.szHost = add.toString();
         m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 20);
-        LOG_MODEL_DEBUG("Socks5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
+        LOG_MODEL_DEBUG("Socks5", "IPV6: %s:%d", add.toString().toStdString().c_str(),
                         m_Client.nPort);
     }
     default:

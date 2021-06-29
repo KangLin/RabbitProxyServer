@@ -305,8 +305,6 @@ int CProxySocks4::CreatePeer()
     if(pPara->GetIce())
     {
         CProxyServerSocks* pServer = qobject_cast<CProxyServerSocks*>(m_pServer);
-        /*m_pPeer = std::make_shared<CPeerConnecterIceClient>(
-                    pServer, this);*/
         m_pPeer = QSharedPointer<CPeerConnecterIceClient>(
                     new CPeerConnecterIceClient(pServer, this),
                     &QObject::deleteLater);
@@ -319,4 +317,3 @@ int CProxySocks4::CreatePeer()
     LOG_MODEL_ERROR("Socks4", "Make peer connect fail");
     return -1;
 }
-
