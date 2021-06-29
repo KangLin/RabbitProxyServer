@@ -14,12 +14,13 @@ class CPeerConnecterIceServer : public CPeerConnecterIceClient
     Q_OBJECT
 
 public:
+    // 多个 DataChannel 复用一个 PeerConnection
     explicit CPeerConnecterIceServer(CProxyServerSocks* pServer,
                                      const QString& fromUser,
                                      const QString& toUser,
                                      const QString& channelId,
                                      std::shared_ptr<rtc::DataChannel> dc);
-
+    // 一个 PeerConnection 对应一个 DataChannel
     explicit CPeerConnecterIceServer(CProxyServerSocks* pServer,
                                      const QString& fromUser,
                                      const QString& toUser,

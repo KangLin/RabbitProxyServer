@@ -21,10 +21,9 @@ public:
                           QObject *parent = nullptr);
     virtual ~CDataChannelIce();
 
-    //! @note These properties must be set before calling Open
-    int SetConfigure(const rtc::Configuration& config);
-    //! @note The above properties must be set before calling Open
-    virtual int open(const QString& user, const QString& peer, const QString& id, bool bData);
+    virtual int open(const rtc::Configuration &config,
+                     const QString& user,
+                     const QString& peer, const QString& id, bool bData);
     virtual void close();
 
     QString GetUser();
@@ -59,13 +58,12 @@ protected:
     CDataChannelIce(QObject *parent = nullptr);
 
     virtual int SetSignal(QSharedPointer<CIceSignal> signal);
-    virtual int CreateDataChannel(bool bData);
+    virtual int CreateDataChannel(const rtc::Configuration &config, bool bData);
 
     QSharedPointer<CIceSignal> m_Signal;
     QString m_szUser;
     QString m_szPeerUser;
     QString m_szChannelId;
-    rtc::Configuration m_Config;
     std::shared_ptr<rtc::PeerConnection> m_peerConnection;
     std::shared_ptr<rtc::DataChannel> m_dataChannel;
 

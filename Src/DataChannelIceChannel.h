@@ -18,7 +18,8 @@ public:
     virtual void close() override;
 
 protected:
-    virtual int CreateDataChannel(bool bData) override;
+    virtual int CreateDataChannel(const rtc::Configuration &config,
+                                  bool bData) override;
     virtual int SetSignal(QSharedPointer<CIceSignal> signal) override;
 
     QMap<QString, std::shared_ptr<rtc::PeerConnection> > m_sPeerConnections;

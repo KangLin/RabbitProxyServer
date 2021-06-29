@@ -31,11 +31,11 @@ int CDataChannelIceChannel::SetSignal(QSharedPointer<CIceSignal> signal)
     return 0;
 }
 
-int CDataChannelIceChannel::CreateDataChannel(bool bData)
+int CDataChannelIceChannel::CreateDataChannel(const rtc::Configuration &config, bool bData)
 {
     Q_ASSERT(m_IceManager);
     Q_ASSERT(!GetPeerUser().isEmpty());
-    auto pc = m_IceManager->GetPeerConnect(m_Signal, m_Config, this);
+    auto pc = m_IceManager->GetPeerConnect(m_Signal, config, this);
 
     m_bServer = !bData;
     if(bData)

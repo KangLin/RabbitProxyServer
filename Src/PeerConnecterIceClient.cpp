@@ -71,9 +71,9 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
                                    pPara->GetTurnPort(),
                                    pPara->GetTurnUser().toStdString().c_str(),
                                    pPara->GetTurnPassword().toStdString().c_str()));
-    m_DataChannel->SetConfigure(config);
+    //m_DataChannel->SetConfigure(config);
 
-    if(m_DataChannel->open(user, peer, channelId, bData))
+    if(m_DataChannel->open(config, user, peer, channelId, bData))
     {
         m_szError = tr("Data channel open fail");
         LOG_MODEL_ERROR("PeerConnecterIce", m_szError.toStdString().c_str());
@@ -141,6 +141,38 @@ void CPeerConnecterIceClient::slotDataChannelReadyRead()
     }
 
     emit sigReadyRead();
+}
+
+int CPeerConnecterIceClient::OnConnectionReply()
+{
+    int nRet = 0;
+
+    if(!m_DataChannel)
+    {
+        emit sigError(-1, "Data channel is null");
+        return -1;
+    }
+
+    m_Buffer.append(m_DataChannel->readAll());
+    if(CheckBufferLength(sizeof(strClientRequst))) return ERROR_CONTINUE_READ;
+    
+    strReply* pReply = reinterpret_cast<strReply*>(m_Buffer.data());
+    if(emERROR::Success == pReply->rep)
+    {
+        if(CheckBufferLength(sizeof(strClientRequst) + pReply->len)) return ERROR_CONTINUE_READ;
+        m_nBindPort = qFromBigEndian(pReply->port);
+        std::string add(pReply->host, pReply->len);
+        m_bindAddress = add.c_str();
+        LOG_MODEL_DEBUG("CPeerConnecterIceClient",
+                        "CPeerConnecterIceClient::OnConnectionReply(): ip:%s;port:%d",
+                        m_bindAddress.toStdString().c_str(), m_nBindPort);
+        m_Status = FORWORD;
+        m_Buffer.clear();
+        emit sigConnected();
+    }
+    else
+        emit sigError(pReply->rep, tr("Ice connect reply fail"));
+    return nRet;
 }
 
 int CPeerConnecterIceClient::Connect(const QString &address, quint16 nPort)
@@ -241,36 +273,4 @@ int CPeerConnecterIceClient::CheckBufferLength(int nLength)
         return nRet;
     }
     return 0;
-}
-
-int CPeerConnecterIceClient::OnConnectionReply()
-{
-    int nRet = 0;
-
-    if(!m_DataChannel)
-    {
-        emit sigError(-1, "Data channel is null");
-        return -1;
-    }
-
-    m_Buffer.append(m_DataChannel->readAll());
-    if(CheckBufferLength(sizeof(strClientRequst))) return ERROR_CONTINUE_READ;
-    
-    strReply* pReply = reinterpret_cast<strReply*>(m_Buffer.data());
-    if(emERROR::Success == pReply->rep)
-    {
-        if(CheckBufferLength(sizeof(strClientRequst) + pReply->len)) return ERROR_CONTINUE_READ;
-        m_nBindPort = qFromBigEndian(pReply->port);
-        std::string add(pReply->host, pReply->len);
-        m_bindAddress = add.c_str();
-        LOG_MODEL_DEBUG("CPeerConnecterIceClient",
-                        "CPeerConnecterIceClient::OnConnectionReply(): ip:%s;port:%d",
-                        m_bindAddress.toStdString().c_str(), m_nBindPort);
-        m_Status = FORWORD;
-        m_Buffer.clear();
-        emit sigConnected();
-    }
-    else
-        emit sigError(pReply->rep, tr("Ice connect reply fail"));
-    return nRet;
 }

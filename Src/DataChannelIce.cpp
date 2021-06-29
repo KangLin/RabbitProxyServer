@@ -83,11 +83,11 @@ QString CDataChannelIce::GetChannelId()
     return m_szChannelId;
 }
 
-int CDataChannelIce::SetConfigure(const rtc::Configuration &config)
-{
-    m_Config = config;
-    return 0;
-}
+//int CDataChannelIce::SetConfigure(const rtc::Configuration &config)
+//{
+//    m_Config = config;
+//    return 0;
+//}
 
 int CDataChannelIce::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
 {
@@ -150,9 +150,9 @@ int CDataChannelIce::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
     return 0;
 }
 
-int CDataChannelIce::CreateDataChannel(bool bData)
+int CDataChannelIce::CreateDataChannel(const rtc::Configuration &config, bool bData)
 {
-    m_peerConnection = std::make_shared<rtc::PeerConnection>(m_Config);
+    m_peerConnection = std::make_shared<rtc::PeerConnection>(config);
     if(!m_peerConnection)
     {
         LOG_MODEL_ERROR("DataChannel", "Peer connect don't open");
@@ -176,8 +176,11 @@ int CDataChannelIce::CreateDataChannel(bool bData)
                         GetChannelId().toStdString().c_str(),
                         std::string(description).c_str());//*/
         // Send to the peer through the signal channel
-        if(m_szPeerUser.isEmpty() || m_szChannelId.isEmpty())
-           LOG_MODEL_ERROR("DataChannel", "Please set peer user and channel id");
+        if(GetPeerUser().isEmpty() || GetChannelId().isEmpty())
+        {
+            LOG_MODEL_ERROR("DataChannel", "Please set peer user and channel id");
+            return;
+        }
         m_Signal->SendDescription(GetPeerUser(), GetChannelId(), description, GetUser());
     });
     m_peerConnection->onLocalCandidate(
@@ -191,9 +194,12 @@ int CDataChannelIce::CreateDataChannel(bool bData)
                         std::string(candidate).c_str(),
                         candidate.mid().c_str());//*/
         // Send to the peer through the signal channel
-        if(m_szPeerUser.isEmpty() || m_szChannelId.isEmpty())
-           LOG_MODEL_ERROR("DataChannel", "Please set peer user and channel id");
-        m_Signal->SendCandiate(m_szPeerUser, m_szChannelId, candidate);
+        if(GetPeerUser().isEmpty() || GetChannelId().isEmpty())
+        {
+            LOG_MODEL_ERROR("DataChannel", "Please set peer user and channel id");
+            return;
+        }
+        m_Signal->SendCandiate(m_szPeerUser, m_szChannelId, candidate, GetUser());
     });
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
         LOG_MODEL_INFO("DataChannel", "Open data channel: user:%s; peer:%s; channel:%s; lable:%s",
@@ -211,6 +217,7 @@ int CDataChannelIce::CreateDataChannel(bool bData)
 
         SetDataChannel(dc);
 
+        // 因为dc已打开，所以必须在此打开设备 
         if(QIODevice::open(QIODevice::ReadWrite))
             emit sigConnected();
         else
@@ -234,13 +241,13 @@ int CDataChannelIce::CreateDataChannel(bool bData)
     return 0;
 }
 
-int CDataChannelIce::open(const QString &user, const QString &peer,
+int CDataChannelIce::open(const rtc::Configuration &config, const QString &user, const QString &peer,
                           const QString &id, bool bData)
 {
     m_szPeerUser = peer;
     m_szUser = user;
     m_szChannelId = id;
-    return CreateDataChannel(bData);
+    return CreateDataChannel(config, bData);
 }
 
 void CDataChannelIce::close()
