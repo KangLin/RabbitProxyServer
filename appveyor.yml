@@ -92,7 +92,7 @@ build_script:
   - cmake --build . --config Release
   - cmake --build . --config Release --target install-runtime
   - call "C:/Program Files (x86)/NSIS/makensis.exe" Install.nsi
-  - call "install/bin/RabbitProxyServer.exe" -f "update_windows.xml" --pf RabbitProxyServer-Setup-v0.0.7.exe -m "v0.0.7"
+  #- call "install/bin/RabbitProxyServer.exe" -f "update_windows.xml" --pf RabbitProxyServer-Setup-v0.0.7.exe -m "v0.0.7"
 
 artifacts:
   - path: build\RabbitProxyServer-Setup-*.exe
