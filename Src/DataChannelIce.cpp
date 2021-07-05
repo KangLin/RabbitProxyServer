@@ -320,7 +320,7 @@ qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
 
     if(m_data.size() == 0)
         return 0;
-    
+
     qint64 n = maxlen;
     if(static_cast<int>(maxlen) > m_data.size())
         n = m_data.size();
@@ -328,10 +328,12 @@ qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
     if(m_data.size() == n)
         m_data.clear();
     else
-    {   
+    {
         m_data.remove(0, n);
-        LOG_MODEL_WARNING("DataChannelIce", "Remain data:%d", m_data.size());
-        //emit readyRead();
+        LOG_MODEL_WARNING("DataChannelIce", "maxlen: %d, Remain data:%d",
+                          maxlen, m_data.size());
+        //因为有 bytesAvailable，所以这里不要触发信号，由调用者自己判断是否继续读
+        //emit readyRead(); 
     }
     return n;
 }
