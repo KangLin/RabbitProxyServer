@@ -64,14 +64,14 @@ jobs:
         ./build_debpackage.sh /usr/lib/`uname -m`-linux-gnu/qt5
         cp ../rabbitproxyserver_0.0.7_amd64.deb ${{github.workspace}}/rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb
         
-    - name: Update xml file
-      working-directory: ${{github.workspace}}
-      run: |
-        sudo apt-get install -y -qq xvfb xpra
-        sudo Xvfb :99 -ac &
-        export DISPLAY=:99.0
-        sudo dpkg -i ../rabbitproxyserver_0.0.7_amd64.deb
-        /opt/RabbitProxyServer/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb -m "v0.0.7"
+#    - name: Update xml file
+#      working-directory: ${{github.workspace}}
+#      run: |
+#        sudo apt-get install -y -qq xvfb xpra
+#        sudo Xvfb :99 -ac &
+#        export DISPLAY=:99.0
+#        sudo dpkg -i ../rabbitproxyserver_0.0.7_amd64.deb
+#        /opt/RabbitProxyServer/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb -m "v0.0.7"
 
     - name: update 
       uses: actions/upload-artifact@v2
