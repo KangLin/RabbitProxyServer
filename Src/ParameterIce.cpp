@@ -5,7 +5,11 @@
 
 CParameterIce::CParameterIce(QObject *parent) : CParameter(parent),
     m_eIceServerClient(emIceServerClient::ServerClient),
+    #ifdef HAVE_QXMPP
+    m_nSignalPort(5222),
+    #else
     m_nSignalPort(80),
+    #endif
     m_nStunPort(3478),
     m_nTurnPort(3478),
     m_nChannelId(0)
