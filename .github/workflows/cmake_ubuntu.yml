@@ -41,30 +41,34 @@ jobs:
         # architectures to pass to dpkg --add-architecture
         #architectures: # optional
         # apt packages to install
-        packages: libdatachannel
+        packages: libqxmpp-dev debhelper fakeroot doxygen qttools5-dev qttools5-dev-tools qtbase5-dev qtbase5-dev-tools qtmultimedia5-dev qtlocation5-dev libqt5svg5-dev libutf8proc-dev libqtermwidget5-0-dev libpam0g-dev libxkbcommon-dev libxkbcommon-x11-dev libx11-xcb-dev libx11-dev libxfixes-dev
 
+    - name: build libdatachannel
+      working-directory: ${{env.SOURCE_DIR}}
+      run: |
+        git clone https://github.com/paullouisageneau/libdatachannel.git
+        cd libdatachannel
+        git submodule update --init --recursive
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}}
+        cmake --build . --config Release 
+        cmake --build . --config Release --target install
+        
     - name: build_debpackage.sh
       working-directory: ${{github.workspace}}
       env:
         RabbitCommon_DIR: ${{env.SOURCE_DIR}}/RabbitCommon
+        libdatachannel_DIR: ${{env.INSTALL_DIR}}/share/cmake/libdatachannel
       run: |
         ./build_debpackage.sh /usr/lib/`uname -m`-linux-gnu/qt5
-#        cp ../rabbitproxyserver_0.0.7_amd64.deb rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb
-#        sudo apt-get install -y -qq xvfb xpra
-#        sudo Xvfb :99 -ac &
-#        export DISPLAY=:99.0
-#        sudo dpkg -i ../rabbitproxyserver_0.0.7_amd64.deb
-#        /opt/rabbitproxyserver/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb -m "v0.0.7"
-      
-#    - name: copy deb file
-#      run: |
-#        cp ../rabbitproxyserver_*.deb .
-#        sudo dpkg -i rabbitproxyserver_0.0.7_amd64.deb
-#        sudo apt-get install -y -qq xvfb xpra
-#        sudo Xvfb :99 -ac &
-#        export DISPLAY=:99.0
-#        /opt/rabbitproxyserver/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb -m "v0.0.7"
-        
+        cp ../rabbitproxyserver_0.0.7_amd64.deb rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb
+        sudo apt-get install -y -qq xvfb xpra
+        sudo Xvfb :99 -ac &
+        export DISPLAY=:99.0
+        sudo dpkg -i ../rabbitproxyserver_0.0.7_amd64.deb
+        /opt/rabbitproxyserver/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb -m "v0.0.7"
+
     - name: update 
       uses: actions/upload-artifact@v2
       with:
