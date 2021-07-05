@@ -1,0 +1,19 @@
+[Desktop Entry]
+Type=Application
+Icon=RabbitProxyServer
+Exec=/opt/RabbitProxyServer/bin/RabbitProxyServer
+Terminal=false
+StartupNotify=true
+Categories=Application;Development;Tools
+
+Name=Rabbit Proxy Server
+GenericName=Rabbit Proxy Server
+Comment=Rabbit Proxy Server
+
+Name[zh_CN]=玉兔代理服务器
+GenericName[zh_CN]=玉兔代理服务器
+Comment[zh_CN]=玉兔代理服务器
+
+Name[zh_TW]=玉兔代理服务器
+GenericName[zh_TW]=玉兔代理服务器
+Comment[zh_TW]=玉兔代理服务器

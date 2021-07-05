@@ -1,0 +1,15 @@
+Source: rabbitproxyserver
+Section: main
+Priority: optional
+Maintainer: Kang Lin <kl222@126.com>
+Build-Depends: debhelper (>= 6)
+Standards-Version:"v0.0.8"
+Homepage: https://github.com/KangLin/RabbitProxyServer
+Vcs-Git: https://github.com/KangLin/RabbitProxyServer.git
+Vcs-Browser: https://github.com/KangLin/RabbitProxyServer.git
+
+Package: rabbitproxyserver
+Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Rabbit proxy server
