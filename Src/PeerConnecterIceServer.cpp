@@ -171,16 +171,16 @@ int CPeerConnecterIceServer::OnReciveConnectRequst()
         return -1;
     }
 
-    bool check = connect(m_Peer.get(), SIGNAL(sigConnected()),
+    bool check = connect(m_Peer.data(), SIGNAL(sigConnected()),
                          this, SLOT(slotPeerConnected()));
     Q_ASSERT(check);
-    check = connect(m_Peer.get(), SIGNAL(sigDisconnected()),
+    check = connect(m_Peer.data(), SIGNAL(sigDisconnected()),
                     this, SLOT(slotPeerDisconnectd()));
     Q_ASSERT(check);
-    check = connect(m_Peer.get(), SIGNAL(sigError(int, const QString&)),
+    check = connect(m_Peer.data(), SIGNAL(sigError(int, const QString&)),
                     this, SLOT(slotPeerError(int, const QString&)));
     Q_ASSERT(check);
-    check = connect(m_Peer.get(), SIGNAL(sigReadyRead()),
+    check = connect(m_Peer.data(), SIGNAL(sigReadyRead()),
                     this, SLOT(slotPeerRead()));
     Q_ASSERT(check);
 

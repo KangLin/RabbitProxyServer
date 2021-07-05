@@ -6,7 +6,10 @@ Author: Kang Lin (kl222@126.com)
 - Project position: [https://github.com/KangLin/RabbitProxyServer](https://github.com/KangLin/RabbitProxyServer)
 - Language:
   + [:cn: Chinese](README_zh_CN.md)
-- [![Build status](https://ci.appveyor.com/api/projects/status/id993rbqmx147cqw?svg=true)](https://ci.appveyor.com/project/KangLin/rabbitproxyserver)
+  
+- Build status
+  - [![Build status](https://ci.appveyor.com/api/projects/status/id993rbqmx147cqw?svg=true)](https://ci.appveyor.com/project/KangLin/rabbitproxyserver)
+  - [![CMake ubuntu](https://github.com/KangLin/RabbitProxyServer/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/KangLin/RabbitProxyServer/actions/workflows/cmake_ubuntu.yml)
 
 ### Introduction
 

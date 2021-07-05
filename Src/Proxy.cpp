@@ -111,18 +111,18 @@ int CProxy::CreatePeer()
 int CProxy::SetPeerConnect()
 {
     if(!m_pPeer) return -1;
-    bool check = connect(m_pPeer.get(), SIGNAL(sigConnected()),
+    bool check = connect(m_pPeer.data(), SIGNAL(sigConnected()),
                     this, SLOT(slotPeerConnected()));
     Q_ASSERT(check);
-    check = connect(m_pPeer.get(), SIGNAL(sigDisconnected()),
+    check = connect(m_pPeer.data(), SIGNAL(sigDisconnected()),
                     this, SLOT(slotPeerDisconnectd()));
     Q_ASSERT(check);
-    check = connect(m_pPeer.get(),
+    check = connect(m_pPeer.data(),
            SIGNAL(sigError(int, const QString&)),
            this,
            SLOT(slotPeerError(int, const QString&)));
     Q_ASSERT(check);
-    check = connect(m_pPeer.get(), SIGNAL(sigReadyRead()),
+    check = connect(m_pPeer.data(), SIGNAL(sigReadyRead()),
                     this, SLOT(slotPeerRead()));
     Q_ASSERT(check);
     return 0;

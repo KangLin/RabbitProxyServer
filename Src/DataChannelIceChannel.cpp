@@ -18,14 +18,14 @@ int CDataChannelIceChannel::SetSignal(QSharedPointer<CIceSignal> signal)
     bool check = false;
     if(!signal) return -1;
     m_Signal = signal;
-    signal.get()->disconnect(this);
-    check = connect(signal.get(), SIGNAL(sigError(int, const QString&)),
+    signal.data()->disconnect(this);
+    check = connect(signal.data(), SIGNAL(sigError(int, const QString&)),
                     this, SLOT(slotSignalError(int, const QString&)));
     Q_ASSERT(check);
-    check = connect(m_Signal.get(), SIGNAL(sigConnected()),
+    check = connect(m_Signal.data(), SIGNAL(sigConnected()),
                     this, SLOT(slotSignalConnected()));
     Q_ASSERT(check);
-    check = connect(signal.get(), SIGNAL(sigDisconnected()),
+    check = connect(signal.data(), SIGNAL(sigDisconnected()),
                     this, SLOT(slotSignalDisconnected()));
     Q_ASSERT(check);
     return 0;

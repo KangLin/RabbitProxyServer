@@ -145,7 +145,7 @@ int CIceManager::SetSignal(QSharedPointer<CIceSignal> signal)
 
     if(signal)
     {
-        check = connect(signal.get(),
+        check = connect(signal.data(),
                         SIGNAL(sigDescription(const QString&,
                                               const QString&,
                                               const QString&,
@@ -158,7 +158,7 @@ int CIceManager::SetSignal(QSharedPointer<CIceSignal> signal)
                                                            const QString&,
                                                            const QString&)));
         Q_ASSERT(check);
-        check = connect(signal.get(),
+        check = connect(signal.data(),
                         SIGNAL(sigCandiate(const QString&,
                                            const QString&,
                                            const QString&,

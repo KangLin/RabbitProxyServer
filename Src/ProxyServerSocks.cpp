@@ -78,7 +78,7 @@ int CProxyServerSocks::Start()
             {
                 bool check = false;
 #if USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
-                check = connect(m_Signal.get(),
+                check = connect(m_Signal.data(),
                                 SIGNAL(sigOffer(const QString&,
                                                 const QString&,
                                                 const QString&,
@@ -91,13 +91,13 @@ int CProxyServerSocks::Start()
                                                const QString&,
                                                const QString&)));
 #else
-                check = connect(m_Signal.get(),
+                check = connect(m_Signal.data(),
                                 SIGNAL(sigOffer(const QString&,
                                                 const QString&,
                                                 const QString&,
                                                 const QString&,
                                                 const QString&)),
-                                m_IceManager.get(),
+                                m_IceManager.data(),
                                 SLOT(slotOffer(const QString&,
                                                const QString&,
                                                const QString&,
@@ -179,10 +179,10 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
     auto ice = QSharedPointer<CPeerConnecterIceServer>(
                 new CPeerConnecterIceServer(this, fromUser, toUser, channelId, type, sdp),
                 &QObject::deleteLater);
-    bool check = connect(ice.get(), SIGNAL(sigDisconnected()),
+    bool check = connect(ice.data(), SIGNAL(sigDisconnected()),
                          this, SLOT(slotRemotePeerConnectServer()));
     Q_ASSERT(check);
-    check = connect(ice.get(), SIGNAL(sigError(int, const QString&)),
+    check = connect(ice.data(), SIGNAL(sigError(int, const QString&)),
                     this, SLOT(slotError(int, const QString&)));
     Q_ASSERT(check);
     

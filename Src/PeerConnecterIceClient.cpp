@@ -47,16 +47,16 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
     if(!m_DataChannel) return -1;
 
     bool check = false;
-    check = connect(m_DataChannel.get(), SIGNAL(sigConnected()),
+    check = connect(m_DataChannel.data(), SIGNAL(sigConnected()),
                     this, SLOT(slotDataChannelConnected()));
     Q_ASSERT(check);
-    check = connect(m_DataChannel.get(), SIGNAL(sigDisconnected()),
+    check = connect(m_DataChannel.data(), SIGNAL(sigDisconnected()),
                     this, SLOT(slotDataChannelDisconnected()));
     Q_ASSERT(check);
-    check = connect(m_DataChannel.get(), SIGNAL(sigError(int, const QString&)),
+    check = connect(m_DataChannel.data(), SIGNAL(sigError(int, const QString&)),
                     this, SLOT(slotDataChannelError(int, const QString&)));
     Q_ASSERT(check);
-    check = connect(m_DataChannel.get(), SIGNAL(readyRead()),
+    check = connect(m_DataChannel.data(), SIGNAL(readyRead()),
                     this, SLOT(slotDataChannelReadyRead()));
     Q_ASSERT(check);
     
