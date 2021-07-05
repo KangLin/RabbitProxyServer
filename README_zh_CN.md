@@ -5,6 +5,7 @@
 - 项目位置：[https://github.com/KangLin/RabbitProxyServer](https://github.com/KangLin/RabbitProxyServer)
 - 语言
   + [:us: 英语](README.md)
+- [![编译状态](https://ci.appveyor.com/api/projects/status/id993rbqmx147cqw?svg=true)](https://ci.appveyor.com/project/KangLin/rabbitproxyserver)
 
 ### 简介
 
