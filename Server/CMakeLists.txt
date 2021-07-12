@@ -34,6 +34,13 @@ set(SOURCE_UI_FILES
     FrmSocket.ui
     )
 
+find_package(QtService)
+if(QtService_FOUND)
+    list(APPEND SOURCE_FILES Service.cpp)
+    list(APPEND HEADER_FILES Service.h)
+    list(APPEND SERVICE_LIBS QtService)
+endif()
+
 #翻译
 GENERATED_QT_TRANSLATIONS(
     SOURCES ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES}
@@ -64,13 +71,14 @@ endif()
 #    endif()
 #endif()
 
+list(APPEND SERVICE_LIBS RabbitProxy ${QT_LIBRARIES})
 ADD_TARGET(NAME ${PROJECT_NAME}
     ISEXE
     ISWINDOWS
     VERSION ${BUILD_VERSION}
     PRIVATE_DEFINITIONS BUILD_VERSION="${BUILD_VERSION}"
     SOURCE_FILES ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} ${RCC_FILES}
-    PRIVATE_LIBS RabbitProxy ${QT_LIBRARIES})
+    PRIVATE_LIBS ${SERVICE_LIBS})
 
 if(WIN32)
     install(FILES Resource/Image/App.ico

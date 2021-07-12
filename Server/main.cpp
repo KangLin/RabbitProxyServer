@@ -16,9 +16,11 @@
 #ifdef BUILD_QUIWidget
     #include "QUIWidget/QUIWidget.h"
 #endif
+#include "Service.h"
 
 int main(int argc, char *argv[])
 {
+    int nRet = 0;
 #if defined (_DEBUG) || !defined(BUILD_SHARED_LIBS)
     Q_INIT_RESOURCE(translations_RabbitProxyServer);
 #endif
@@ -29,6 +31,17 @@ int main(int argc, char *argv[])
     QApplication::setDesktopFileName(QLatin1String("RabbitProxyServer.desktop"));
 #endif
 
+#define USE_SERVER
+#ifdef USE_SERVER
+#if !defined(Q_OS_WIN)
+    // QtService stores service settings in SystemScope, which normally require root privileges.
+    // To allow testing this example as non-root, we change the directory of the SystemScope settings file.
+    QSettings::setPath(QSettings::NativeFormat, QSettings::SystemScope, QDir::tempPath());
+    qWarning("(Example uses dummy settings file: %s/QtSoftware.conf)", QDir::tempPath().toLatin1().constData());
+#endif
+    CService s(argc, argv);
+    s.exec();
+#else
     QApplication a(argc, argv);
 
     RabbitCommon::CTools::Instance()->Init();
@@ -65,7 +78,6 @@ int main(int argc, char *argv[])
     win->show();
 #endif
 
-    int nRet = 0;
     try {
         nRet = a.exec();
     }  catch (QException &e) {
@@ -82,6 +94,9 @@ int main(int argc, char *argv[])
 
     RabbitCommon::CTools::Instance()->Clean();
     a.removeTranslator(&tApp);
+    
+#endif
+
 #if defined (_DEBUG) || !defined(BUILD_SHARED_LIBS)
     Q_CLEANUP_RESOURCE(translations_RabbitProxyServer);
 #endif

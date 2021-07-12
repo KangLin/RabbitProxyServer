@@ -65,12 +65,30 @@ before_build:
   - vcpkg --triplet %BUILD_ARCH%-windows install zlib libdatachannel
   
   - cd "%OTHER_SOURCE%"
+  - if not exist Log4Qt (git clone -b v1.5.1 https://github.com/MEONMedical/Log4Qt.git)
+  - cd Log4Qt
+  - cmake -E make_directory build
+  - cd build
+  - cmake .. -G"%GENERATORS%" -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%INSTALL_DIR%" -DCMAKE_TOOLCHAIN_FILE="%VCPKG_DIR%/scripts/buildsystems/vcpkg.cmake"
+  - cmake --build . --config Release
+  - cmake --build . --config Release --target install
+  
+  - cd "%OTHER_SOURCE%"
   #- if exist qxmpp (rmdir /s /q "qxmpp")
   - if not exist qxmpp (git clone -b v1.4.0 "https://github.com/qxmpp-project/qxmpp.git")
   - cd qxmpp
   - mkdir build
   - cd build
-  - cmake .. -G"%GENERATORS%" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -G"%GENERATORS%" -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5 
+  - cmake .. -G"%GENERATORS%" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5 
+  - cmake --build . --config Release
+  - cmake --build . --config Release --target install
+  
+  - cd "%OTHER_SOURCE%"
+  - if not exist qt-solutions (git clone "https://github.com/KangLin/qt-solutions.git")
+  - cd qt-solutions/qtservice
+  - mkdir build
+  - cd build
+  - cmake .. -G"%GENERATORS%" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5 
   - cmake --build . --config Release
   - cmake --build . --config Release --target install
   
@@ -83,7 +101,7 @@ build_script:
   - cd %APPVEYOR_BUILD_FOLDER%
   - mkdir build
   - cd build
-  - cmake .. -G"%GENERATORS%" -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQXmpp_DIR=%INSTALL_DIR%/lib/cmake/qxmpp -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%cd%/install" -DCMAKE_PREFIX_PATH="%INSTALL_DIR%" -DCMAKE_TOOLCHAIN_FILE="%VCPKG_DIR%/scripts/buildsystems/vcpkg.cmake"
+  - cmake .. -G"%GENERATORS%" -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQtService_DIR=%INSTALL_DIR%/lib/cmake/QtService -DQXmpp_DIR=%INSTALL_DIR%/lib/cmake/qxmpp -DLog4Qt_DIR="%INSTALL_DIR%/lib/cmake/Log4Qt" -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="%cd%/install" -DCMAKE_PREFIX_PATH="%INSTALL_DIR%" -DCMAKE_TOOLCHAIN_FILE="%VCPKG_DIR%/scripts/buildsystems/vcpkg.cmake"
   - cmake --build . --config Release
   - cmake --build . --config Release --target install-runtime
   - call "C:/Program Files (x86)/NSIS/makensis.exe" Install.nsi

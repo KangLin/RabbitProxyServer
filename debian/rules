@@ -17,6 +17,12 @@
 ifdef libdatachannel_DIR
     PARAS += -Dlibdatachannel_DIR=${libdatachannel_DIR}
 endif
+ifdef QtService_DIR
+    PARAS += -DQtService_DIR=${QtService_DIR}
+endif
+ifdef QXmpp_DIR
+    PARAS += -DQXmpp_DIR=${QXmpp_DIR}
+endif
 
 %:
 	dh $@
