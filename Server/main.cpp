@@ -16,7 +16,9 @@
 #ifdef BUILD_QUIWidget
     #include "QUIWidget/QUIWidget.h"
 #endif
+#ifdef USE_SERVER
 #include "Service.h"
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -31,7 +33,6 @@ int main(int argc, char *argv[])
     QApplication::setDesktopFileName(QLatin1String("RabbitProxyServer.desktop"));
 #endif
 
-#define USE_SERVER
 #ifdef USE_SERVER
 #if !defined(Q_OS_WIN)
     // QtService stores service settings in SystemScope, which normally require root privileges.
