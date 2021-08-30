@@ -39,7 +39,7 @@ if(LibDataChannel_FOUND)
     find_package(OpenSSL)
     find_package(Threads)
     find_package(LibJuice)
-    list(APPEND _PROXY_LIBS LibDatachannel::datachannel)
+    list(APPEND _PROXY_LIBS LibDatachannel::LibDataChannel)
 else()
     find_path(_LibDataChannel_INCLUDE_DIRS
         NAMES "rtc/rtc.hpp"
