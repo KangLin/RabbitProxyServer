@@ -1,67 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="zh_CN">
-<context>
-    <name>CDataChannelIce</name>
-    <message>
-        <source>Signal disconnected</source>
-        <translation type="vanished">信令通道断开</translation>
-    </message>
-    <message>
-        <source>Signal error: %1</source>
-        <translation type="vanished">信令错误：%1</translation>
-    </message>
-</context>
+<TS version="2.1" language="gd_GB">
 <context>
     <name>CPeerConnecter</name>
     <message>
         <location filename="../../PeerConnecter.cpp" line="127"/>
         <source>Refused connection</source>
-        <translation>拒绝连接</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../PeerConnecter.cpp" line="131"/>
         <source>Remote host close error</source>
-        <translation>远程主机关闭错误</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../PeerConnecter.cpp" line="135"/>
         <source>Not found host</source>
-        <translation>未发现主机</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../PeerConnecter.cpp" line="139"/>
         <source>Socket resource error</source>
-        <translation>Socket 资源错误</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../PeerConnecter.cpp" line="143"/>
         <source>Not allowd connection</source>
-        <translation>不允许连接</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../PeerConnecter.cpp" line="147"/>
         <source>Connection timeout</source>
-        <translation>连接超时</translation>
-    </message>
-</context>
-<context>
-    <name>CPeerConnecterIceClient</name>
-    <message>
-        <source>Data channel open fail</source>
-        <translation type="vanished">数据通道打开失败</translation>
-    </message>
-    <message>
-        <source>Signal don&apos;t open</source>
-        <translation type="vanished">信令通道没打开</translation>
-    </message>
-    <message>
-        <source>Please set peer user</source>
-        <translation type="vanished">请设置对端用户</translation>
-    </message>
-    <message>
-        <source>Ice connect reply fail</source>
-        <translation type="vanished">Ice 连接响应失败</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -69,17 +39,17 @@
     <message>
         <location filename="../../ProxyServer.cpp" line="53"/>
         <source>Server listen at: %s:%d: %s</source>
-        <translation>服务器监听在：%s:%d: %s</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../ProxyServer.cpp" line="61"/>
         <source>Server listen at: %s:%d</source>
-        <translation>服务器监听在：%s:%d</translation>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../ProxyServer.cpp" line="84"/>
         <source>New connect from: %s:%d</source>
-        <translation>新连接：%s:%d</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -87,7 +57,7 @@
     <message>
         <location filename="../../ProxySocks5.cpp" line="111"/>
         <source>Select authenticator: 0x%x</source>
-        <translation>选择验证： 0x％x</translation>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

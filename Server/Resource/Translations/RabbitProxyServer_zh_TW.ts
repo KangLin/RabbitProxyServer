@@ -97,11 +97,11 @@
     </message>
     <message>
         <source>Domain:</source>
-        <translation>域名:</translation>
+        <translation type="vanished">域名:</translation>
     </message>
     <message>
         <source>Resource:</source>
-        <translation>資源:</translation>
+        <translation type="vanished">資源:</translation>
     </message>
     <message>
         <source>One peer connection to one data channel</source>
@@ -124,7 +124,7 @@
     </message>
     <message>
         <source>Proxy Server</source>
-        <translation>代理服務器</translation>
+        <translation type="vanished">代理服務器</translation>
     </message>
     <message>
         <source>toolBar</source>
