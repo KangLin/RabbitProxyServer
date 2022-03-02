@@ -1,4 +1,4 @@
-#Author: Kang Lin(kl222@126.com)
+# Author: Kang Lin <kl222@126.com>
 
 project(RabbitProxy)
 
@@ -33,84 +33,90 @@ set(SOURCE_UI_FILES
     )
 
 set(_PROXY_LIBS RabbitCommon ${QT_LIBRARIES})
-set(_LibDataChannel_DIR ${LibDataChannel_DIR})
-find_package(LibDataChannel)
-if(LibDataChannel_FOUND)
-    find_package(OpenSSL)
-    find_package(Threads)
-    find_package(LibJuice)
-    list(APPEND _PROXY_LIBS LibDatachannel::LibDataChannel)
-else()
-    find_path(_LibDataChannel_INCLUDE_DIRS
-        NAMES "rtc/rtc.hpp"
-        HINTS ${_LibDataChannel_DIR}
-        PATHS ${_LibDataChannel_DIR}
-        PATH_SUFFIXES include        
-        )
-    find_library(_LibDataChannel_LIB
-        NAMES datachannel
-        HINTS ${_LibDataChannel_DIR}
-        PATHS ${_LibDataChannel_DIR}
-        PATH_SUFFIXES lib
-        )
-    if(_LibDataChannel_LIB)
-        list(APPEND _PROXY_LIBS ${_LibDataChannel_LIB})
+set(DEPEND_LIB)
+option(WITH_ICE "With ICE" ON)
+if(WITH_ICE)
+    set(_LibDataChannel_DIR ${LibDataChannel_DIR})
+    find_package(LibDataChannel)
+    if(LibDataChannel_FOUND)
+        find_package(OpenSSL)
+        find_package(Threads)
+        find_package(LibJuice)
+        list(APPEND _PROXY_LIBS LibDatachannel::LibDataChannel)
+        list(APPEND DEPEND_LIB LibDataChannel)
+    else()
+        find_path(_LibDataChannel_INCLUDE_DIRS
+            NAMES "rtc/rtc.hpp"
+            HINTS ${_LibDataChannel_DIR}
+            PATHS ${_LibDataChannel_DIR}
+            PATH_SUFFIXES include
+            )
+        find_library(_LibDataChannel_LIB
+            NAMES datachannel
+            HINTS ${_LibDataChannel_DIR}
+            PATHS ${_LibDataChannel_DIR}
+            PATH_SUFFIXES lib
+            )
+        if(_LibDataChannel_LIB)
+            list(APPEND _PROXY_LIBS ${_LibDataChannel_LIB})
+        endif()
+        if(_LibDataChannel_INCLUDE_DIRS AND _LibDataChannel_LIB)
+            set(LibDataChannel_FOUND TRUE)
+            message("libdatachannel: ${_LibDataChannel_LIB}")
+        endif()
     endif()
-    if(_LibDataChannel_INCLUDE_DIRS AND _LibDataChannel_LIB)
-        set(LibDataChannel_FOUND TRUE)
-        message("libdatachannel: ${_LibDataChannel_LIB}")
-    endif()
-endif()
-if(LibDataChannel_FOUND)
-    list(APPEND INSTALL_HEAD_FILES
-        PeerConnecterIceClient.h
-        PeerConnecterIceServer.h
-        IceSignal.h
-        DataChannelIce.h
-        DataChannelIceChannel.h
-        )
-    list(APPEND HEADER_FILES
-        IceManager.h)
-    list(APPEND SOURCE_FILES
-        PeerConnecterIceClient.cpp
-        PeerConnecterIceServer.cpp
-        IceSignal.cpp
-        DataChannelIce.cpp
-        DataChannelIceChannel.cpp
-        IceManager.cpp
-        )
-    list(APPEND PROXY_DEFINITIONS HAVE_ICE)
-    option(USE_ONE_PEERCONNECTION_ONE_DATACHANNEL "Use one peer connect to one data channel" ON)
-    if(USE_ONE_PEERCONNECTION_ONE_DATACHANNEL)
-        list(APPEND PROXY_DEFINITIONS USE_ONE_PEERCONNECTION_ONE_DATACHANNEL)
-    endif()
-
-    find_package(nlohmann_json)
-    if(nlohmann_json_FOUND)
-        list(APPEND _PROXY_LIBS nlohmann_json::nlohmann_json)
-        list(APPEND PROXY_DEFINITIONS HAVE_WebSocket)
-        list(APPEND HEADER_FILES IceSignalWebSocket.h)
-        list(APPEND SOURCE_FILES IceSignalWebSocket.cpp)
-    endif()
-
-    find_package(QXmpp)
-    if(QXmpp_FOUND)
-        list(APPEND _PROXY_LIBS QXmpp::QXmpp)
-        list(APPEND PROXY_DEFINITIONS HAVE_QXMPP)
+    if(LibDataChannel_FOUND)
+        list(APPEND INSTALL_HEAD_FILES
+            PeerConnecterIceClient.h
+            PeerConnecterIceServer.h
+            IceSignal.h
+            DataChannelIce.h
+            DataChannelIceChannel.h
+            )
         list(APPEND HEADER_FILES
-            IceSignalQxmpp.h
-            IceSignalQXmppManager.h
-            IceSignalQXmppIq.h)
+            IceManager.h)
         list(APPEND SOURCE_FILES
-            IceSignalQxmpp.cpp
-            IceSignalQXmppManager.cpp
-            IceSignalQXmppIq.cpp)
-        INSTALL_TARGETS(TARGETS QXmpp::QXmpp)
+            PeerConnecterIceClient.cpp
+            PeerConnecterIceServer.cpp
+            IceSignal.cpp
+            DataChannelIce.cpp
+            DataChannelIceChannel.cpp
+            IceManager.cpp
+            )
+        list(APPEND PROXY_DEFINITIONS HAVE_ICE)
+        option(USE_ONE_PEERCONNECTION_ONE_DATACHANNEL "Use one peer connect to one data channel" ON)
+        if(USE_ONE_PEERCONNECTION_ONE_DATACHANNEL)
+            list(APPEND PROXY_DEFINITIONS USE_ONE_PEERCONNECTION_ONE_DATACHANNEL)
+        endif()
+        
+        find_package(nlohmann_json)
+        if(nlohmann_json_FOUND)
+            list(APPEND DEPEND_LIB nlohmann_json)
+            list(APPEND _PROXY_LIBS nlohmann_json::nlohmann_json)
+            list(APPEND PROXY_DEFINITIONS HAVE_WebSocket)
+            list(APPEND HEADER_FILES IceSignalWebSocket.h)
+            list(APPEND SOURCE_FILES IceSignalWebSocket.cpp)
+        endif()
+        
+        find_package(QXmpp)
+        if(QXmpp_FOUND)
+            list(APPEND DEPEND_LIB QXmpp)
+            list(APPEND _PROXY_LIBS QXmpp::QXmpp)
+            list(APPEND PROXY_DEFINITIONS HAVE_QXMPP)
+            list(APPEND HEADER_FILES
+                IceSignalQxmpp.h
+                IceSignalQXmppManager.h
+                IceSignalQXmppIq.h)
+            list(APPEND SOURCE_FILES
+                IceSignalQxmpp.cpp
+                IceSignalQXmppManager.cpp
+                IceSignalQXmppIq.cpp)
+            INSTALL_TARGETS(TARGETS QXmpp::QXmpp)
+        endif()
+    else()
+        message(AUTHOR_WARNING "Please install libdatachannel from https://github.com/paullouisageneau/libdatachannel")
     endif()
-else()
-    message(AUTHOR_WARNING "Please install libdatachannel from https://github.com/paullouisageneau/libdatachannel")
-endif()
-
+endif(WITH_ICE)
 message("LIBS:${_PROXY_LIBS}")
 
 #翻译
@@ -135,4 +141,5 @@ ADD_TARGET(NAME ${PROJECT_NAME}
     PRIVATE_DEFINITIONS ${PROXY_PRIVATE_DEFINITIONS}
     DEFINITIONS ${PROXY_DEFINITIONS}
     LIBS ${_PROXY_LIBS}
-    VERSION ${BUILD_VERSION})
+    VERSION ${BUILD_VERSION}
+    )
