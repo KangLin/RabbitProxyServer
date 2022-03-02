@@ -2,6 +2,19 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="gl_ES">
 <context>
+    <name>CDataChannelIce</name>
+    <message>
+        <location filename="../../DataChannelIce.cpp" line="357"/>
+        <source>Signal disconnected</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../DataChannelIce.cpp" line="410"/>
+        <source>Signal error: %1</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>CPeerConnecter</name>
     <message>
         <location filename="../../PeerConnecter.cpp" line="127"/>
@@ -31,6 +44,29 @@
     <message>
         <location filename="../../PeerConnecter.cpp" line="147"/>
         <source>Connection timeout</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CPeerConnecterIceClient</name>
+    <message>
+        <location filename="../../PeerConnecterIceClient.cpp" line="78"/>
+        <source>Data channel open fail</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../PeerConnecterIceClient.cpp" line="174"/>
+        <source>Ice connect reply fail</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../PeerConnecterIceClient.cpp" line="184"/>
+        <source>Signal don&apos;t open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../PeerConnecterIceClient.cpp" line="196"/>
+        <source>Please set peer user</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
