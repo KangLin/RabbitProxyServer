@@ -118,8 +118,8 @@ artifacts:
 
 test: off
 
-#See: https://www.appveyor.com/docs/deployment/github/
-deploy:
+##See: https://www.appveyor.com/docs/deployment/github/
+#deploy:
   #provider: FTP 
   #protocol: sftp 
   #host: frs.sourceforge.net 
@@ -133,17 +133,17 @@ deploy:
   #on:
     #branch: master
 
-  - provider: GitHub
-    # token : https://github.com/settings/tokens
-    # password encrypt: https://ci.appveyor.com/tools/encrypt
-    auth_token:
-      secure: 9do9yUjK8IrlU7jqUHUSPkTDADxzqBSa2GxJ0b0mqo9U2gaAkDFgsiDTvjPgCcnV
-    #artifact:
-    #draft: true
-    #prerelease: true
-    force_update: false
-    on:
-      TOOLCHAIN_VERSION: 15
-      #QT_VERSION: 5.6.3
-      BUILD_ARCH: x86
-      appveyor_repo_tag: true        # deploy on tag push only
+  #- provider: GitHub
+  #  # token : https://github.com/settings/tokens
+  #  # password encrypt: https://ci.appveyor.com/tools/encrypt
+  #  auth_token:
+  #    secure: 9do9yUjK8IrlU7jqUHUSPkTDADxzqBSa2GxJ0b0mqo9U2gaAkDFgsiDTvjPgCcnV
+  #  #artifact:
+  #  #draft: true
+  #  #prerelease: true
+  #  force_update: false
+  #  on:
+  #    TOOLCHAIN_VERSION: 15
+  #    #QT_VERSION: 5.6.3
+  #    BUILD_ARCH: x86
+  #    appveyor_repo_tag: true        # deploy on tag push only
