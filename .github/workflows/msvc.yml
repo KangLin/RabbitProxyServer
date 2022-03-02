@@ -85,7 +85,7 @@ jobs:
         appendedCacheKey: cache-vcpkg-msvc-${{matrix.os}}-${{matrix.triplet}}-qt${{matrix.qt_version}}-${{matrix.BUILD_TYPE}}-${{env.VCPKGGITCOMMITID}}
         #additionalCachedPaths: ${{ env.VCPKG_ROOT }}/installed
         vcpkgTriplet: '${{matrix.triplet}}'
-        vcpkgArguments: 'zlib openssl libdatachannel'
+        vcpkgArguments: 'zlib openssl'
 
     - name: build libdatachannel
       working-directory: ${{env.SOURCE_DIR}}
@@ -219,6 +219,7 @@ jobs:
             -DCMAKE_PREFIX_PATH=${{env.INSTALL_DIR}} ^
             -DQtService_DIR=${{env.INSTALL_DIR}}/lib/cmake/QtService ^
             -DQXmpp_DIR=${{env.INSTALL_DIR}}/lib/cmake/qxmpp ^
+            -DLibDataChannel_DIR=${{env.INSTALL_DIR}}/lib/cmake/LibDataChannel ^
             -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake
         cmake --build . --config ${{ matrix.BUILD_TYPE }}
         cmake --build . --config ${{ matrix.BUILD_TYPE }} --target install
