@@ -19,6 +19,7 @@ jobs:
       SOURCE_DIR:  ${{github.workspace}}/source
       TOOSL_DIR:   ${{github.workspace}}/tools
       INSTALL_DIR: ${{github.workspace}}/install
+      RABBITPROXYSERVER_VERSION: 0.0.1
       
     steps:
     - uses: actions/checkout@v2
@@ -63,7 +64,7 @@ jobs:
         cd qt-solutions/qtservice
         mkdir build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}} -DQt5_DIR=/usr/lib/`uname -m`-linux-gnu/qt5/lib/cmake/Qt5  
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES:BOOL=OFF -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}} -DQt5_DIR=/usr/lib/`uname -m`-linux-gnu/qt5/lib/cmake/Qt5  
         cmake --build . --config Release 
         cmake --build . --config Release --target install
         
@@ -75,7 +76,7 @@ jobs:
         QtService_DIR: ${{env.INSTALL_DIR}}/lib/cmake/QtService
       run: |
         ./build_debpackage.sh /usr/lib/`uname -m`-linux-gnu/qt5
-        cp ../rabbitproxyserver_0.0.7_amd64.deb ${{github.workspace}}/rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb
+        cp ../rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64.deb ${{github.workspace}}/rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64_${{matrix.os}}.deb
         
 #    - name: Update xml file
 #      working-directory: ${{github.workspace}}
@@ -83,8 +84,8 @@ jobs:
 #        sudo apt-get install -y -qq xvfb xpra
 #        sudo Xvfb :99 -ac &
 #        export DISPLAY=:99.0
-#        sudo dpkg -i ../rabbitproxyserver_0.0.7_amd64.deb
-#        /opt/RabbitProxyServer/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb -m "v0.0.7"
+#        sudo dpkg -i ../rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64.deb
+#        /opt/RabbitProxyServer/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64_${{matrix.os}}.deb -m "v${{env.RABBITPROXYSERVER_VERSION}}"
 
     - name: update 
       uses: actions/upload-artifact@v2
@@ -111,4 +112,4 @@ jobs:
         body: |
           [:cn: 修改日志](ChangeLog_zh_CN.md) [:us: Change log](ChangeLog.md)
         files: |
-          ${{github.workspace}}/rabbitproxyserver_*.deb
+          ${{github.workspace}}/rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64_${{matrix.os}}.deb

@@ -32,7 +32,7 @@ int CPeerConnecterIceClient::CreateDataChannel(const QString &peer,
     CParameterSocks* pPara = qobject_cast<CParameterSocks*>(m_pServer->Getparameter());
     if(!pPara) return -1;
     
-    #if USE_ONE_PEERCONNECTION_ONE_DATACHANNEL
+    #if WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL
     m_DataChannel = QSharedPointer<CDataChannelIce>(
                 new CDataChannelIce(m_pServer->GetSignal(), this),
                 &QObject::deleteLater);

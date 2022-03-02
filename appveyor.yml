@@ -79,7 +79,7 @@ before_build:
   - cd qxmpp
   - mkdir build
   - cd build
-  - cmake .. -G"%GENERATORS%" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5 
+  - cmake .. -G"%GENERATORS%" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DBUILD_EXAMPLES:BOOL=OFF -DBUILD_TESTS:BOOL=OFF -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5
   - cmake --build . --config Release
   - cmake --build . --config Release --target install
   
@@ -88,7 +88,7 @@ before_build:
   - cd qt-solutions/qtservice
   - mkdir build
   - cd build
-  - cmake .. -G"%GENERATORS%" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5 
+  - cmake .. -G"%GENERATORS%" -DCMAKE_INSTALL_PREFIX=%INSTALL_DIR% -DBUILD_EXAMPLES=OFF -DQT_DIR=%QT_ROOT%/lib/cmake/Qt5 -DQt5_DIR=%QT_ROOT%/lib/cmake/Qt5 
   - cmake --build . --config Release
   - cmake --build . --config Release --target install
   

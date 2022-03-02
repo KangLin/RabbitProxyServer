@@ -40,8 +40,7 @@ sed -i "s/tag_name:.*/tag_name: '${VERSION}'/g" ${SOURCE_DIR}/.github/workflows/
 sed -i "s/tag_name:.*/tag_name: '${VERSION}'/g" ${SOURCE_DIR}/.github/workflows/cmake_mingw.yml
 sed -i "s/tag_name:.*/tag_name: '${VERSION}'/g" ${SOURCE_DIR}/.github/workflows/cmake.yml
 sed -i "s/RabbitProxyServer-Setup-v[0-9]\+\.[0-9]\+\.[0-9]\+.exe/RabbitProxyServer-Setup-${VERSION}.exe/g" ${SOURCE_DIR}/.github/workflows/cmake.yml
-sed -i "s/-m \"v[0-9]\+\.[0-9]\+\.[0-9]\+\"/-m \"${VERSION}\"/g" ${SOURCE_DIR}/.github/workflows/cmake.yml
-sed -i "s/-m \"v[0-9]\+\.[0-9]\+\.[0-9]\+\"/-m \"${VERSION}\"/g" ${SOURCE_DIR}/.github/workflows/cmake_ubuntu.yml
+sed -i "s/-m \"v[0-9]\+\.[0-9]\+\.[0-9]\+\"/-m \"${VERSION}\"/g" ${SOURCE_DIR}/.github/workflows/msvc.yml
 sed -i "s/PROJECT_NUMBER.*v[0-9]\+\.[0-9]\+\.[0-9]\+/PROJECT_NUMBER = ${VERSION}/g" ${SOURCE_DIR}/Doxyfile.in
 
 sed -i "s/^\Standards-Version:.*/\Standards-Version:\"${VERSION}\"/g" ${SOURCE_DIR}/debian/control
@@ -50,7 +49,7 @@ sed -i "s/rabbitproxyserver (.*)/rabbitproxyserver (${DEBIAN_VERSION})/g" ${SOUR
 sed -i "s/Version=.*/Version=${DEBIAN_VERSION}/g" ${SOURCE_DIR}/debian/RabbitProxyServer.desktop
 sed -i "s/[0-9]\+\.[0-9]\+\.[0-9]\+/${DEBIAN_VERSION}/g" ${SOURCE_DIR}/README*.md
 #sed -i "s/[0-9]\+\.[0-9]\+\.[0-9]\+/${DEBIAN_VERSION}/g" ${SOURCE_DIR}/App/android/AndroidManifest.xml
-sed -i "s/rabbitproxyserver_[0-9]\+\.[0-9]\+\.[0-9]\+/rabbitproxyserver_${DEBIAN_VERSION}/g" ${SOURCE_DIR}/.github/workflows/cmake_ubuntu.yml
+sed -i "s/RABBITPROXYSERVER_VERSION_[0-9]\+\.[0-9]\+\.[0-9]\+/RABBITPROXYSERVER_VERSION_${DEBIAN_VERSION}/g" ${SOURCE_DIR}/.github/workflows/cmake_ubuntu.yml
 
 MAJOR_VERSION=`echo ${DEBIAN_VERSION}|cut -d "." -f 1`
 #sed -i "s/android:versionCode=.*android/android:versionCode=\"${MAJOR_VERSION}\" android/g" ${SOURCE_DIR}/App/android/AndroidManifest.xml
