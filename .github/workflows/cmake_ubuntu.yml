@@ -19,6 +19,7 @@ jobs:
       SOURCE_DIR:  ${{github.workspace}}/source
       TOOSL_DIR:   ${{github.workspace}}/tools
       INSTALL_DIR: ${{github.workspace}}/install
+      RABBITPROXYSERVER_VERSION: 0.0.1
       
     steps:
     - uses: actions/checkout@v2
@@ -49,6 +50,7 @@ jobs:
         git clone https://github.com/paullouisageneau/libdatachannel.git
         cd libdatachannel
         git submodule update --init --recursive
+        git checkout -b v0.16.5 v0.16.5
         mkdir build
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}}
@@ -62,7 +64,7 @@ jobs:
         cd qt-solutions/qtservice
         mkdir build
         cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}} -DQt5_DIR=/usr/lib/`uname -m`-linux-gnu/qt5/lib/cmake/Qt5  
+        cmake .. -DCMAKE_BUILD_TYPE=Release -DBUILD_EXAMPLES:BOOL=OFF -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}} -DQt5_DIR=/usr/lib/`uname -m`-linux-gnu/qt5/lib/cmake/Qt5  
         cmake --build . --config Release 
         cmake --build . --config Release --target install
         
@@ -74,7 +76,7 @@ jobs:
         QtService_DIR: ${{env.INSTALL_DIR}}/lib/cmake/QtService
       run: |
         ./build_debpackage.sh /usr/lib/`uname -m`-linux-gnu/qt5
-        cp ../rabbitproxyserver_0.0.7_amd64.deb ${{github.workspace}}/rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb
+        cp ../rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64.deb ${{github.workspace}}/rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64_${{matrix.os}}.deb
         
 #    - name: Update xml file
 #      working-directory: ${{github.workspace}}
@@ -82,8 +84,8 @@ jobs:
 #        sudo apt-get install -y -qq xvfb xpra
 #        sudo Xvfb :99 -ac &
 #        export DISPLAY=:99.0
-#        sudo dpkg -i ../rabbitproxyserver_0.0.7_amd64.deb
-#        /opt/RabbitProxyServer/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_0.0.7_amd64_${{matrix.os}}.deb -m "v0.0.7"
+#        sudo dpkg -i ../rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64.deb
+#        /opt/RabbitProxyServer/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64_${{matrix.os}}.deb -m "v${{env.RABBITPROXYSERVER_VERSION}}"
 
     - name: update 
       uses: actions/upload-artifact@v2
@@ -101,30 +103,13 @@ jobs:
     #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Upload To Github Release
-      # You may pin to the exact commit or the version.
-      # uses: xresloader/upload-to-github-release@3ad14478ee4fb9bd65e84c6d496a7d6862892f43
-      uses: xresloader/upload-to-github-release@v1.2.2
+      if: ${{ matrix.BUILD_TYPE == 'Release' && startsWith(github.ref, 'refs/tags/') }}
+      uses: softprops/action-gh-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        # The files or file patterns to upload. You can upload multiple files by split them by semicolon. You can use the glob pattern to find the files.
-        file: ${{github.workspace}}/rabbitproxyserver_*.deb;${{github.workspace}}/update_*.xml # default is 
-        # The files or file patterns to delete before uploading new files. You can delete multiple files by split them by semicolon. You can use the glob pattern to find the files.
-        #delete_file: # optional, default is 
-        # If you need to overwrite existing files, add overwrite: true to the with.
-        #overwrite: # optional, default is false
-        # The resultant deployment is a draft Release that only repository collaborators can see. This gives you an opportunity to examine and edit the draft release.
-        draft: false # optional, default is true
-        # The resultant deployment is a Prerelease. This gives you an opportunity to examine and edit the prerelease.
-        prerelease: true # optional, default is false
-        # With tags: true, your Releases deployment will trigger if and only if the build is a tagged build.
-        tags: true # optional, default is false
-        # Only work on these branches(splited by semicolon), set to nothing to accept all branches.
-        branches: master # optional, default is 
-        # With verbose: true, be verbose.
-        verbose: true # optional, default is false
-        # Set custom tag name.
-        tag_name: 'v0.0.7'
-        # If try to update latest release.
-        #update_latest_release: true # optional, default is false
-      if: ${{ matrix.BUILD_TYPE == 'Release' && startsWith(github.ref, 'refs/tags/') }} 
+        prerelease: true
+        body: |
+          [:cn: 修改日志](ChangeLog_zh_CN.md) [:us: Change log](ChangeLog.md)
+        files: |
+          ${{github.workspace}}/rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64_${{matrix.os}}.deb

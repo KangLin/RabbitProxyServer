@@ -4,12 +4,14 @@
 <context>
     <name>CDataChannelIce</name>
     <message>
+        <location filename="../../DataChannelIce.cpp" line="357"/>
         <source>Signal disconnected</source>
-        <translation type="vanished">信令通道断开</translation>
+        <translation>信令通道断开</translation>
     </message>
     <message>
+        <location filename="../../DataChannelIce.cpp" line="410"/>
         <source>Signal error: %1</source>
-        <translation type="vanished">信令错误：%1</translation>
+        <translation>信令错误：%1</translation>
     </message>
 </context>
 <context>
@@ -48,20 +50,24 @@
 <context>
     <name>CPeerConnecterIceClient</name>
     <message>
+        <location filename="../../PeerConnecterIceClient.cpp" line="78"/>
         <source>Data channel open fail</source>
-        <translation type="vanished">数据通道打开失败</translation>
+        <translation>数据通道打开失败</translation>
     </message>
     <message>
+        <location filename="../../PeerConnecterIceClient.cpp" line="184"/>
         <source>Signal don&apos;t open</source>
-        <translation type="vanished">信令通道没打开</translation>
+        <translation>信令通道没打开</translation>
     </message>
     <message>
+        <location filename="../../PeerConnecterIceClient.cpp" line="196"/>
         <source>Please set peer user</source>
-        <translation type="vanished">请设置对端用户</translation>
+        <translation>请设置对端用户</translation>
     </message>
     <message>
+        <location filename="../../PeerConnecterIceClient.cpp" line="174"/>
         <source>Ice connect reply fail</source>
-        <translation type="vanished">Ice 连接响应失败</translation>
+        <translation>Ice 连接响应失败</translation>
     </message>
 </context>
 <context>
