@@ -218,7 +218,7 @@ jobs:
             -DLog4Qt_DIR=${{env.INSTALL_DIR}}/lib/cmake/Log4Qt ^
             -DQXmpp_DIR=${{env.INSTALL_DIR}}/lib/cmake/qxmpp ^
             -DQtService_DIR=${{env.INSTALL_DIR}}/lib/cmake/QtService ^
-            -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}/scripts/buildsystems/vcpkg.cmake
+            -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}\scripts\buildsystems\vcpkg.cmake
         cmake --build . --config ${{matrix.BUILD_TYPE}}
 
     - name: Package
