@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 2.8.12)
 
-project(RabbitProxyServer)
+project(RabbitProxyServer HOMEPAGE_URL "https://github.com/KangLin/RabbitProxyServer")
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_STANDARD 17)
@@ -194,10 +194,6 @@ ADD_CUSTOM_TARGET(uninstall
     "${CMAKE_COMMAND}" -P "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake"
     DEPENDS uninstall-runtime)
 
-iF(WIN32)
-    INSTALL(FILES Install/Install.nsi DESTINATION "${CMAKE_BINARY_DIR}"
-        COMPONENT Runtime)
-endif()
 # Install other files
 set(OTHER_FILES
     License.md
@@ -210,3 +206,24 @@ if(ANDROID)
 else()
     INSTALL(FILES ${OTHER_FILES} DESTINATION "." COMPONENT Runtime)
 endif()
+
+
+# CPack
+iF(WIN32)
+    CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/Install/Install.nsi "${CMAKE_BINARY_DIR}"
+        IMMEDIATE @ONLY)
+endif()
+
+set(CPACK_SOURCE_IGNORE_FILES "/\\\\.git/;/\\\\.gitignore;/CMakeCache.txt")
+
+set(CPACK_PACKAGE_VENDOR "Kang Lin studio <kl222@126.com>")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Rabbit proxy server")
+
+set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/License.md")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/License.md")
+
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Server/Resource/Image\\\\App.ico")
+set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/Server/Resource/Image\\\\App.ico")
+set(CPACK_NSIS_MUI_UNICON "${CMAKE_SOURCE_DIR}/Server/Resource/Image\\\\App.ico")
+
+include(CPack)
