@@ -207,22 +207,22 @@ else()
     INSTALL(FILES ${OTHER_FILES} DESTINATION "." COMPONENT Runtime)
 endif()
 
-
-# CPack
 iF(WIN32)
     CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/Install/Install.nsi "${CMAKE_BINARY_DIR}"
         IMMEDIATE @ONLY)
 endif()
 
+# CPack
 set(CPACK_SOURCE_IGNORE_FILES "/\\\\.git/;/\\\\.gitignore;/CMakeCache.txt")
 
 set(CPACK_PACKAGE_VENDOR "Kang Lin studio <kl222@126.com>")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Rabbit proxy server")
-
+set(CPACK_PACKAGE_VERSION ${VERSION})
+set(CPACK_PACKAGE_INSTALL_DIRECTORY ${PROJECT_NAME})
 set(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/License.md")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/License.md")
-
-set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Server/Resource/Image\\\\App.ico")
+#set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/Server/Resource/Image\\\\App.png")
 set(CPACK_NSIS_MUI_ICON "${CMAKE_SOURCE_DIR}/Server/Resource/Image\\\\App.ico")
 set(CPACK_NSIS_MUI_UNICON "${CMAKE_SOURCE_DIR}/Server/Resource/Image\\\\App.ico")
 

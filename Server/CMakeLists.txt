@@ -95,4 +95,3 @@ endif()
 #            COMPONENT Runtime
 #        RENAME RabbitRemoteControl.png)
 #endif()
-
