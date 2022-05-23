@@ -56,7 +56,8 @@ if(WITH_ICE)
             IceManager.cpp
             )
         list(APPEND PROXY_DEFINITIONS HAVE_ICE)
-        option(WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL "Use one peer connect to one data channel" ON)
+        option(WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL
+            "Use one peer connect to one data channel" ON)
         if(WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL)
             list(APPEND PROXY_DEFINITIONS WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL)
         endif()
