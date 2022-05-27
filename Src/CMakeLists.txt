@@ -37,7 +37,13 @@ option(WITH_ICE "With ICE" ON)
 if(WITH_ICE)
     find_package(LibDataChannel)
     if(LibDataChannel_FOUND)
-        list(APPEND _PROXY_PRIVATE_LIBS LibDatachannel::LibDataChannel)
+        if (TARGET LibDataChannel::LibDataChannel)
+            list(APPEND _PROXY_PRIVATE_LIBS LibDataChannel::LibDataChannel)
+        elseif (TARGET LibDatachannel::datachannel)
+            list(APPEND _PROXY_PRIVATE_LIBS LibDatachannel::datachannel)
+        else()
+            list(APPEND _PROXY_PRIVATE_LIBS LibDataChannel::datachannel)
+        endif()
         list(APPEND INSTALL_HEAD_FILES
             PeerConnecterIceClient.h
             PeerConnecterIceServer.h
