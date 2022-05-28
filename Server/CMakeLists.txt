@@ -94,5 +94,5 @@ endif()
 #    INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resource/Image/App.png
 #        DESTINATION share/pixmaps
 #            COMPONENT Runtime
-#        RENAME RabbitRemoteControl.png)
+#        RENAME RabbitProxyServer.png)
 #endif()
