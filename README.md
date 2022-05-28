@@ -2,8 +2,13 @@
 
 Author: Kang Lin (kl222@126.com)
 
-- Project Home: [https://kanglin.github.io/RabbitProxyServer](https://kanglin.github.io/RabbitProxyServer/)
-- Project position: [https://github.com/KangLin/RabbitProxyServer](https://github.com/KangLin/RabbitProxyServer)
+- Project
+  + Home: [https://kanglin.github.io/RabbitProxyServer](https://kanglin.github.io/RabbitProxyServer/)
+  + Project main repository: [https://github.com/KangLin/RabbitProxyServer](https://github.com/KangLin/RabbitProxyServer)
+    - Mirror:
+      + sourceforge: https://sourceforge.net/projects/rabbitproxyserver/
+      + gitlab: https://gitlab.com/kl222/RabbitProxyServer
+  + Mailing list: <rabbitproxyserver-discuss@lists.sourceforge.net>
 - Language:
   + [:cn: Chinese](README_zh_CN.md)
   
@@ -66,4 +71,4 @@ https://gitee.com/kl222/RabbitCommon/raw/master/Src/Resource/image/Contribute.pn
 
 ##### libraries
 
-- [Option] libdatachannel: https://github.com/paullouisageneau/libdatachannel
+- [Optional] libdatachannel: https://github.com/paullouisageneau/libdatachannel
