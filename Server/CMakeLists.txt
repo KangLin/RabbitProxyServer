@@ -21,7 +21,6 @@ if(Qt${QT_VERSION_MAJOR}_FOUND)
 endif()
 
 SET(SOURCE_FILES
-    main.cpp
     mainwindow.cpp
     FrmSocket.cpp)
 
@@ -33,15 +32,6 @@ set(SOURCE_UI_FILES
     mainwindow.ui
     FrmSocket.ui
     )
-
-find_package(QtService)
-if(QtService_FOUND)
-    list(APPEND SOURCE_FILES Service.cpp)
-    list(APPEND HEADER_FILES Service.h)
-    list(APPEND SERVICE_LIBS QtService)
-    list(APPEND SERVICE_DEFINITIONS USE_SERVER)
-    INSTALL_TARGETS(TARGETS QtService)
-endif()
 
 #翻译
 GENERATED_QT_TRANSLATIONS(
@@ -74,12 +64,28 @@ endif()
 #endif()
 
 list(APPEND SERVICE_LIBS RabbitProxy ${QT_LIBRARIES})
-ADD_TARGET(NAME ${PROJECT_NAME}
+find_package(QtService)
+if(QtService_FOUND)
+    list(APPEND SOURCE_FILES Service.cpp)
+    list(APPEND HEADER_FILES Service.h)
+    list(APPEND SERVICE_LIBS QtService)
+    INSTALL_TARGETS(TARGETS QtService)
+
+    ADD_TARGET(NAME ${PROJECT_NAME}
+        ISEXE
+        ISWINDOWS
+        VERSION ${BUILD_VERSION}
+        PRIVATE_DEFINITIONS BUILD_VERSION="${BUILD_VERSION}" ${SERVICE_DEFINITIONS}
+        SOURCE_FILES main.cpp ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} ${RCC_FILES}
+        PRIVATE_LIBS ${SERVICE_LIBS})
+endif()
+
+ADD_TARGET(NAME ${PROJECT_NAME}Configure
     ISEXE
     ISWINDOWS
     VERSION ${BUILD_VERSION}
     PRIVATE_DEFINITIONS BUILD_VERSION="${BUILD_VERSION}" ${SERVICE_DEFINITIONS}
-    SOURCE_FILES ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} ${RCC_FILES}
+    SOURCE_FILES main_config.cpp ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} ${RCC_FILES}
     PRIVATE_LIBS ${SERVICE_LIBS})
 
 if(WIN32)
