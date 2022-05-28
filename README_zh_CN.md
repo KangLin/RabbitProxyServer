@@ -8,6 +8,7 @@
       - sourceforge: https://sourceforge.net/projects/rabbitproxyserver/
       - gitlab: https://gitlab.com/kl222/RabbitProxyServer
   + 邮件列表：<rabbitproxyserver-discuss@lists.sourceforge.net>
+    https://sourceforge.net/p/rabbitproxyserver/mailman/
 - 语言
   + [:us: 英语](README.md)
 - 编译状态

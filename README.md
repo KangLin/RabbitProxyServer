@@ -9,6 +9,7 @@ Author: Kang Lin (kl222@126.com)
       + sourceforge: https://sourceforge.net/projects/rabbitproxyserver/
       + gitlab: https://gitlab.com/kl222/RabbitProxyServer
   + Mailing list: <rabbitproxyserver-discuss@lists.sourceforge.net>
+    https://sourceforge.net/p/rabbitproxyserver/mailman/
 - Language:
   + [:cn: Chinese](README_zh_CN.md)
   
