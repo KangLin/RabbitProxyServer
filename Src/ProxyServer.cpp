@@ -6,7 +6,7 @@
 #include <QTcpSocket>
 
 CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
-    m_pParameter(nullptr)
+    m_pParameter(nullptr), m_Status(STATUS::Stop)
 {
     m_pParameter = std::make_unique<CParameter>(this);
 }
@@ -14,6 +14,11 @@ CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
 CProxyServer::~CProxyServer()
 {
     qDebug() << "CProxyServer::~CProxyServer()";
+}
+
+CProxyServer::STATUS CProxyServer::GetStatus()
+{
+    return m_Status;
 }
 
 CParameter* CProxyServer::Getparameter()
@@ -64,6 +69,9 @@ int CProxyServer::Start()
     bCheck = connect(&m_Acceptor, SIGNAL(newConnection()),
                      this, SLOT(slotAccept()));
     Q_ASSERT(bCheck);
+    
+    m_Status = STATUS::Start;
+    
     return nRet;
 }
 
@@ -73,6 +81,7 @@ int CProxyServer::Stop()
     
     m_Acceptor.close();
     emit sigStop();
+    m_Status = STATUS::Stop;
     return nRet;
 }
 

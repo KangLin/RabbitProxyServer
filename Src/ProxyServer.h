@@ -23,6 +23,13 @@ public:
     virtual int Load(QSettings &set);
     virtual int Save(QSettings &set);
 
+    enum class STATUS{
+        Start,
+        Stop,
+        Error
+    };
+    STATUS GetStatus();
+
 Q_SIGNALS:
     void sigStop();
 
@@ -33,6 +40,7 @@ protected Q_SLOTS:
 protected:
     QTcpServer m_Acceptor;
     std::unique_ptr<CParameter> m_pParameter;
+    STATUS m_Status;
 };
 
 #endif // CPROXYSERVER_H
