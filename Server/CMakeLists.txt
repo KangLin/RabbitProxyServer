@@ -40,6 +40,7 @@ if(QtService_FOUND)
     list(APPEND HEADER_FILES Service.h)
     list(APPEND SERVICE_LIBS QtService)
     list(APPEND SERVICE_DEFINITIONS USE_SERVER)
+    INSTALL_TARGETS(TARGETS QtService)
 endif()
 
 #翻译
