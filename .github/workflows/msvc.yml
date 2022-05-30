@@ -40,7 +40,7 @@ jobs:
       INSTALL_DIR: ${{github.workspace}}\.cache\install_msvc_${{matrix.triplet}}_${{matrix.BUILD_TYPE}}_2022_02_14
       VCPKG_PLATFORM_TOOLSET: ${{matrix.VCPKG_PLATFORM_TOOLSET}}
       CMAKE_GENERATOR_PLATFORM: ${{matrix.CMAKE_GENERATOR_PLATFORM}}
-      RabbitRemoteControl_VERSION: v0.0.18
+      RabbitProxyServer_VERSION: v0.0.1
       VCPKGGITCOMMITID: 306c9a9e22e4a4425e21da69d141e8b102a5b956
       qt_modules: qtwebengine ${{matrix.qt_modules}}
 
@@ -243,7 +243,7 @@ jobs:
     - name: update
       uses: actions/upload-artifact@v2
       with:
-        name: RabbitProxyServer_${{ matrix.os }}_qt${{matrix.qt_version}}
+        name: RabbitProxyServer_${{matrix.os}}_qt${{matrix.qt_version}}
         path: |
           ${{github.workspace}}\build\RabbitProxyServer_setup_${{env.RabbitProxyServer_VERSION}}.exe
           ${{github.workspace}}\build\RabbitProxyServer_windows_${{env.RabbitProxyServer_VERSION}}.zip
