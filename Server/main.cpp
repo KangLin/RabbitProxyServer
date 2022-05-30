@@ -18,15 +18,12 @@
 int main(int argc, char *argv[])
 {
     int nRet = 0;
-#if defined (_DEBUG) || !defined(BUILD_SHARED_LIBS)
-    Q_INIT_RESOURCE(translations_RabbitProxyServer);
-#endif
 
     QApplication::setApplicationVersion(BUILD_VERSION);
     QApplication::setApplicationName("RabbitProxyServer");
-#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-    QApplication::setDesktopFileName(QLatin1String("RabbitProxyServer.desktop"));
-#endif
+//#if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
+//    QApplication::setDesktopFileName(QLatin1String("RabbitProxyServer.desktop"));
+//#endif
 
 #if !defined(Q_OS_WIN)
     // QtService stores service settings in SystemScope, which normally require root privileges.
@@ -36,10 +33,6 @@ int main(int argc, char *argv[])
 #endif
     CService s(argc, argv);
     s.exec();
-
-#if defined (_DEBUG) || !defined(BUILD_SHARED_LIBS)
-    Q_CLEANUP_RESOURCE(translations_RabbitProxyServer);
-#endif
     
     return nRet;
 }

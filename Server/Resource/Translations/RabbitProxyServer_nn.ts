@@ -154,84 +154,99 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="55"/>
+        <location filename="../../mainwindow.ui" line="47"/>
+        <source>Open log</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../mainwindow.ui" line="71"/>
         <source>Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="66"/>
+        <location filename="../../mainwindow.ui" line="82"/>
         <source>toolBar</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="90"/>
+        <location filename="../../mainwindow.ui" line="106"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="99"/>
+        <location filename="../../mainwindow.ui" line="115"/>
         <source>Stop</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="108"/>
-        <location filename="../../mainwindow.ui" line="111"/>
-        <location filename="../../mainwindow.ui" line="114"/>
+        <location filename="../../mainwindow.ui" line="124"/>
+        <location filename="../../mainwindow.ui" line="127"/>
+        <location filename="../../mainwindow.ui" line="130"/>
         <source>Save parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="123"/>
-        <location filename="../../mainwindow.ui" line="126"/>
-        <location filename="../../mainwindow.ui" line="129"/>
+        <location filename="../../mainwindow.ui" line="139"/>
+        <location filename="../../mainwindow.ui" line="142"/>
+        <location filename="../../mainwindow.ui" line="145"/>
         <source>Load parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="138"/>
+        <location filename="../../mainwindow.ui" line="154"/>
         <source>Restart</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="147"/>
+        <location filename="../../mainwindow.ui" line="163"/>
         <source>Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="156"/>
-        <location filename="../../mainwindow.ui" line="159"/>
-        <location filename="../../mainwindow.ui" line="162"/>
+        <location filename="../../mainwindow.ui" line="172"/>
+        <location filename="../../mainwindow.ui" line="175"/>
+        <location filename="../../mainwindow.ui" line="178"/>
         <source>Apply parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="171"/>
-        <location filename="../../mainwindow.ui" line="174"/>
-        <location filename="../../mainwindow.ui" line="177"/>
+        <location filename="../../mainwindow.ui" line="187"/>
+        <location filename="../../mainwindow.ui" line="190"/>
+        <location filename="../../mainwindow.ui" line="193"/>
         <source>About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="182"/>
-        <location filename="../../mainwindow.ui" line="185"/>
-        <location filename="../../mainwindow.ui" line="188"/>
+        <location filename="../../mainwindow.ui" line="198"/>
+        <location filename="../../mainwindow.ui" line="201"/>
+        <location filename="../../mainwindow.ui" line="204"/>
         <source>Update</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="193"/>
-        <location filename="../../mainwindow.ui" line="196"/>
-        <location filename="../../mainwindow.ui" line="199"/>
-        <location filename="../../mainwindow.ui" line="202"/>
-        <location filename="../../mainwindow.ui" line="205"/>
+        <location filename="../../mainwindow.ui" line="209"/>
+        <location filename="../../mainwindow.ui" line="212"/>
+        <location filename="../../mainwindow.ui" line="215"/>
+        <location filename="../../mainwindow.ui" line="218"/>
+        <location filename="../../mainwindow.ui" line="221"/>
         <source>Default style</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="214"/>
-        <location filename="../../mainwindow.ui" line="217"/>
-        <location filename="../../mainwindow.ui" line="220"/>
+        <location filename="../../mainwindow.ui" line="230"/>
+        <location filename="../../mainwindow.ui" line="233"/>
+        <location filename="../../mainwindow.ui" line="236"/>
         <source>Load Style</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../mainwindow.ui" line="245"/>
+        <source>Open log file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../mainwindow.ui" line="250"/>
+        <source>Open log folder</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -243,12 +258,12 @@
 <context>
     <name>QObject</name>
     <message>
-        <location filename="../../main.cpp" line="58"/>
-        <source>Rabbit proxy server</source>
+        <location filename="../../main_config.cpp" line="44"/>
+        <source>Rabbit proxy server config</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../main.cpp" line="59"/>
+        <location filename="../../main_config.cpp" line="45"/>
         <source>Kang Lin studio</source>
         <translation type="unfinished"></translation>
     </message>

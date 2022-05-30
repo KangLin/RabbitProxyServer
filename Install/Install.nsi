@@ -41,7 +41,7 @@ SetCompressor lzma
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
 ; Finish page
-!define MUI_FINISHPAGE_RUN "$INSTDIR\bin\${PRODUCT_APP_NAME}.exe"
+!define MUI_FINISHPAGE_RUN "$INSTDIR\bin\${PRODUCT_APP_NAME}Configure.exe"
 !define MUI_FINISHPAGE_SHOWREADME
 !define MUI_FINISHPAGE_SHOWREADME_Function OpenReadme
 !insertmacro MUI_PAGE_FINISH

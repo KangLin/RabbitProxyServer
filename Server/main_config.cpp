@@ -20,14 +20,11 @@
 int main(int argc, char *argv[])
 {
     int nRet = 0;
-#if defined (_DEBUG) || !defined(BUILD_SHARED_LIBS)
-    Q_INIT_RESOURCE(translations_RabbitProxyServer);
-#endif
 
     QApplication::setApplicationVersion(BUILD_VERSION);
-    QApplication::setApplicationName("RabbitProxyServer");
+    QApplication::setApplicationName("RabbitProxyServerConfigure");
 #if QT_VERSION >= QT_VERSION_CHECK(5, 7, 0)
-    QApplication::setDesktopFileName(QLatin1String("RabbitProxyServer.desktop"));
+    QApplication::setDesktopFileName(QLatin1String("RabbitProxyServerConfigure.desktop"));
 #endif
 
     QApplication a(argc, argv);
@@ -36,13 +33,15 @@ int main(int argc, char *argv[])
 
     // Install translator
     QTranslator tApp;
-    tApp.load(RabbitCommon::CDir::Instance()->GetDirTranslations()
-              + QDir::separator() + QApplication::applicationName() + "_"
-              + QLocale::system().name() + ".qm");
+    QString szTranslatorFile = RabbitCommon::CDir::Instance()->GetDirTranslations()
+            + QDir::separator() + QApplication::applicationName() + "_"
+            + QLocale::system().name() + ".qm";
+    tApp.load(szTranslatorFile);
     a.installTranslator(&tApp);
-    LOG_MODEL_INFO("Main", "Language: %s", QLocale::system().name().toStdString().c_str());
+    LOG_MODEL_INFO("Main", "Translator file: %s",
+                   szTranslatorFile.toStdString().c_str());
 
-    a.setApplicationDisplayName(QObject::tr("Rabbit proxy server"));
+    a.setApplicationDisplayName(QObject::tr("Rabbit proxy server configure"));
     a.setOrganizationName(QObject::tr("Kang Lin studio"));
 
     // Check update version
@@ -83,9 +82,5 @@ int main(int argc, char *argv[])
     RabbitCommon::CTools::Instance()->Clean();
     a.removeTranslator(&tApp);
 
-#if defined (_DEBUG) || !defined(BUILD_SHARED_LIBS)
-    Q_CLEANUP_RESOURCE(translations_RabbitProxyServer);
-#endif
-    
     return nRet;
 }

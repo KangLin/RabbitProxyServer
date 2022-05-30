@@ -2,7 +2,7 @@
 
 cmake_minimum_required(VERSION 2.8.12)
 
-project(RabbitProxyServer)
+project(RabbitProxyServerConfigure)
 
 SET(QT_COMPONENTS Gui Widgets)
 if(ANDROID)
@@ -34,17 +34,18 @@ set(SOURCE_UI_FILES
     )
 
 #翻译
-GENERATED_QT_TRANSLATIONS(
-    SOURCES ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES}
-    OUT_QRC TRANSLATIONS_QRC_FILES
-    )
-string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
-if(BUILD_TYPE STREQUAL "debug")
-    LIST(APPEND PRIVATE_DEFINITIONS DEBUG)
-    LIST(APPEND RCC_FILES
-        ${TRANSLATIONS_QRC_FILES}
-        )
-endif()
+#GENERATED_QT_TRANSLATIONS(
+#    NAME ${PROJECT_NAME}Configure
+#    SOURCES ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} main_config.cpp main.cpp
+#    OUT_QRC TRANSLATIONS_QRC_FILES
+#    )
+#string(TOLOWER ${CMAKE_BUILD_TYPE} BUILD_TYPE)
+#if(BUILD_TYPE STREQUAL "debug")
+#    LIST(APPEND PRIVATE_DEFINITIONS DEBUG)
+#    LIST(APPEND RCC_FILES
+#        ${TRANSLATIONS_QRC_FILES}
+#        )
+#endif()
 LIST(APPEND RCC_FILES Resource/Resource.qrc)
 if(WIN32)
     LIST(APPEND RCC_FILES Resource/App.rc)
@@ -64,23 +65,8 @@ endif()
 #endif()
 
 list(APPEND SERVICE_LIBS RabbitProxy ${QT_LIBRARIES})
-find_package(QtService)
-if(QtService_FOUND)
-    list(APPEND SOURCE_FILES Service.cpp)
-    list(APPEND HEADER_FILES Service.h)
-    list(APPEND SERVICE_LIBS QtService)
-    INSTALL_TARGETS(TARGETS QtService)
 
-    ADD_TARGET(NAME ${PROJECT_NAME}
-        ISEXE
-        ISWINDOWS
-        VERSION ${BUILD_VERSION}
-        PRIVATE_DEFINITIONS BUILD_VERSION="${BUILD_VERSION}" ${SERVICE_DEFINITIONS}
-        SOURCE_FILES main.cpp ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} ${RCC_FILES}
-        PRIVATE_LIBS ${SERVICE_LIBS})
-endif()
-
-ADD_TARGET(NAME ${PROJECT_NAME}Configure
+ADD_TARGET(NAME ${PROJECT_NAME}
     ISEXE
     ISWINDOWS
     VERSION ${BUILD_VERSION}
@@ -88,17 +74,34 @@ ADD_TARGET(NAME ${PROJECT_NAME}Configure
     SOURCE_FILES main_config.cpp ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} ${RCC_FILES}
     PRIVATE_LIBS ${SERVICE_LIBS})
 
+find_package(QtService)
+if(QtService_FOUND)
+    SET(SOURCE_FILES Service.cpp)
+    SET(HEADER_FILES Service.h)
+    list(APPEND SERVICE_LIBS QtService)
+    INSTALL_TARGETS(TARGETS QtService)
+
+    ADD_TARGET(NAME RabbitProxyServer
+        ISEXE
+        ISWINDOWS
+        NO_TRANSLATION
+        VERSION ${BUILD_VERSION}
+        PRIVATE_DEFINITIONS BUILD_VERSION="${BUILD_VERSION}" ${SERVICE_DEFINITIONS}
+        SOURCE_FILES main.cpp ${SOURCE_FILES} ${HEADER_FILES} ${SOURCE_UI_FILES} ${RCC_FILES}
+        PRIVATE_LIBS ${SERVICE_LIBS})
+endif()
+
 if(WIN32)
     install(FILES Resource/Image/App.ico
         DESTINATION .
             COMPONENT Runtime)
 endif()
-#if(UNIX AND NOT ANDROID)
-#    INSTALL(FILES ${CMAKE_SOURCE_DIR}/debian/RabbitProxyServer.desktop
-#        DESTINATION share/applications
-#            COMPONENT Runtime)
-#    INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resource/Image/App.png
-#        DESTINATION share/pixmaps
-#            COMPONENT Runtime
-#        RENAME RabbitProxyServer.png)
-#endif()
+if(UNIX AND NOT ANDROID)
+    INSTALL(FILES ${CMAKE_SOURCE_DIR}/debian/RabbitProxyServerConfig.desktop
+        DESTINATION share/applications
+            COMPONENT Runtime)
+    INSTALL(FILES ${CMAKE_CURRENT_SOURCE_DIR}/Resource/Image/App.png
+        DESTINATION share/pixmaps
+            COMPONENT Runtime
+        RENAME RabbitProxyServer.png)
+endif()

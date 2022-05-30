@@ -246,7 +246,6 @@ jobs:
         name: RabbitProxyServer_${{matrix.os}}_qt${{matrix.qt_version}}
         path: |
           ${{github.workspace}}\build\RabbitProxyServer_setup_${{env.RabbitProxyServer_VERSION}}.exe
-          ${{github.workspace}}\build\RabbitProxyServer_windows_${{env.RabbitProxyServer_VERSION}}.zip
       if: ${{ matrix.BUILD_TYPE == 'Release' }}
 
     - name: Upload To Github Release

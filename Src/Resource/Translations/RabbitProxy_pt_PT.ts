@@ -73,17 +73,17 @@
 <context>
     <name>CProxyServer</name>
     <message>
-        <location filename="../../ProxyServer.cpp" line="53"/>
+        <location filename="../../ProxyServer.cpp" line="58"/>
         <source>Server listen at: %s:%d: %s</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ProxyServer.cpp" line="61"/>
+        <location filename="../../ProxyServer.cpp" line="66"/>
         <source>Server listen at: %s:%d</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../ProxyServer.cpp" line="84"/>
+        <location filename="../../ProxyServer.cpp" line="93"/>
         <source>New connect from: %s:%d</source>
         <translation type="unfinished"></translation>
     </message>
