@@ -27,29 +27,20 @@ Q_SIGNALS:
     void sigSaveParameter();
     
 private slots:
-    void on_actionStart_triggered();
-    
-    void on_actionStop_triggered();
-    
-    void on_actionSave_triggered();
-    
-    void on_actionLoad_triggered();
-    
+    void on_actionStart_triggered();    
+    void on_actionStop_triggered();    
+    void on_actionSave_triggered();    
+    void on_actionLoad_triggered();    
     void on_actionRestart_triggered();
-
     void on_actionExit_triggered();
-
     void on_actionApply_triggered();
-
     void on_actionAbout_triggered();
-
     void on_actionUpdate_triggered();
-
-
     void on_actionDefault_triggered();
-
     void on_actionLoadStyle_triggered();
-
+    void on_actionOpen_log_file_triggered();
+    void on_actionOpen_log_folder_triggered();
+    
 private:
     Ui::MainWindow *ui;
     std::list<QSharedPointer<CProxyServer> > m_Server;

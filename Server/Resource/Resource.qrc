@@ -10,5 +10,6 @@
         <file alias="Apply">Image/applying.png</file>
         <file alias="Style">Image/skin.png</file>
         <file alias="Option">Image/option.png</file>
+        <file alias="Log">Image/log.svg</file>
     </qresource>
 </RCC>

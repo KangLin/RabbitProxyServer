@@ -24,7 +24,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>22</height>
+     <height>21</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOperate">
@@ -42,6 +42,17 @@
      <addaction name="actionDefault"/>
      <addaction name="actionLoadStyle"/>
     </widget>
+    <widget class="QMenu" name="menuOpen_log">
+     <property name="title">
+      <string>Open log</string>
+     </property>
+     <property name="icon">
+      <iconset resource="Resource/Resource.qrc">
+       <normaloff>:/image/Log</normaloff>:/image/Log</iconset>
+     </property>
+     <addaction name="actionOpen_log_file"/>
+     <addaction name="actionOpen_log_folder"/>
+    </widget>
     <addaction name="actionRestart"/>
     <addaction name="actionStart"/>
     <addaction name="actionStop"/>
@@ -53,6 +64,7 @@
     <addaction name="menuStyle"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
+    <addaction name="menuOpen_log"/>
    </widget>
    <widget class="QMenu" name="menuHelp">
     <property name="title">
@@ -222,6 +234,20 @@
    </property>
    <property name="whatsThis">
     <string>Load Style</string>
+   </property>
+  </action>
+  <action name="actionOpen_log_file">
+   <property name="icon">
+    <iconset resource="Resource/Resource.qrc">
+     <normaloff>:/image/Log</normaloff>:/image/Log</iconset>
+   </property>
+   <property name="text">
+    <string>Open log file</string>
+   </property>
+  </action>
+  <action name="actionOpen_log_folder">
+   <property name="text">
+    <string>Open log folder</string>
    </property>
   </action>
  </widget>

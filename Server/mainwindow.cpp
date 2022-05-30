@@ -43,7 +43,7 @@ MainWindow::MainWindow(QWidget *parent)
     Q_ASSERT(check);
     m_pTabWidget->addTab(pFrmSocket, tr("Socks proxy server"));
     
-    on_actionStart_triggered();
+    //on_actionStart_triggered();
 }
 
 MainWindow::~MainWindow()
@@ -59,6 +59,9 @@ void MainWindow::on_actionStart_triggered()
     foreach (auto s, m_Server) {
         s->Start();
     }
+    ui->actionStop->setEnabled(true);
+    ui->actionStart->setDisabled(true);
+    ui->actionRestart->setEnabled(true);
 }
 
 void MainWindow::on_actionStop_triggered()
@@ -67,6 +70,9 @@ void MainWindow::on_actionStop_triggered()
     foreach (auto s, m_Server) {
         s->Stop();
     }
+    ui->actionStop->setDisabled(true);
+    ui->actionStart->setEnabled(true);
+    ui->actionRestart->setDisabled(true);
 }
 
 void MainWindow::on_actionSave_triggered()
@@ -157,4 +163,14 @@ void MainWindow::on_actionDefault_triggered()
 void MainWindow::on_actionLoadStyle_triggered()
 {
     RabbitCommon::CStyle::Instance()->slotStyle();
+}
+
+void MainWindow::on_actionOpen_log_file_triggered()
+{
+    RabbitCommon::OpenLogFile();
+}
+
+void MainWindow::on_actionOpen_log_folder_triggered()
+{
+    RabbitCommon::OpenLogDirectory();
 }

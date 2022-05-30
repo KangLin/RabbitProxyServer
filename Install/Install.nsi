@@ -158,12 +158,13 @@ SectionEnd
 Section -AdditionalIcons
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\$(LANG_PRODUCT_NAME).lnk" "$INSTDIR\bin\${PRODUCT_APP_NAME}.exe"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\$(LANG_PRODUCT_NAME)Configure.lnk" "$INSTDIR\bin\${PRODUCT_APP_NAME}Configure.exe"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$INSTDIR\uninst.exe"
 
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
     
-  CreateShortCut "$DESKTOP\$(LANG_PRODUCT_NAME).lnk" "$INSTDIR\bin\${PRODUCT_APP_NAME}.exe"
+  CreateShortCut "$DESKTOP\$(LANG_PRODUCT_NAME)Configure.lnk" "$INSTDIR\bin\${PRODUCT_APP_NAME}Configure.exe"
 SectionEnd
 
 Section -Post
@@ -173,7 +174,7 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" "Path" "$INSTDIR\"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\bin\${PRODUCT_APP_NAME}.exe"
+  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\bin\${PRODUCT_APP_NAME}Configure.exe"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
@@ -203,7 +204,7 @@ Section Uninstall
   ;SetShellVarContext all
   RMDir /r "$SMPROGRAMS\${PRODUCT_NAME}"
   SetOutPath "$SMPROGRAMS"
-  Delete "$DESKTOP\$(LANG_PRODUCT_NAME).lnk"
+  Delete "$DESKTOP\$(LANG_PRODUCT_NAME)Configure.lnk"
   RMDIR /r "$INSTDIR"
   ;SetShellVarContext current
   
