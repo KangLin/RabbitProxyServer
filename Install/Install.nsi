@@ -55,6 +55,9 @@ SetCompressor lzma
 LangString LANG_PRODUCT_NAME ${LANG_ENGLISH} "RabbitProxyServer"
 LangString LANG_PRODUCT_NAME ${LANG_SIMPCHINESE} "玉兔代理服务器"
 
+LangString LANG_CONFIGURE ${LANG_ENGLISH} "Configure"
+LangString LANG_CONFIGURE ${LANG_SIMPCHINESE} "配置程序"
+
 LangString LANG_UNINSTALL_CONFIRM ${LANG_ENGLISH} "Thank you very much! $(^Name) has been successfully removed."
 LangString LANG_UNINSTALL_CONFIRM ${LANG_SIMPCHINESE} "非常感谢您的使用！ $(^Name) 已成功地从您的计算机中移除。"
 
@@ -158,13 +161,13 @@ SectionEnd
 Section -AdditionalIcons
   CreateDirectory "$SMPROGRAMS\${PRODUCT_NAME}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\$(LANG_PRODUCT_NAME).lnk" "$INSTDIR\bin\${PRODUCT_APP_NAME}.exe"
-  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\$(LANG_PRODUCT_NAME)Configure.lnk" "$INSTDIR\bin\${PRODUCT_APP_NAME}Configure.exe"
+  CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\$(LANG_PRODUCT_NAME)$(LANG_CONFIGURE).lnk" "$INSTDIR\bin\${PRODUCT_APP_NAME}Configure.exe"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Uninstall.lnk" "$INSTDIR\uninst.exe"
 
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
   CreateShortCut "$SMPROGRAMS\${PRODUCT_NAME}\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
     
-  CreateShortCut "$DESKTOP\$(LANG_PRODUCT_NAME)Configure.lnk" "$INSTDIR\bin\${PRODUCT_APP_NAME}Configure.exe"
+  CreateShortCut "$DESKTOP\$(LANG_PRODUCT_NAME)$(LANG_CONFIGURE).lnk" "$INSTDIR\bin\${PRODUCT_APP_NAME}Configure.exe"
 SectionEnd
 
 Section -Post
