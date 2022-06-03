@@ -23,7 +23,11 @@ CProxyServer::STATUS CProxyServer::GetStatus()
 
 CParameter* CProxyServer::Getparameter()
 {
+#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     return m_pParameter.get();
+#else
+    return m_pParameter.data();
+#endif
 }
 
 int CProxyServer::Save(QSettings &set)
