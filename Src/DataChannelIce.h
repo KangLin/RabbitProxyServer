@@ -12,6 +12,9 @@
 #include <QMutex>
 #include <QSharedPointer>
 
+/*!
+ * \brief The Ice data channel class
+ */
 class CDataChannelIce : public QIODevice
 {
     Q_OBJECT

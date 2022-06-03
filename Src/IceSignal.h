@@ -8,6 +8,9 @@
 
 #include "rtc/rtc.hpp"
 
+/*!
+ * \brief The ice signal interface class
+ */
 class CIceSignal : public QObject
 {
     Q_OBJECT

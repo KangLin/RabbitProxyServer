@@ -11,6 +11,9 @@
 #include "PeerConnecter.h"
 #include "ProxyServer.h"
 
+/*!
+ * \brief The CProxy interface class
+ */
 class CProxy : public QObject
 {
     Q_OBJECT

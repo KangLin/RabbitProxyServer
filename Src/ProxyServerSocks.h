@@ -16,6 +16,9 @@
     class CIceManager;
 #endif
 
+ /*!
+ * \brief The socks proxy implement server class
+ */
 class RABBITPROXY_EXPORT CProxyServerSocks : public CProxyServer
 {
     Q_OBJECT

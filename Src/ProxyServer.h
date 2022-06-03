@@ -10,6 +10,9 @@
 #include <memory>
 #include "Parameter.h"
 
+/*!
+ * \brief The proxy server interface class
+ */
 class RABBITPROXY_EXPORT CProxyServer : public QObject
 {
     Q_OBJECT

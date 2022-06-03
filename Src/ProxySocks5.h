@@ -14,7 +14,7 @@
 #include <QUdpSocket>
 
 /**
- * @brief The CProxySocket5 class
+ * @brief The socks proxy class
  *        Implement SOCKET5(RFC1928)：http://www.ietf.org/rfc/rfc1928.txt
  * @note  The first version is processed in CProxyServerSocket::slotRead()
  */

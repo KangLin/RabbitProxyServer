@@ -11,7 +11,7 @@
 #include <QSharedPointer>
 
 /**
- * @brief The CProxySocket4 class
+ * @brief The socks4 proxy class
  * @see   https://www.openssh.com/txt/socks4.protocol
  *        https://www.openssh.com/txt/socks4a.protocol
  */

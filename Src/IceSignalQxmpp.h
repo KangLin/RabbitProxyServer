@@ -7,6 +7,9 @@
 #include "QXmppClient.h"
 #include "IceSignalQXmppManager.h"
 
+/*!
+ * \brief The ice signal used qxmpp class
+ */
 class CIceSignalQxmpp : public CIceSignal
 {
     Q_OBJECT

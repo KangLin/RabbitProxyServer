@@ -7,6 +7,9 @@
 #include <QTcpSocket>
 #include <QHostAddress>
 
+/*!
+ * \brief The CPeerConnecter class
+ */
 class CPeerConnecter : public QObject
 {
     Q_OBJECT
