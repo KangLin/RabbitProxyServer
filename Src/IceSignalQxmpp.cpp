@@ -16,10 +16,10 @@ CIceSignalQxmpp::CIceSignalQxmpp(QObject *parent)
     m_Client.addExtension(&m_Manager);
 
     check = connect(&m_Client, SIGNAL(connected()),
-                    this, SIGNAL(sigConnected()));
+                    this, SLOT(slotConnected()));
     Q_ASSERT(check);
     check = connect(&m_Client, SIGNAL(disconnected()),
-                    this, SIGNAL(sigDisconnected()));
+                    this, SLOT(slotDisconnected()));
     Q_ASSERT(check);
     check = connect(&m_Client, SIGNAL(error(QXmppClient::Error)),
                     this, SLOT(slotError(QXmppClient::Error)));
@@ -148,6 +148,26 @@ int CIceSignalQxmpp::Write(const char *buf, int nLen)
 int CIceSignalQxmpp::Read(char *buf, int nLen)
 {
     return 0;
+}
+
+void CIceSignalQxmpp::slotConnected()
+{
+    QXmppConfiguration& configure = m_Client.configuration();
+    LOG_MODEL_INFO("CIceSignalQxmpp", "User [%s] connected to signal server: %s:%d",
+                    configure.jid().toStdString().c_str(),
+                    configure.host().toStdString().c_str(),
+                    configure.port());
+    emit sigConnected();
+}
+
+void CIceSignalQxmpp::slotDisconnected()
+{
+    QXmppConfiguration& configure = m_Client.configuration();
+    LOG_MODEL_INFO("CIceSignalQxmpp", "User [%s] disconnected to signal server: %s:%d",
+                    configure.jid().toStdString().c_str(),
+                    configure.host().toStdString().c_str(),
+                    configure.port());
+    emit sigDisconnected();
 }
 
 void CIceSignalQxmpp::slotError(QXmppClient::Error e)

@@ -37,6 +37,8 @@ public:
     bool proecssIq(CIceSignalQXmppIq iq);
     
 private Q_SLOTS:
+    void slotConnected();
+    void slotDisconnected();
     void slotError(QXmppClient::Error e);
     void slotSendPackage(CIceSignalQXmppIq iq);
     
