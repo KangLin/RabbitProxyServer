@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QTcpSocket>
 #include <QSharedPointer>
-#include "PeerConnecter.h"
+#include "PeerConnector.h"
 #include "ProxyServer.h"
 
 /*!
@@ -51,7 +51,7 @@ protected:
 
     CProxyServer* m_pServer;
     QTcpSocket* m_pSocket;
-    QSharedPointer<CPeerConnecter> m_pPeer;
+    QSharedPointer<CPeerConnector> m_pPeer;
 };
 
 #endif // CPROXY_H

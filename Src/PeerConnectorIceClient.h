@@ -5,18 +5,18 @@
 
 #pragma once
 
-#include "PeerConnecter.h"
+#include "PeerConnector.h"
 #include "DataChannelIce.h"
 #include <QSharedPointer>
 
 class CProxyServerSocks;
-class CPeerConnecterIceClient : public CPeerConnecter
+class CPeerConnectorIceClient : public CPeerConnector
 {
     Q_OBJECT
 
 public:
-    explicit CPeerConnecterIceClient(CProxyServerSocks* pServer, QObject *parent = nullptr);
-    virtual ~CPeerConnecterIceClient();
+    explicit CPeerConnectorIceClient(CProxyServerSocks* pServer, QObject *parent = nullptr);
+    virtual ~CPeerConnectorIceClient();
 
 public:
     virtual int Connect(const QString& address, quint16 nPort) override;

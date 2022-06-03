@@ -5,30 +5,30 @@
 
 #pragma once
 
-#include "PeerConnecterIceClient.h"
+#include "PeerConnectorIceClient.h"
 #include "ProxyServerSocks.h"
 #include "DataChannelIce.h"
 
-class CPeerConnecterIceServer : public CPeerConnecterIceClient
+class CPeerConnectorIceServer : public CPeerConnectorIceClient
 {
     Q_OBJECT
 
 public:
     // 多个 DataChannel 复用一个 PeerConnection
-    explicit CPeerConnecterIceServer(CProxyServerSocks* pServer,
+    explicit CPeerConnectorIceServer(CProxyServerSocks* pServer,
                                      const QString& fromUser,
                                      const QString& toUser,
                                      const QString& channelId,
                                      std::shared_ptr<rtc::DataChannel> dc);
     // 一个 PeerConnection 对应一个 DataChannel
-    explicit CPeerConnecterIceServer(CProxyServerSocks* pServer,
+    explicit CPeerConnectorIceServer(CProxyServerSocks* pServer,
                                      const QString& fromUser,
                                      const QString& toUser,
                                      const QString& channelId,
                                      const QString& type,
                                      const QString& sdp,
                                      QObject *parent = nullptr);
-    virtual ~CPeerConnecterIceServer();
+    virtual ~CPeerConnectorIceServer();
 
 public:
     virtual qint64 Read(char *buf, qint64 nLen) override;
@@ -56,7 +56,7 @@ private Q_SLOTS:
     virtual void slotPeerRead();
 
 private:
-    QSharedPointer<CPeerConnecter> m_Peer;
+    QSharedPointer<CPeerConnector> m_Peer;
 };
 
 #endif // CPEERCONNECTERICESERVER_H

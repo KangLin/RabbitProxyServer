@@ -1,18 +1,18 @@
 //! @author Kang Lin <kl222@126.com>
 
-#include "PeerConnecter.h"
+#include "PeerConnector.h"
 #include "RabbitCommonLog.h"
 
-CPeerConnecter::CPeerConnecter(QObject *parent) : QObject(parent)
+CPeerConnector::CPeerConnector(QObject *parent) : QObject(parent)
 {
 }
 
-CPeerConnecter::~CPeerConnecter()
+CPeerConnector::~CPeerConnector()
 {
     qDebug() << "CPeerConnecter::~CPeerConnecter()";
 }
 
-int CPeerConnecter::InitSignals()
+int CPeerConnector::InitSignals()
 {
     bool check = connect(&m_Socket, SIGNAL(connected()),
             this, SIGNAL(sigConnected()));
@@ -29,14 +29,14 @@ int CPeerConnecter::InitSignals()
     return 0;
 }
 
-int CPeerConnecter::Connect(const QString &address, quint16 nPort)
+int CPeerConnector::Connect(const QString &address, quint16 nPort)
 {
     InitSignals();
     m_Socket.connectToHost(address, nPort);
     return 0;
 }
 
-int CPeerConnecter::Bind(const QHostAddress &address, quint16 nPort)
+int CPeerConnector::Bind(const QHostAddress &address, quint16 nPort)
 {
     InitSignals();
     bool bBind = false;
@@ -46,7 +46,7 @@ int CPeerConnecter::Bind(const QHostAddress &address, quint16 nPort)
     return -1;
 }
 
-int CPeerConnecter::Bind(quint16 nPort)
+int CPeerConnector::Bind(quint16 nPort)
 {
     bool bBind = false;
     bBind = m_Socket.bind(nPort);
@@ -55,7 +55,7 @@ int CPeerConnecter::Bind(quint16 nPort)
     return -1;
 }
 
-qint64 CPeerConnecter::Read(char *buf, qint64 nLen)
+qint64 CPeerConnector::Read(char *buf, qint64 nLen)
 {
     if(!m_Socket.isOpen())
     {
@@ -66,7 +66,7 @@ qint64 CPeerConnecter::Read(char *buf, qint64 nLen)
     return m_Socket.read(buf, nLen);
 }
 
-QByteArray CPeerConnecter::ReadAll()
+QByteArray CPeerConnector::ReadAll()
 {
     if(!m_Socket.isOpen())
     {
@@ -77,7 +77,7 @@ QByteArray CPeerConnecter::ReadAll()
     return m_Socket.readAll();
 }
 
-int CPeerConnecter::Write(const char *buf, qint64 nLen)
+int CPeerConnector::Write(const char *buf, qint64 nLen)
 {
     if(!m_Socket.isOpen())
     {
@@ -88,34 +88,34 @@ int CPeerConnecter::Write(const char *buf, qint64 nLen)
     return m_Socket.write(buf, nLen);
 }
 
-int CPeerConnecter::Close()
+int CPeerConnector::Close()
 {
     m_Socket.disconnect();
     m_Socket.close();
     return 0;
 }
 
-int CPeerConnecter::Error()
+int CPeerConnector::Error()
 {
     return m_Socket.error();
 }
 
-QString CPeerConnecter::ErrorString()
+QString CPeerConnector::ErrorString()
 {
     return m_Socket.errorString();
 }
 
-QHostAddress CPeerConnecter::LocalAddress()
+QHostAddress CPeerConnector::LocalAddress()
 {
     return m_Socket.localAddress();
 }
 
-quint16 CPeerConnecter::LocalPort()
+quint16 CPeerConnector::LocalPort()
 {
     return m_Socket.localPort();
 }
 
-void CPeerConnecter::slotError(QAbstractSocket::SocketError error)
+void CPeerConnector::slotError(QAbstractSocket::SocketError error)
 {
     LOG_MODEL_ERROR("CPeerConnecter", "CPeerConnecter::slotError: %d: %s",
                     error, ErrorString().toStdString().c_str());

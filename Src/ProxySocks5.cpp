@@ -5,7 +5,7 @@
 #include "ProxyServerSocks.h"
 
 #ifdef HAVE_ICE
-    #include "PeerConnecterIceClient.h"
+    #include "PeerConnectorIceClient.h"
 #endif
 
 #include "RabbitCommonLog.h"
@@ -456,14 +456,14 @@ void CProxySocks5::slotPeerError(int err, const QString &szErr)
     }
 
     switch (err) {
-    case CPeerConnecter::emERROR::ConnectionRefused:
+    case CPeerConnector::emERROR::ConnectionRefused:
 
         processClientReply(REPLY_ConnectionRefused);
         return;
-    case CPeerConnecter::emERROR::HostNotFound:
+    case CPeerConnector::emERROR::HostNotFound:
         processClientReply(REPLY_HostUnreachable);
         return;
-    case CPeerConnecter::emERROR::NotAllowdConnection:
+    case CPeerConnector::emERROR::NotAllowdConnection:
         processClientReply(REPLY_NotAllowdConnection);
         return;
     default:

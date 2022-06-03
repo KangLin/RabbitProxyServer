@@ -8,7 +8,7 @@
 #ifdef HAVE_WebSocket
 #include "IceSignalWebSocket.h"
 #endif
-#include "PeerConnecterIceServer.h"
+#include "PeerConnectorIceServer.h"
 #include "IceManager.h"
 
 #ifdef HAVE_QXMPP
@@ -47,6 +47,7 @@ int CProxyServerSocks::Start()
         CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
         if(p->GetIce())
         {
+            // Signal
 #ifdef HAVE_QXMPP
             m_Signal = QSharedPointer<CIceSignal>(
                         new CIceSignalQxmpp(this),
@@ -73,6 +74,7 @@ int CProxyServerSocks::Start()
                         &QObject::deleteLater);
 #endif
             
+            // Server
             if((int)p->GetIceServerClient()
                     & (int)CParameterSocks::emIceServerClient::Server)
             {
@@ -107,9 +109,12 @@ int CProxyServerSocks::Start()
 
                 Q_ASSERT(check);
             }
+            
+            // Client
             if((int)p->GetIceServerClient()
                     & (int)CParameterSocks::emIceServerClient::Client)
                 nRet = CProxyServer::Start();
+            
         } else
             nRet = CProxyServer::Start();
     } catch(std::exception &e) {
@@ -176,8 +181,8 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
                     channelId.toStdString().c_str(),
                     p->GetSignalUser().toStdString().c_str(),
                     p->GetPeerUser().toStdString().c_str());
-    auto ice = QSharedPointer<CPeerConnecterIceServer>(
-                new CPeerConnecterIceServer(this, fromUser, toUser, channelId, type, sdp),
+    auto ice = QSharedPointer<CPeerConnectorIceServer>(
+                new CPeerConnectorIceServer(this, fromUser, toUser, channelId, type, sdp),
                 &QObject::deleteLater);
     bool check = connect(ice.data(), SIGNAL(sigDisconnected()),
                          this, SLOT(slotRemotePeerConnectServer()));
@@ -199,8 +204,8 @@ void CProxyServerSocks::slotError(int err, const QString& szErr)
 void CProxyServerSocks::slotRemotePeerConnectServer()
 {
     try{
-        CPeerConnecterIceServer* pServer
-                = qobject_cast<CPeerConnecterIceServer*>(sender());
+        CPeerConnectorIceServer* pServer
+                = qobject_cast<CPeerConnectorIceServer*>(sender());
         if(!pServer) return;
         if(pServer->GetPeerUser().isEmpty() || pServer->GetId().isEmpty())
         {

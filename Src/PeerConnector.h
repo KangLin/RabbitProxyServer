@@ -8,15 +8,15 @@
 #include <QHostAddress>
 
 /*!
- * \brief The CPeerConnecter class
+ * \brief The peer connector interface class
  */
-class CPeerConnecter : public QObject
+class CPeerConnector : public QObject
 {
     Q_OBJECT
 
 public:
-    explicit CPeerConnecter(QObject *parent = nullptr);
-    virtual ~CPeerConnecter();
+    explicit CPeerConnector(QObject *parent = nullptr);
+    virtual ~CPeerConnector();
     
     enum emERROR{
         Success = 0,

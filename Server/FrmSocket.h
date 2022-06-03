@@ -8,6 +8,9 @@ namespace Ui {
 class CFrmSocket;
 }
 
+/*!
+ * \brief Show and set parameters widget
+ */
 class CFrmSocket : public QWidget
 {
     Q_OBJECT

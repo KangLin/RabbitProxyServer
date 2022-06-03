@@ -328,9 +328,9 @@ void CIceManager::slotReceiverDataChannel(const QString &peer, const QString &us
         auto itServer = it->server.find(channleId);
         if(it->server.end() != itServer)
         {
-            QSharedPointer<CPeerConnecterIceServer> s
-                    = QSharedPointer<CPeerConnecterIceServer>(
-                        new CPeerConnecterIceServer(m_pServer, peer, user,
+            QSharedPointer<CPeerConnectorIceServer> s
+                    = QSharedPointer<CPeerConnectorIceServer>(
+                        new CPeerConnectorIceServer(m_pServer, peer, user,
                                                     itServer->dc->label().c_str(),
                                                     itServer->dc),
                         &QObject::deleteLater);

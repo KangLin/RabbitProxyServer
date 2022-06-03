@@ -22,6 +22,7 @@ public:
 
     virtual int Start();
     virtual int Stop();
+
     virtual CParameter* Getparameter();
     virtual int Load(QSettings &set);
     virtual int Save(QSettings &set);
@@ -42,7 +43,7 @@ protected Q_SLOTS:
 
 protected:
     QTcpServer m_Acceptor;
-    std::unique_ptr<CParameter> m_pParameter;
+    QSharedPointer<CParameter> m_pParameter;
     STATUS m_Status;
 };
 

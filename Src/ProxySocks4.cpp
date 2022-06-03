@@ -4,7 +4,7 @@
 #include "ProxyServerSocks.h"
 #include "ParameterSocks.h"
 #ifdef HAVE_ICE
-    #include "PeerConnecterIceClient.h"
+    #include "PeerConnectorIceClient.h"
 #endif
 #include "RabbitCommonLog.h"
 
@@ -263,13 +263,13 @@ void CProxySocks4::slotPeerError(int err, const QString &szErr)
     if(emStatus::ClientRequest == m_Status)
     {
         switch (err) {
-        case CPeerConnecter::emERROR::ConnectionRefused:
+        case CPeerConnector::emERROR::ConnectionRefused:
             reply(emErrorCode::Rejected);
             return;
-        case CPeerConnecter::emERROR::HostNotFound:
+        case CPeerConnector::emERROR::HostNotFound:
             reply(emErrorCode::DoNotConnect);
             return;
-        case CPeerConnecter::emERROR::NotAllowdConnection:
+        case CPeerConnector::emERROR::NotAllowdConnection:
             reply(emErrorCode::DoNotConnect);
             return;
         default:
@@ -305,12 +305,12 @@ int CProxySocks4::CreatePeer()
     if(pPara->GetIce())
     {
         CProxyServerSocks* pServer = qobject_cast<CProxyServerSocks*>(m_pServer);
-        m_pPeer = QSharedPointer<CPeerConnecterIceClient>(
-                    new CPeerConnecterIceClient(pServer, this),
+        m_pPeer = QSharedPointer<CPeerConnectorIceClient>(
+                    new CPeerConnectorIceClient(pServer, this),
                     &QObject::deleteLater);
     } else
 #endif
-        m_pPeer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
+        m_pPeer = QSharedPointer<CPeerConnector>(new CPeerConnector(this),
                                                  &QObject::deleteLater);
     if(m_pPeer)
         return 0;

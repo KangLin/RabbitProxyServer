@@ -4,7 +4,7 @@
 #define CPROXYSOCKS4_H
 
 #include "Proxy.h"
-#include "PeerConnecter.h"
+#include "PeerConnector.h"
 #include <memory>
 #include <QTcpSocket>
 #include <QHostInfo>

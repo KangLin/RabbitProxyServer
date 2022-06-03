@@ -11,7 +11,7 @@
     #include <QMutex>
     #include <QSharedPointer>
 
-    class CPeerConnecterIceServer;
+    class CPeerConnectorIceServer;
     class CIceSignal;
     class CIceManager;
 #endif
@@ -32,7 +32,7 @@ public:
 #ifndef WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL
     QSharedPointer<CIceManager> GetIceManager();
 #endif
-protected Q_SLOTS:
+public Q_SLOTS:
     virtual int Start();
     virtual int Stop();
 
@@ -50,7 +50,7 @@ private:
     QSharedPointer<CIceManager> m_IceManager;
 #endif
     QMutex m_ConnectServerMutex;
-    QMap<QString, QMap<QString, QSharedPointer<CPeerConnecterIceServer> > > m_ConnectServer;
+    QMap<QString, QMap<QString, QSharedPointer<CPeerConnectorIceServer> > > m_ConnectServer;
 #endif
 
 protected Q_SLOTS:

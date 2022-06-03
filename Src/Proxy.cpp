@@ -100,7 +100,7 @@ int CProxy::RemoveCommandBuffer(int nLength)
 
 int CProxy::CreatePeer()
 {
-    m_pPeer = QSharedPointer<CPeerConnecter>(new CPeerConnecter(this),
+    m_pPeer = QSharedPointer<CPeerConnector>(new CPeerConnector(this),
                                              &QObject::deleteLater);
     if(m_pPeer)
         return 0;

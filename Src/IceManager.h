@@ -9,7 +9,7 @@
 
 #include "DataChannelIceChannel.h"
 #include "ProxyServerSocks.h"
-#include "PeerConnecterIceServer.h"
+#include "PeerConnectorIceServer.h"
 
 class CIceManager : public QObject
 {
@@ -64,7 +64,7 @@ private:
     QMutex m_mutexPeerConnection;
     struct strServer {
         std::shared_ptr<rtc::DataChannel> dc;
-        QSharedPointer<CPeerConnecterIceServer> server;
+        QSharedPointer<CPeerConnectorIceServer> server;
     };
     struct strPeerConnection{
         std::shared_ptr<rtc::PeerConnection> pc;

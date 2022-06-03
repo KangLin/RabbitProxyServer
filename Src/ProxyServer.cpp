@@ -8,7 +8,7 @@
 CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
     m_pParameter(nullptr), m_Status(STATUS::Stop)
 {
-    m_pParameter = std::make_unique<CParameter>(this);
+    m_pParameter = QSharedPointer<CParameter>(new CParameter(this));
 }
 
 CProxyServer::~CProxyServer()

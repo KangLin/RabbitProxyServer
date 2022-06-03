@@ -9,7 +9,7 @@ set(INSTALL_HEAD_FILES
     Proxy.h
     ProxySocks4.h
     ProxySocks5.h
-    PeerConnecter.h
+    PeerConnector.h
     Parameter.h
     ParameterIce.h
     ParameterSocks.h
@@ -23,7 +23,7 @@ set(SOURCE_FILES
     Proxy.cpp
     ProxySocks4.cpp
     ProxySocks5.cpp
-    PeerConnecter.cpp
+    PeerConnector.cpp
     Parameter.cpp
     ParameterIce.cpp
     ParameterSocks.cpp
@@ -45,8 +45,8 @@ if(WITH_ICE)
             list(APPEND _PROXY_PRIVATE_LIBS LibDataChannel::datachannel)
         endif()
         list(APPEND INSTALL_HEAD_FILES
-            PeerConnecterIceClient.h
-            PeerConnecterIceServer.h
+            PeerConnectorIceClient.h
+            PeerConnectorIceServer.h
             IceSignal.h
             DataChannelIce.h
             DataChannelIceChannel.h
@@ -54,8 +54,8 @@ if(WITH_ICE)
         list(APPEND HEADER_FILES
             IceManager.h)
         list(APPEND SOURCE_FILES
-            PeerConnecterIceClient.cpp
-            PeerConnecterIceServer.cpp
+            PeerConnectorIceClient.cpp
+            PeerConnectorIceServer.cpp
             IceSignal.cpp
             DataChannelIce.cpp
             DataChannelIceChannel.cpp
