@@ -1,4 +1,4 @@
-//! @author Kang Lin(kl222@126.com)
+//! @author Kang Lin <kl222@126.com>
 
 #include "DataChannelIce.h"
 #include "rtc/rtc.hpp"
@@ -350,6 +350,10 @@ bool CDataChannelIce::isSequential() const
 
 void CDataChannelIce::slotSignalConnected()
 {
+//    LOG_MODEL_INFO("Signal", "Signal connected: user: %s; peer: %s; channelId: %s",
+//                   GetUser().toStdString().c_str(),
+//                   GetPeerUser().toStdString().c_str(),
+//                   GetChannelId().toStdString().c_str());
 }
 
 void CDataChannelIce::slotSignalDisconnected()

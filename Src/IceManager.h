@@ -1,3 +1,5 @@
+//! @author Kang Lin <kl222@126.com>
+
 #ifndef CICEMANGER_H
 #define CICEMANGER_H
 

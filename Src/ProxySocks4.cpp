@@ -1,4 +1,4 @@
-//! @author Kang Lin(kl222@126.com)
+//! @author Kang Lin <kl222@126.com>
 
 #include "ProxySocks4.h"
 #include "ProxyServerSocks.h"

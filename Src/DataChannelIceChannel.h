@@ -1,3 +1,5 @@
+//! @author Kang Lin <kl222@126.com>
+
 #ifndef CDATACHANNELICECHANNEL_H
 #define CDATACHANNELICECHANNEL_H
 

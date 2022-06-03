@@ -1,4 +1,4 @@
-//! @author Kang Lin(kl222@126.com)
+//! @author Kang Lin <kl222@126.com>
 
 #ifndef CPROXYSOCKS4_H
 #define CPROXYSOCKS4_H

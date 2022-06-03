@@ -1,6 +1,4 @@
-/**
- * @author Kang Lin (kl222@126.com)
- */
+//! @author Kang Lin <kl222@126.com>
 
 #include "Parameter.h"
 #include <QDebug>

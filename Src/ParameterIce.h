@@ -1,3 +1,5 @@
+//! @author Kang Lin <kl222@126.com>
+
 #ifndef CPARAMETERICE_H
 #define CPARAMETERICE_H
 

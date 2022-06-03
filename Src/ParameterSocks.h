@@ -1,3 +1,5 @@
+//! @author Kang Lin <kl222@126.com>
+
 #ifndef CPARAMETERSOCKS_H
 #define CPARAMETERSOCKS_H
 
