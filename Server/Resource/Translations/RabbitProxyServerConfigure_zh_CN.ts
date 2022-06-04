@@ -135,6 +135,32 @@
         <source>One peer connection to one data channel</source>
         <translation>一个对等连对应一个数据通道</translation>
     </message>
+    <message>
+        <location filename="../../FrmSocket.cpp" line="50"/>
+        <location filename="../../FrmSocket.cpp" line="54"/>
+        <source>Format: user@domain/resource</source>
+        <translation>格式：user@domain/resource</translation>
+    </message>
+    <message>
+        <location filename="../../FrmSocket.cpp" line="121"/>
+        <location filename="../../FrmSocket.cpp" line="128"/>
+        <location filename="../../FrmSocket.cpp" line="151"/>
+        <location filename="../../FrmSocket.cpp" line="164"/>
+        <source>Error</source>
+        <translation>错误</translation>
+    </message>
+    <message>
+        <location filename="../../FrmSocket.cpp" line="121"/>
+        <location filename="../../FrmSocket.cpp" line="151"/>
+        <source>The peer user format error. please user@domain/resource</source>
+        <translation>对端用户格式错误。请用：user@domain/resource</translation>
+    </message>
+    <message>
+        <location filename="../../FrmSocket.cpp" line="128"/>
+        <location filename="../../FrmSocket.cpp" line="164"/>
+        <source>The user format error. please user@domain/resource</source>
+        <translation>用户格式错误。请用：user@domain/resource</translation>
+    </message>
 </context>
 <context>
     <name>MainWindow</name>

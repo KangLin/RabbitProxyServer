@@ -24,6 +24,8 @@ public Q_SLOTS:
     
 private slots:
     void on_cbUserPassword_clicked(bool checked);
+    void on_lePeerUser_editingFinished();
+    void on_leSignalUser_editingFinished();
     
 private:
     Ui::CFrmSocket *ui;

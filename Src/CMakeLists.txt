@@ -78,7 +78,7 @@ if(WITH_ICE)
         
         find_package(QXmpp)
         if(QXmpp_FOUND)
-            list(APPEND _PROXY_PRIVATE_LIBS QXmpp::QXmpp)
+            list(APPEND _PROXY_LIBS QXmpp::QXmpp)
             list(APPEND PROXY_DEFINITIONS HAVE_QXMPP)
             list(APPEND HEADER_FILES
                 IceSignalQxmpp.h

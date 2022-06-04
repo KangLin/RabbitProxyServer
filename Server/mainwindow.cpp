@@ -57,7 +57,11 @@ void MainWindow::on_actionStart_triggered()
     on_actionStop_triggered();
     LOG_MODEL_INFO("main", "Start server");
     foreach (auto s, m_Server) {
-        s->Start();
+        if(s->Start())
+        {
+            on_actionStop_triggered();
+            return;
+        }
     }
     ui->actionStop->setEnabled(true);
     ui->actionStart->setDisabled(true);

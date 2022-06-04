@@ -196,9 +196,9 @@ int CPeerConnectorIceServer::Reply(int nError, const QString& szError)
     Q_UNUSED(szError)
     if(!m_DataChannel) return -1;
     int nLen = sizeof(strReply) + m_bindAddress.toStdString().size();
-    QSharedPointer<char> buf(new char[nLen]);
+    QSharedPointer<char> buf(new char[nLen + 1]);
     strReply* pReply = reinterpret_cast<strReply*>(buf.data());
-    memset(pReply, 0, nLen);
+    memset(pReply, 0, nLen + 1);
     pReply->rep = nError;
     if(0 == nError)
     {

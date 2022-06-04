@@ -1,5 +1,9 @@
 #include "FrmSocket.h"
 #include "ui_FrmSocket.h"
+#include "QMessageBox"
+#ifdef HAVE_QXMPP
+    #include "QXmppUtils.h"
+#endif
 
 CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
     QWidget(parent),
@@ -42,6 +46,15 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
                                 & (int)CParameterSocks::emIceServerClient::Server);
     ui->cbIceClient->setChecked((int)m_pPara->GetIceServerClient()
                                 & (int)CParameterSocks::emIceServerClient::Client);
+#ifdef HAVE_QXMPP
+    ui->lePeerUser->setWhatsThis(tr("Format: user@domain/resource"));
+    ui->lePeerUser->setToolTip(ui->lePeerUser->whatsThis());
+    ui->lePeerUser->setStatusTip(ui->lePeerUser->toolTip());
+    
+    ui->leSignalUser->setWhatsThis(tr("Format: user@domain/resource"));
+    ui->leSignalUser->setToolTip(ui->leSignalUser->whatsThis());
+    ui->leSignalUser->setStatusTip(ui->leSignalUser->toolTip());
+#endif
     ui->lePeerUser->setText(m_pPara->GetPeerUser());
     ui->leSignalServer->setText(m_pPara->GetSignalServer());
     ui->spSignalPort->setValue(m_pPara->GetSignalPort());
@@ -101,6 +114,23 @@ void CFrmSocket::slotAccept()
     m_pPara->SetTurnUser(ui->leTurnUser->text());
     m_pPara->SetTurnPassword(ui->leTurnPassword->text());
     
+#ifdef HAVE_QXMPP
+    if(QXmppUtils::jidToDomain(ui->lePeerUser->text()).isEmpty()
+            || QXmppUtils::jidToResource(ui->lePeerUser->text()).isEmpty())
+    {
+        QMessageBox::critical(this, tr("Error"), tr("The peer user format error. please user@domain/resource"));
+        ui->lePeerUser->setFocus();
+        return;
+    }
+    if(QXmppUtils::jidToDomain(ui->leSignalUser->text()).isEmpty()
+            || QXmppUtils::jidToResource(ui->leSignalUser->text()).isEmpty())
+    {
+        QMessageBox::critical(this, tr("Error"), tr("The user format error. please user@domain/resource"));
+        ui->leSignalUser->setFocus();
+        
+        return;
+    }
+#endif
     emit m_pPara->sigUpdate();
 }
 
@@ -110,4 +140,31 @@ void CFrmSocket::on_cbUserPassword_clicked(bool checked)
     ui->leAuthentUser->setVisible(checked);
     ui->lbAuthentPassword->setVisible(checked);
     ui->lbAuthentUser->setVisible(checked);
+}
+
+void CFrmSocket::on_lePeerUser_editingFinished()
+{
+#ifdef HAVE_QXMPP
+    if(QXmppUtils::jidToDomain(ui->lePeerUser->text()).isEmpty()
+            || QXmppUtils::jidToResource(ui->lePeerUser->text()).isEmpty())
+    {
+        QMessageBox::critical(this, tr("Error"), tr("The peer user format error. please user@domain/resource"));
+        ui->lePeerUser->setFocus();
+        return;
+    }
+#endif
+}
+
+void CFrmSocket::on_leSignalUser_editingFinished()
+{
+#ifdef HAVE_QXMPP
+    if(QXmppUtils::jidToDomain(ui->leSignalUser->text()).isEmpty()
+            || QXmppUtils::jidToResource(ui->leSignalUser->text()).isEmpty())
+    {
+        QMessageBox::critical(this, tr("Error"), tr("The user format error. please user@domain/resource"));
+        ui->leSignalUser->setFocus();
+        
+        return;
+    }
+#endif 
 }

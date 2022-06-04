@@ -32,6 +32,12 @@ CIceSignalQxmpp::CIceSignalQxmpp(QObject *parent)
 
 int CIceSignalQxmpp::Open(const std::string &szServer, quint16 nPort, const std::string &user, const std::string &password)
 {
+    if(QXmppUtils::jidToDomain(user.c_str()).isEmpty()
+            || QXmppUtils::jidToResource(user.c_str()).isEmpty())
+    {
+        LOG_MODEL_ERROR("CIceSignalQxmpp", "The user name format error. please user@domain/resource");
+        return -1;
+    }
     QXmppConfiguration conf;
     conf.setHost(szServer.c_str());
     conf.setPort(nPort);
@@ -97,7 +103,7 @@ bool CIceSignalQxmpp::proecssIq(CIceSignalQXmppIq iq)
                          iq.mid(),
                          iq.Candiate());
     } else {
-        LOG_MODEL_ERROR("CIceSignalQxmpp", "iq type error: %s",
+        LOG_MODEL_ERROR("CIceSignalQxmpp", "iq signal type error: %s",
                         iq.SignalType().toStdString().c_str());
         return false;
     }
@@ -109,9 +115,16 @@ int CIceSignalQxmpp::SendDescription(const QString &toUser,
                                      const rtc::Description &description,
                                      const QString &fromUser)
 {
+    if(QXmppUtils::jidToDomain(toUser.toStdString().c_str()).isEmpty()
+            || QXmppUtils::jidToResource(toUser.toStdString().c_str()).isEmpty())
+    {
+        LOG_MODEL_ERROR("CIceSignalQxmpp", "The toUser name format error. please user@domain/resource");
+        return -1;
+    }
     CIceSignalQXmppIq iq;
     iq.setType(QXmppIq::Set);
     iq.setTo(toUser);
+    //iq.setFrom(fromUser);
     iq.setChannelId(channelId);
     iq.setSignalType(description.typeString().c_str());
     iq.setDescription(std::string(description).c_str());
@@ -124,9 +137,16 @@ int CIceSignalQxmpp::SendCandiate(const QString &toUser,
                                   const rtc::Candidate &candidate,
                                   const QString &fromUser)
 {
+    if(QXmppUtils::jidToDomain(toUser.toStdString().c_str()).isEmpty()
+            || QXmppUtils::jidToResource(toUser.toStdString().c_str()).isEmpty())
+    {
+        LOG_MODEL_ERROR("CIceSignalQxmpp", "The toUser name format error. please user@domain/resource");
+        return -1;
+    }
     CIceSignalQXmppIq iq;
     iq.setType(QXmppIq::Set);
     iq.setTo(toUser);
+    //iq.setFrom(fromUser);
     iq.setChannelId(channelId);
     iq.setSignalType("candidate");
     iq.setMid(candidate.mid().c_str());

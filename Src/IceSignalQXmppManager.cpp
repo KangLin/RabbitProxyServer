@@ -63,5 +63,4 @@ bool CIceSignalQXmppManager::handleStanza(const QDomElement &element)
     ack.setTo(iq.from());
     ack.setType(QXmppIq::Result);
     return client()->sendPacket(ack);
-    
 }
