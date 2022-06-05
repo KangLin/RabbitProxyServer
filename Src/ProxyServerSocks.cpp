@@ -154,7 +154,7 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
     if(!p->GetPeerUser().isEmpty() && p->GetPeerUser() != fromUser
             && p->GetSignalUser() != toUser)
     {
-        LOG_MODEL_ERROR("ProxyServerSocks", "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+        LOG_MODEL_ERROR("ProxyServerSocks", "User is empty or signal user is not toUser. fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
                         fromUser.toStdString().c_str(),
                         toUser.toStdString().c_str(),
                         channelId.toStdString().c_str(),
@@ -166,13 +166,14 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
     QMutexLocker lock(&m_ConnectServerMutex);
     if(m_ConnectServer[fromUser][channelId])
     {
-        LOG_MODEL_ERROR("ProxyServerSocks", "Is existed. fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+        LOG_MODEL_WARNING("ProxyServerSocks", "channel Is existed. fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
                         fromUser.toStdString().c_str(),
                         toUser.toStdString().c_str(),
                         channelId.toStdString().c_str(),
                         p->GetSignalUser().toStdString().c_str(),
                         p->GetPeerUser().toStdString().c_str());
-        return;
+        CloseConnectServer(m_ConnectServer[fromUser][channelId].data());
+        //return;
     }
     
     LOG_MODEL_DEBUG("ProxyServerSocks", "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
@@ -185,7 +186,7 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
                 new CPeerConnectorIceServer(this, fromUser, toUser, channelId, type, sdp),
                 &QObject::deleteLater);
     bool check = connect(ice.data(), SIGNAL(sigDisconnected()),
-                         this, SLOT(slotRemotePeerConnectServer()));
+                         this, SLOT(slotRemotePeerDisconnectServer()));
     Q_ASSERT(check);
     check = connect(ice.data(), SIGNAL(sigError(int, const QString&)),
                     this, SLOT(slotError(int, const QString&)));
@@ -198,10 +199,10 @@ void CProxyServerSocks::slotError(int err, const QString& szErr)
 {
     LOG_MODEL_ERROR("CProxyServerSocks", "CProxyServerSocks::slotError: %d;%s",
                     err, szErr.toStdString().c_str());
-    slotRemotePeerConnectServer();
+    slotRemotePeerDisconnectServer();
 }
 
-void CProxyServerSocks::slotRemotePeerConnectServer()
+void CProxyServerSocks::slotRemotePeerDisconnectServer()
 {
     try{
         CPeerConnectorIceServer* pServer
@@ -211,7 +212,15 @@ void CProxyServerSocks::slotRemotePeerConnectServer()
         {
             return;
         }
-        
+        CloseConnectServer(pServer);        
+    }catch(std::exception &e) {
+        LOG_MODEL_ERROR("CProxyServerSocks", e.what());
+    }
+}
+
+void CProxyServerSocks::CloseConnectServer(CPeerConnectorIceServer* pServer)
+{
+    try{
         LOG_MODEL_DEBUG("CProxyServerSocks",
                         "CProxyServerSocks::slotRemotePeerConnectServer(), peer:%s;id:%s",
                         pServer->GetPeerUser().toStdString().c_str(),

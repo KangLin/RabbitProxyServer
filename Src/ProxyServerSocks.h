@@ -36,13 +36,15 @@ public Q_SLOTS:
     virtual int Start();
     virtual int Stop();
 
+private:
+    void CloseConnectServer(CPeerConnectorIceServer *pServer);
 private Q_SLOTS:
     virtual void slotOffer(const QString& fromUser,
                            const QString& toUser,
                            const QString& channelId,
                            const QString& type,
                            const QString& sdp);
-    void slotRemotePeerConnectServer();
+    void slotRemotePeerDisconnectServer();
     void slotError(int nErr, const QString& szErr = QString());
 private:
     QSharedPointer<CIceSignal> m_Signal;

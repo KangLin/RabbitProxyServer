@@ -9,7 +9,7 @@ CPeerConnector::CPeerConnector(QObject *parent) : QObject(parent)
 
 CPeerConnector::~CPeerConnector()
 {
-    qDebug() << "CPeerConnecter::~CPeerConnecter()";
+    qDebug() << "CPeerConnector::~CPeerConnector()";
 }
 
 int CPeerConnector::InitSignals()
@@ -59,7 +59,7 @@ qint64 CPeerConnector::Read(char *buf, qint64 nLen)
 {
     if(!m_Socket.isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnecter", "Socket isn't open");
+        LOG_MODEL_ERROR("CPeerConnector", "Socket isn't open");
         emit sigError(-1, "Socket isn't open");
         return -1;
     }
@@ -70,7 +70,7 @@ QByteArray CPeerConnector::ReadAll()
 {
     if(!m_Socket.isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnecter", "Socket isn't open");
+        LOG_MODEL_ERROR("CPeerConnector", "Socket isn't open");
         emit sigError(-1, "Socket isn't open");
         return QByteArray();
     }
@@ -81,7 +81,7 @@ int CPeerConnector::Write(const char *buf, qint64 nLen)
 {
     if(!m_Socket.isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnecter", "Socket isn't open");
+        LOG_MODEL_ERROR("CPeerConnector", "Socket isn't open");
         emit sigError(-1, "Socket isn't open");
         return -1;
     }
@@ -117,7 +117,7 @@ quint16 CPeerConnector::LocalPort()
 
 void CPeerConnector::slotError(QAbstractSocket::SocketError error)
 {
-    LOG_MODEL_ERROR("CPeerConnecter", "CPeerConnecter::slotError: %d: %s",
+    LOG_MODEL_ERROR("CPeerConnector", "CPeerConnector::slotError: %d: %s",
                     error, ErrorString().toStdString().c_str());
     emERROR e = Success;
     QString szErr = ErrorString();

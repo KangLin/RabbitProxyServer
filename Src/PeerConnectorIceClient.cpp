@@ -21,7 +21,7 @@ CPeerConnectorIceClient::CPeerConnectorIceClient(CProxyServerSocks *pServer, QOb
 
 CPeerConnectorIceClient::~CPeerConnectorIceClient()
 {
-    qDebug() << "CPeerConnecterIceClient::~CPeerConnecterIceClient()";
+    qDebug() << "CPeerConnectorIceClient::~CPeerConnectorIceClient()";
 }
 
 int CPeerConnectorIceClient::CreateDataChannel(const QString &peer,
@@ -96,7 +96,7 @@ void CPeerConnectorIceClient::slotDataChannelConnected()
     memcpy(requst->host, m_peerAddress.toStdString().c_str(), m_peerAddress.toStdString().size());
     if(m_DataChannel)
     {
-        LOG_MODEL_INFO("CPeerConnecterIceClient",
+        LOG_MODEL_INFO("CPeerConnectorIceClient",
                         "Data channel connected: peer:%s;channel:%s;ip:%s;port:%d",
                         m_DataChannel->GetPeerUser().toStdString().c_str(),
                         m_DataChannel->GetChannelId().toStdString().c_str(),
@@ -108,7 +108,7 @@ void CPeerConnectorIceClient::slotDataChannelConnected()
 
 void CPeerConnectorIceClient::slotDataChannelDisconnected()
 {
-    LOG_MODEL_INFO("CPeerConnecterIceClient",
+    LOG_MODEL_INFO("CPeerConnectorIceClient",
                     "Data channel disconnected: peer:%s;channel:%s;ip:%s;port:%d",
                     m_DataChannel->GetPeerUser().toStdString().c_str(),
                     m_DataChannel->GetChannelId().toStdString().c_str(),
@@ -119,7 +119,7 @@ void CPeerConnectorIceClient::slotDataChannelDisconnected()
 
 void CPeerConnectorIceClient::slotDataChannelError(int nErr, const QString& szErr)
 {
-    LOG_MODEL_ERROR("CPeerConnecterIceClient",
+    LOG_MODEL_ERROR("CPeerConnectorIceClient",
                     "Data channel error: %d %s; peer:%s;channel:%s;ip:%s;port:%d",
                     nErr, szErr.toStdString().c_str(),
                     m_DataChannel->GetPeerUser().toStdString().c_str(),
@@ -131,7 +131,7 @@ void CPeerConnectorIceClient::slotDataChannelError(int nErr, const QString& szEr
 
 void CPeerConnectorIceClient::slotDataChannelReadyRead()
 {
-    //LOG_MODEL_DEBUG("CPeerConnecterIceClient", "slotDataChannelReadyRead");
+    //LOG_MODEL_DEBUG("CPeerConnectorIceClient", "slotDataChannelReadyRead");
     if(!m_DataChannel) return;
 
     if(CONNECT == m_Status)
@@ -163,8 +163,8 @@ int CPeerConnectorIceClient::OnConnectionReply()
         m_nBindPort = qFromBigEndian(pReply->port);
         std::string add(pReply->host, pReply->len);
         m_bindAddress = add.c_str();
-        LOG_MODEL_DEBUG("CPeerConnecterIceClient",
-                        "CPeerConnecterIceClient::OnConnectionReply(): ip:%s;port:%d",
+        LOG_MODEL_DEBUG("CPeerConnectorIceClient",
+                        "CPeerConnectorIceClient::OnConnectionReply(): ip:%s;port:%d",
                         m_bindAddress.toStdString().c_str(), m_nBindPort);
         m_Status = FORWORD;
         m_Buffer.clear();
@@ -216,7 +216,7 @@ QByteArray CPeerConnectorIceClient::ReadAll()
 {
     if(!m_DataChannel || !m_DataChannel->isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnecterIceClient", "CPeerConnecterIceClient::ReadAll(): Data channel is not open");
+        LOG_MODEL_ERROR("CPeerConnectorIceClient", "CPeerConnectorIceClient::ReadAll(): Data channel is not open");
         return QByteArray();
     }
     return m_DataChannel->readAll();
@@ -226,7 +226,7 @@ int CPeerConnectorIceClient::Write(const char *buf, qint64 nLen)
 {
     if(!m_DataChannel || !m_DataChannel->isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnecterIceClient", "CPeerConnecterIceClient::Write: Data channel is not open");
+        LOG_MODEL_ERROR("CPeerConnectorIceClient", "CPeerConnectorIceClient::Write: Data channel is not open");
         return -1;
     }
     return m_DataChannel->write(buf, nLen);
@@ -268,7 +268,7 @@ int CPeerConnectorIceClient::CheckBufferLength(int nLength)
     int nRet = nLength - m_Buffer.size();
     if(nRet > 0)
     {
-        LOG_MODEL_DEBUG("CPeerConnecterIceClient",
+        LOG_MODEL_DEBUG("CPeerConnectorIceClient",
             "CheckBufferLength %d < %d", m_Buffer.size(), nLength);
         return nRet;
     }
