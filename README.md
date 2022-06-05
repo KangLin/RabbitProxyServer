@@ -8,8 +8,8 @@ Author: Kang Lin (kl222@126.com)
     - Mirror:
       + sourceforge: https://sourceforge.net/projects/rabbitproxyserver/
       + gitlab: https://gitlab.com/kl222/RabbitProxyServer
-  + Mailing list: <rabbitproxyserver-discuss@lists.sourceforge.net>
-    https://sourceforge.net/p/rabbitproxyserver/mailman/
+  + [Mailing list](https://sourceforge.net/p/rabbitproxyserver/mailman/): <rabbitproxyserver-discuss@lists.sourceforge.net>
+
 - Language:
   + [:cn: Chinese](README_zh_CN.md)
   
