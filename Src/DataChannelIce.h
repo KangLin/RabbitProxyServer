@@ -13,7 +13,8 @@
 #include <QSharedPointer>
 
 /*!
- * \brief The Ice data channel class
+ * \brief The Ice data channel class.
+ *        A PeerConnection corresponds to a datachannel
  */
 class CDataChannelIce : public QIODevice
 {

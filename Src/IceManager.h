@@ -11,6 +11,10 @@
 #include "ProxyServerSocks.h"
 #include "PeerConnectorIceServer.h"
 
+/*!
+ * \brief The CIceManager class
+ *        Used when a PeerConnection corresponds to multiple datachannels
+ */
 class CIceManager : public QObject
 {
     Q_OBJECT

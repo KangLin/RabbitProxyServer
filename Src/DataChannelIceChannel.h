@@ -8,6 +8,10 @@
 #include <QSharedPointer>
 
 class CIceManager;
+/*!
+ * \brief The CDataChannelIceChannel class
+ *        A PeerConnection corresponds to multiple datachannels
+ */
 class CDataChannelIceChannel : public CDataChannelIce
 {
     Q_OBJECT
