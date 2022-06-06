@@ -1,6 +1,6 @@
 ## Rabbit proxy server
 
-Author: Kang Lin (kl222@126.com)
+Author: Kang Lin <kl222@126.com>
 
 - Project
   + Home: [https://kanglin.github.io/RabbitProxyServer](https://kanglin.github.io/RabbitProxyServer/)
@@ -14,7 +14,6 @@ Author: Kang Lin (kl222@126.com)
   + [:cn: Chinese](README_zh_CN.md)
   
 - Build status
-  - [![Build status](https://ci.appveyor.com/api/projects/status/id993rbqmx147cqw?svg=true)](https://ci.appveyor.com/project/KangLin/rabbitproxyserver)
   - [![CMake ubuntu](https://github.com/KangLin/RabbitProxyServer/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/KangLin/RabbitProxyServer/actions/workflows/cmake_ubuntu.yml)
   - [![CMake msvc](https://github.com/KangLin/RabbitProxyServer/actions/workflows/msvc.yml/badge.svg)](https://github.com/KangLin/RabbitProxyServer/actions/workflows/msvc.yml)
 
@@ -39,6 +38,45 @@ If this software is useful to you, or you like it, please donate and support the
 
 If it cannot be displayed, please open:
 https://gitee.com/kl222/RabbitCommon/raw/master/Src/Resource/image/Contribute.png
+
+### Download
+
+Semantic Versioning: https://semver.org/lang/zh-CN/
+
++ Latest Release: 
+  - [![Github Latest Release](https://img.shields.io/github/release/KangLin/RabbitProxyServer?label=Github%20最后发行版本)](https://github.com/KangLin/RabbitProxyServer/releases)
+  - [![Github Release](https://img.shields.io/github/release-pre/KangLin/RabbitProxyServer?label=Github%20发行版本)](https://github.com/KangLin/RabbitProxyServer/releases)
+  - [![Download from sourceforge](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/rabbitproxyserver/files/latest/download)
++ Current version:
+  - Windows: Supported WINDOWS 7 and later version
+    + Install package： RabbitProxyServer_setup_v0.0.1.exe
+      - [Download from Github](https://github.com/KangLin/RabbitProxyServer/releases/download/v0.0.1/RabbitProxyServer_setup_v0.0.1.exe)
+      - [Download from sourceforge](https://sourceforge.net/projects/rabbitproxyserver/files/v0.0.1/RabbitProxyServer_setup_v0.0.1.exe/download)
+    + No need to install package:RabbitProxyServer_windows_v0.0.1.zip
+      - [Download from Github](https://github.com/KangLin/RabbitProxyServer/releases/download/v0.0.1/RabbitProxyServer_windows_v0.0.1.zip)
+      - [Download from sourceforge](https://sourceforge.net/projects/rabbitproxyserver/files/v0.0.1/RabbitProxyServer_windows_v0.0.1.zip/download)
+  - Ubuntu:
+    + Ubuntu 20.04: rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb
+      
+          sudo apt install ./rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb
+          
+          # If you're on an older Linux distribution, you will need to run this instead:
+          # sudo dpkg -i rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb
+          # sudo apt-get install -f # Install dependencies
+
+      - [Download from Github](https://github.com/KangLin/RabbitProxyServer/releases/download/v0.0.1/rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb)
+      - [Download from sourceforge](https://sourceforge.net/projects/rabbitproxyserver/files/v0.0.1/rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb/download)
+      
+    + Ubuntu 18.04: rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb
+
+          sudo apt install ./rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb
+          
+          # If you're on an older Linux distribution, you will need to run this instead:
+          # sudo dpkg -i rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb
+          # sudo apt-get install -f # Install dependencies
+
+      - [Download from Github](https://github.com/KangLin/RabbitProxyServer/releases/download/v0.0.1/rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb)
+      - [Download from sourceforge](https://sourceforge.net/projects/rabbitproxyserver/files/v0.0.1/rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb/download)
 
 ### Supported protocols
 

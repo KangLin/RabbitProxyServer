@@ -1,18 +1,17 @@
 ## 玉兔代理服务器
-作者: 康林(kl222@126.com)
+作者: 康林 <kl222@126.com>
 
 - 项目
   + 主页：[https://kanglin.github.io/RabbitProxyServer](https://kanglin.github.io/RabbitProxyServer)
   + 代码主仓库：[https://github.com/KangLin/RabbitProxyServer](https://github.com/KangLin/RabbitProxyServer)
-    + 镜像：
-      - sourceforge: https://sourceforge.net/projects/rabbitproxyserver/
-      - gitlab: https://gitlab.com/kl222/RabbitProxyServer
+    - 镜像：
+      + sourceforge: https://sourceforge.net/projects/rabbitproxyserver/
+      + gitlab: https://gitlab.com/kl222/RabbitProxyServer
   + [邮件列表](https://sourceforge.net/p/rabbitproxyserver/mailman/)：<rabbitproxyserver-discuss@lists.sourceforge.net>
     
 - 语言
   + [:us: 英语](README.md)
 - 编译状态
-  - [![编译状态](https://ci.appveyor.com/api/projects/status/id993rbqmx147cqw?svg=true)](https://ci.appveyor.com/project/KangLin/rabbitproxyserver)
   - [![编译状态](https://github.com/KangLin/RabbitProxyServer/actions/workflows/cmake_ubuntu.yml/badge.svg)](https://github.com/KangLin/RabbitProxyServer/actions/workflows/cmake_ubuntu.yml)
   - [![编译状态](https://github.com/KangLin/RabbitProxyServer/actions/workflows/msvc.yml/badge.svg)](https://github.com/KangLin/RabbitProxyServer/actions/workflows/msvc.yml)
 
@@ -23,8 +22,8 @@
 ![网络拓朴图](Documents/Image/network.svg)
 
 在网上没有查找到相关的开源软件。
-所以着手写了[玉兔远程控制](https://github.com/KangLin/RabbitRemoteControl)。在写的过
-程遇到了两个内网互相访问的问题，详见：https://github.com/KangLin/RabbitRemoteControl/issues/7 。
+所以着手写了[玉兔远程控制](https://github.com/KangLin/RabbitProxyServer)。在写的过
+程遇到了两个内网互相访问的问题，详见：https://github.com/KangLin/RabbitProxyServer/issues/7 。
 
 在网上查找相关的代理软件，只有有公网IP的代理服务器，并没有无公网IP的代理服务器。所以写了本软件，
 以解决两个无公网IP的内网互相访问的问题。并且本软件实现[多种协议](#支持的协议)代理服务功能。
@@ -36,6 +35,45 @@
 
 如果不能显示，请打开：
 https://gitee.com/kl222/RabbitCommon/raw/master/Src/Resource/image/Contribute.png
+
+### 下载
+
+版本号说明： https://semver.org/lang/zh-CN/
+
++ 最后发行版本：
+  - [![Github 最后发行版本](https://img.shields.io/github/release/KangLin/RabbitProxyServer?label=Github%20最后发行版本)](https://github.com/KangLin/RabbitProxyServer/releases)
+  - [![Github 发行版本](https://img.shields.io/github/release-pre/KangLin/RabbitProxyServer?label=Github%20发行版本)](https://github.com/KangLin/RabbitProxyServer/releases)
+  - [![Download from sourceforge](https://a.fsdn.com/con/app/sf-download-button)](https://sourceforge.net/projects/rabbitproxyserver/files/latest/download)
++ 当前版本：
+  - Windows: 支持 WINDOWS 7 及以后版本
+    + 安装包：RabbitProxyServer_setup_v0.0.1.exe
+      - [从 github 下载](https://github.com/KangLin/RabbitProxyServer/releases/download/v0.0.1/RabbitProxyServer_setup_v0.0.1.exe)
+      - [从 sourceforge 下载](https://sourceforge.net/projects/rabbitproxyserver/files/v0.0.1/RabbitProxyServer_setup_v0.0.1.exe/download)
+    + 绿色版本：RabbitProxyServer_windows_v0.0.1.zip
+      - [从 github 下载](https://github.com/KangLin/RabbitProxyServer/releases/download/v0.0.1/RabbitProxyServer_windows_v0.0.1.zip)
+      - [从 sourceforge 下载](https://sourceforge.net/projects/rabbitproxyserver/files/v0.0.1/RabbitProxyServer_windows_v0.0.1.zip/download)
+  - Ubuntu:
+    + Ubuntu 20.04: rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb
+      
+          sudo apt install ./rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb
+          
+          # 如要你是在老的 linux 发行版本上，你需要用下列命令替换：
+          # sudo dpkg -i rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb
+          # sudo apt-get install -f # 安装依赖
+
+      - [从 github 下载](https://github.com/KangLin/RabbitProxyServer/releases/download/v0.0.1/rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb)
+      - [从 sourceforge 下载](https://sourceforge.net/projects/rabbitproxyserver/files/v0.0.1/rabbitproxyserver_0.0.1_amd64_Ubuntu-20.04.deb/download)
+      
+    + Ubuntu 18.04: rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb
+
+          sudo apt install ./rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb
+          
+          # 如要你是在老的 linux 发行版本上，你需要用下列命令替换：
+          # sudo dpkg -i rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb
+          # sudo apt-get install -f # 安装依赖
+
+      - [从 github 下载](https://github.com/KangLin/RabbitProxyServer/releases/download/v0.0.1/rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb)
+      - [从 sourceforge 下载](https://sourceforge.net/projects/rabbitproxyserver/files/v0.0.1/rabbitproxyserver_0.0.1_amd64_Ubuntu-18.04.deb/download)
 
 ### 支持的协议
 
