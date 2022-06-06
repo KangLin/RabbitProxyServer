@@ -31,25 +31,23 @@ fi
 sed -i "s/^\!define PRODUCT_VERSION.*/\!define PRODUCT_VERSION \"${VERSION}\"/g" ${SOURCE_DIR}/Install/Install.nsi
 sed -i "s/^\SET(BUILD_VERSION.*/\SET(BUILD_VERSION \"${VERSION}\")/g" ${SOURCE_DIR}/CMakeLists.txt
 sed -i "s/<VERSION>.*</<VERSION>${VERSION}</g" ${SOURCE_DIR}/Update/update.xml
-sed -i "s/export VERSION=.*/export VERSION=\"${VERSION}\"/g" ${SOURCE_DIR}/ci/build.sh
-sed -i "s/version:.*/version: \"${VERSION}.{build}\"/g" ${SOURCE_DIR}/appveyor.yml
-sed -i "s/-m \"v[0-9]\+\.[0-9]\+\.[0-9]\+\"/-m \"${VERSION}\"/g" ${SOURCE_DIR}/appveyor.yml
-sed -i "s/RabbitProxyServer-Setup-v[0-9]\+\.[0-9]\+\.[0-9]\+/RabbitProxyServer-Setup-${VERSION}/g" ${SOURCE_DIR}/appveyor.yml
-sed -i "s/RabbitProxyServer_[0-9]\+\.[0-9]\+\.[0-9]\+/RabbitProxyServer_${VERSION}/g" ${SOURCE_DIR}/appveyor.yml
-sed -i "s/tag_name:.*/tag_name: '${VERSION}'/g" ${SOURCE_DIR}/.github/workflows/cmake_ubuntu.yml
-sed -i "s/tag_name:.*/tag_name: '${VERSION}'/g" ${SOURCE_DIR}/.github/workflows/cmake_mingw.yml
-sed -i "s/tag_name:.*/tag_name: '${VERSION}'/g" ${SOURCE_DIR}/.github/workflows/cmake.yml
-sed -i "s/RabbitProxyServer-Setup-v[0-9]\+\.[0-9]\+\.[0-9]\+.exe/RabbitProxyServer-Setup-${VERSION}.exe/g" ${SOURCE_DIR}/.github/workflows/cmake.yml
-sed -i "s/-m \"v[0-9]\+\.[0-9]\+\.[0-9]\+\"/-m \"${VERSION}\"/g" ${SOURCE_DIR}/.github/workflows/msvc.yml
-sed -i "s/PROJECT_NUMBER.*v[0-9]\+\.[0-9]\+\.[0-9]\+/PROJECT_NUMBER = ${VERSION}/g" ${SOURCE_DIR}/Doxyfile.in
+#sed -i "s/version:.*/version: \"${VERSION}.{build}\"/g" ${SOURCE_DIR}/appveyor.yml
+#sed -i "s/-m \"v[0-9]\+\.[0-9]\+\.[0-9]\+\"/-m \"${VERSION}\"/g" ${SOURCE_DIR}/appveyor.yml
+#sed -i "s/RabbitProxyServer-Setup-v[0-9]\+\.[0-9]\+\.[0-9]\+/RabbitProxyServer-Setup-${VERSION}/g" ${SOURCE_DIR}/appveyor.yml
+#sed -i "s/RabbitProxyServer_[0-9]\+\.[0-9]\+\.[0-9]\+/RabbitProxyServer_${VERSION}/g" ${SOURCE_DIR}/appveyor.yml
 
-sed -i "s/^\Standards-Version:.*/\Standards-Version:\"${VERSION}\"/g" ${SOURCE_DIR}/debian/control
+#sed -i "s/tag_name:.*/tag_name: '${VERSION}'/g" ${SOURCE_DIR}/.github/workflows/cmake_mingw.yml
+sed -i "s/RABBITPROXYSERVER_VERSION:.*/RABBITPROXYSERVER_VERSION: '${VERSION}'/g" ${SOURCE_DIR}/.github/workflows/msvc.yml
+sed -i "s/-m \"v[0-9]\+\.[0-9]\+\.[0-9]\+\"/-m \"${VERSION}\"/g" ${SOURCE_DIR}/.github/workflows/msvc.yml
+#sed -i "s/PROJECT_NUMBER.*v[0-9]\+\.[0-9]\+\.[0-9]\+/PROJECT_NUMBER = ${VERSION}/g" ${SOURCE_DIR}/Doxyfile.in
+
 DEBIAN_VERSION=`echo ${VERSION}|cut -d "v" -f 2`
+sed -i "s/^\Standards-Version:.*/\Standards-Version:\"${DEBIAN_VERSION}\"/g" ${SOURCE_DIR}/debian/control
 sed -i "s/rabbitproxyserver (.*)/rabbitproxyserver (${DEBIAN_VERSION})/g" ${SOURCE_DIR}/debian/changelog
-sed -i "s/Version=.*/Version=${DEBIAN_VERSION}/g" ${SOURCE_DIR}/debian/RabbitProxyServer.desktop
+sed -i "s/RABBITPROXYSERVER_VERSION:.*/RABBITPROXYSERVER_VERSION: '${DEBIAN_VERSION}'/g" ${SOURCE_DIR}/.github/workflows/cmake_ubuntu.yml
+sed -i "s/Version=.*/Version=${DEBIAN_VERSION}/g" ${SOURCE_DIR}/debian/RabbitProxyServerConfig.desktop
 sed -i "s/[0-9]\+\.[0-9]\+\.[0-9]\+/${DEBIAN_VERSION}/g" ${SOURCE_DIR}/README*.md
 #sed -i "s/[0-9]\+\.[0-9]\+\.[0-9]\+/${DEBIAN_VERSION}/g" ${SOURCE_DIR}/App/android/AndroidManifest.xml
-sed -i "s/RABBITPROXYSERVER_VERSION_[0-9]\+\.[0-9]\+\.[0-9]\+/RABBITPROXYSERVER_VERSION_${DEBIAN_VERSION}/g" ${SOURCE_DIR}/.github/workflows/cmake_ubuntu.yml
 
 MAJOR_VERSION=`echo ${DEBIAN_VERSION}|cut -d "." -f 1`
 #sed -i "s/android:versionCode=.*android/android:versionCode=\"${MAJOR_VERSION}\" android/g" ${SOURCE_DIR}/App/android/AndroidManifest.xml

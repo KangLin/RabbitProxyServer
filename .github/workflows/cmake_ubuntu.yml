@@ -19,7 +19,7 @@ jobs:
       SOURCE_DIR:  ${{github.workspace}}/source
       TOOSL_DIR:   ${{github.workspace}}/tools
       INSTALL_DIR: ${{github.workspace}}/install
-      RABBITPROXYSERVER_VERSION: 0.0.1
+      RABBITPROXYSERVER_VERSION: '0.0.1'
       
     steps:
     - uses: actions/checkout@v2
