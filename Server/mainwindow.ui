@@ -24,7 +24,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>21</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOperate">
@@ -53,9 +53,9 @@
      <addaction name="actionOpen_log_file"/>
      <addaction name="actionOpen_log_folder"/>
     </widget>
-    <addaction name="actionRestart"/>
     <addaction name="actionStart"/>
     <addaction name="actionStop"/>
+    <addaction name="actionRestart"/>
     <addaction name="separator"/>
     <addaction name="actionApply"/>
     <addaction name="actionSave"/>
@@ -78,6 +78,9 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QToolBar" name="toolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
@@ -91,8 +94,8 @@
    <addaction name="actionStop"/>
    <addaction name="actionRestart"/>
    <addaction name="separator"/>
-   <addaction name="actionApply"/>
    <addaction name="actionLoad"/>
+   <addaction name="actionApply"/>
    <addaction name="actionSave"/>
    <addaction name="separator"/>
    <addaction name="actionExit"/>
@@ -107,6 +110,9 @@
    </property>
   </action>
   <action name="actionStop">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="Resource/Resource.qrc">
      <normaloff>:/image/Stop</normaloff>:/image/Stop</iconset>
@@ -146,6 +152,9 @@
    </property>
   </action>
   <action name="actionRestart">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="Resource/Resource.qrc">
      <normaloff>:/image/Restart</normaloff>:/image/Restart</iconset>

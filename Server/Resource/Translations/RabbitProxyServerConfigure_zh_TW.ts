@@ -190,88 +190,88 @@
         <translation>幫助</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="82"/>
+        <location filename="../../mainwindow.ui" line="85"/>
         <source>toolBar</source>
         <translation>工具欄</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="106"/>
+        <location filename="../../mainwindow.ui" line="109"/>
         <source>Start</source>
         <translation>開始</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="115"/>
+        <location filename="../../mainwindow.ui" line="121"/>
         <source>Stop</source>
         <translation>停止</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="124"/>
-        <location filename="../../mainwindow.ui" line="127"/>
         <location filename="../../mainwindow.ui" line="130"/>
+        <location filename="../../mainwindow.ui" line="133"/>
+        <location filename="../../mainwindow.ui" line="136"/>
         <source>Save parameters</source>
         <translation>保存參數</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="139"/>
-        <location filename="../../mainwindow.ui" line="142"/>
         <location filename="../../mainwindow.ui" line="145"/>
+        <location filename="../../mainwindow.ui" line="148"/>
+        <location filename="../../mainwindow.ui" line="151"/>
         <source>Load parameters</source>
         <translation>加載參數</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="154"/>
+        <location filename="../../mainwindow.ui" line="163"/>
         <source>Restart</source>
         <translation>重啟</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="163"/>
+        <location filename="../../mainwindow.ui" line="172"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="172"/>
-        <location filename="../../mainwindow.ui" line="175"/>
-        <location filename="../../mainwindow.ui" line="178"/>
+        <location filename="../../mainwindow.ui" line="181"/>
+        <location filename="../../mainwindow.ui" line="184"/>
+        <location filename="../../mainwindow.ui" line="187"/>
         <source>Apply parameters</source>
         <translation>應用參數</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="187"/>
-        <location filename="../../mainwindow.ui" line="190"/>
-        <location filename="../../mainwindow.ui" line="193"/>
+        <location filename="../../mainwindow.ui" line="196"/>
+        <location filename="../../mainwindow.ui" line="199"/>
+        <location filename="../../mainwindow.ui" line="202"/>
         <source>About</source>
         <translation>關於</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="198"/>
-        <location filename="../../mainwindow.ui" line="201"/>
-        <location filename="../../mainwindow.ui" line="204"/>
+        <location filename="../../mainwindow.ui" line="207"/>
+        <location filename="../../mainwindow.ui" line="210"/>
+        <location filename="../../mainwindow.ui" line="213"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="209"/>
-        <location filename="../../mainwindow.ui" line="212"/>
-        <location filename="../../mainwindow.ui" line="215"/>
         <location filename="../../mainwindow.ui" line="218"/>
         <location filename="../../mainwindow.ui" line="221"/>
+        <location filename="../../mainwindow.ui" line="224"/>
+        <location filename="../../mainwindow.ui" line="227"/>
+        <location filename="../../mainwindow.ui" line="230"/>
         <source>Default style</source>
         <translation>默認樣式</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="230"/>
-        <location filename="../../mainwindow.ui" line="233"/>
-        <location filename="../../mainwindow.ui" line="236"/>
+        <location filename="../../mainwindow.ui" line="239"/>
+        <location filename="../../mainwindow.ui" line="242"/>
+        <location filename="../../mainwindow.ui" line="245"/>
         <source>Load Style</source>
         <translation>加載樣式</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="245"/>
+        <location filename="../../mainwindow.ui" line="254"/>
         <source>Open log file</source>
         <translation>打開日誌文件</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="254"/>
+        <location filename="../../mainwindow.ui" line="263"/>
         <source>Open log folder</source>
         <translation>打開日誌文件夾</translation>
     </message>

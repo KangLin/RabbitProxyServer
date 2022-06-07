@@ -79,6 +79,11 @@ void MainWindow::on_actionStop_triggered()
     ui->actionRestart->setDisabled(true);
 }
 
+void MainWindow::on_actionApply_triggered()
+{
+    emit sigSaveParameter();
+}
+
 void MainWindow::on_actionSave_triggered()
 {
     on_actionApply_triggered();
@@ -106,11 +111,6 @@ void MainWindow::on_actionRestart_triggered()
 void MainWindow::on_actionExit_triggered()
 {
     close();
-}
-
-void MainWindow::on_actionApply_triggered()
-{
-    emit sigSaveParameter();
 }
 
 void MainWindow::on_actionAbout_triggered()
