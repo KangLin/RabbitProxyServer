@@ -239,11 +239,12 @@ void CProxyServerSocks::CloseConnectServer(CPeerConnectorIceServer* pServer)
 }
 #endif
 
-void CProxyServerSocks::onAccecpt(QTcpSocket* pSocket)
+int CProxyServerSocks::onAccecpt(QTcpSocket* pSocket)
 {
     bool check = connect(pSocket, SIGNAL(readyRead()),
                          this, SLOT(slotRead()));
     Q_ASSERT(check);
+    return 0;
 }
 
 void CProxyServerSocks::slotRead()

@@ -6,7 +6,9 @@
 #include <QTcpSocket>
 
 CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
-    m_pParameter(nullptr), m_Status(STATUS::Stop)
+    m_pParameter(nullptr),
+    m_Status(STATUS::Stop),
+    m_nConnectors(0)
 {
     m_pParameter = QSharedPointer<CParameter>(new CParameter(this));
 }
@@ -21,6 +23,11 @@ CProxyServer::STATUS CProxyServer::GetStatus()
     return m_Status;
 }
 
+int CProxyServer::GetConnectors()
+{
+    return m_nConnectors;
+}
+
 CParameter* CProxyServer::Getparameter()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
@@ -32,13 +39,15 @@ CParameter* CProxyServer::Getparameter()
 
 int CProxyServer::Save(QSettings &set)
 {
-    Getparameter()->Save(set);
+    if(Getparameter())
+        Getparameter()->Save(set);
     return 0;
 }
 
 int CProxyServer::Load(QSettings &set)
 {
-    Getparameter()->Load(set);
+    if(Getparameter())
+        Getparameter()->Load(set);
     return 0;
 }
 
@@ -97,10 +106,29 @@ void CProxyServer::slotAccept()
                    tr("New connect from: %s:%d").toStdString().c_str(),
                    s->peerAddress().toString().toStdString().c_str(),
                    s->peerPort());
-    onAccecpt(s);
+    
+    int nRet = onAccecpt(s);
+    if(nRet) return;
+    bool check = connect(s, SIGNAL(disconnected()),
+                         this, SLOT(slotDisconnected()));
+    Q_ASSERT(check);
+    check = connect(s, SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+                    this, SLOT(slotError(QAbstractSocket::SocketError)));
+    Q_ASSERT(check);
+    m_nConnectors++;
 }
 
-void CProxyServer::onAccecpt(QTcpSocket* pSocket)
+void CProxyServer::slotDisconnected()
 {
-    Q_UNUSED(pSocket);
+    m_nConnectors--;
 }
+
+void CProxyServer::slotError(QAbstractSocket::SocketError socketError)
+{
+    m_nConnectors--;
+}
+
+//void CProxyServer::onAccecpt(QTcpSocket* pSocket)
+//{
+//    Q_UNUSED(pSocket);
+//}

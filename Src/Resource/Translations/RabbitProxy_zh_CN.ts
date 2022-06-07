@@ -119,17 +119,17 @@
 <context>
     <name>CProxyServer</name>
     <message>
-        <location filename="../../ProxyServer.cpp" line="62"/>
+        <location filename="../../ProxyServer.cpp" line="71"/>
         <source>Server listen at: %s:%d: %s</source>
         <translation>服务器监听在：%s:%d: %s</translation>
     </message>
     <message>
-        <location filename="../../ProxyServer.cpp" line="70"/>
+        <location filename="../../ProxyServer.cpp" line="79"/>
         <source>Server listen at: %s:%d</source>
         <translation>服务器监听在：%s:%d</translation>
     </message>
     <message>
-        <location filename="../../ProxyServer.cpp" line="97"/>
+        <location filename="../../ProxyServer.cpp" line="106"/>
         <source>New connect from: %s:%d</source>
         <translation>新连接：%s:%d</translation>
     </message>

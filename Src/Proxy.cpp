@@ -5,8 +5,8 @@
 
 CProxy::CProxy(QTcpSocket* pSocket, CProxyServer* server, QObject *parent)
     : QObject(parent),
-    m_pSocket(pSocket),
-    m_pServer(server)
+    m_pServer(server),
+    m_pSocket(pSocket)
 {
     bool check = false;
     if(m_pSocket)

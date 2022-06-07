@@ -56,8 +56,10 @@ private:
 #endif
 
 protected Q_SLOTS:
-    virtual void onAccecpt(QTcpSocket* pSocket);
     virtual void slotRead();
+
+protected:
+    virtual int onAccecpt(QTcpSocket* pSocket);
 };
 
 #endif // CPROXYSERVERSOCKS_H
