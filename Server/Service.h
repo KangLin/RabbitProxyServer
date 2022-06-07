@@ -2,7 +2,7 @@
 #define CSERVICE_H
 
 #include "QtService/qtservice.h"
-#include "ProxyServer.h"
+#include "Server.h"
 
 class CService : public QtService<QCoreApplication>
 {
@@ -14,7 +14,7 @@ protected:
     virtual void stop() override;
     
 private:
-    std::list<QSharedPointer<CProxyServer> > m_Server;
+    std::list<QSharedPointer<CServer> > m_Server;
 };
 
 #endif // CSERVICE_H

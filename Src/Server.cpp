@@ -1,11 +1,11 @@
 //! @author Kang Lin <kl222@126.com>
 
-#include "ProxyServer.h"
+#include "Server.h"
 #include "RabbitCommonLog.h"
 #include <QHostAddress>
 #include <QTcpSocket>
 
-CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
+CServer::CServer(QObject *parent) : QObject(parent),
     m_pParameter(nullptr),
     m_Status(STATUS::Stop),
     m_nConnectors(0)
@@ -13,22 +13,22 @@ CProxyServer::CProxyServer(QObject *parent) : QObject(parent),
     m_pParameter = QSharedPointer<CParameter>(new CParameter(this));
 }
 
-CProxyServer::~CProxyServer()
+CServer::~CServer()
 {
     qDebug() << "CProxyServer::~CProxyServer()";
 }
 
-CProxyServer::STATUS CProxyServer::GetStatus()
+CServer::STATUS CServer::GetStatus()
 {
     return m_Status;
 }
 
-int CProxyServer::GetConnectors()
+int CServer::GetConnectors()
 {
     return m_nConnectors;
 }
 
-CParameter* CProxyServer::Getparameter()
+CParameter* CServer::Getparameter()
 {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     return m_pParameter.get();
@@ -37,21 +37,21 @@ CParameter* CProxyServer::Getparameter()
 #endif
 }
 
-int CProxyServer::Save(QSettings &set)
+int CServer::Save(QSettings &set)
 {
     if(Getparameter())
         Getparameter()->Save(set);
     return 0;
 }
 
-int CProxyServer::Load(QSettings &set)
+int CServer::Load(QSettings &set)
 {
     if(Getparameter())
         Getparameter()->Load(set);
     return 0;
 }
 
-int CProxyServer::Start()
+int CServer::Start()
 {
     int nRet = 0;
     if(!m_pParameter)
@@ -88,7 +88,7 @@ int CProxyServer::Start()
     return nRet;
 }
 
-int CProxyServer::Stop()
+int CServer::Stop()
 {
     int nRet = 0;
     
@@ -98,7 +98,7 @@ int CProxyServer::Stop()
     return nRet;
 }
 
-void CProxyServer::slotAccept()
+void CServer::slotAccept()
 {
     QTcpSocket* s = m_Acceptor.nextPendingConnection();
     if(!s) return;
@@ -118,12 +118,12 @@ void CProxyServer::slotAccept()
     m_nConnectors++;
 }
 
-void CProxyServer::slotDisconnected()
+void CServer::slotDisconnected()
 {
     m_nConnectors--;
 }
 
-void CProxyServer::slotError(QAbstractSocket::SocketError socketError)
+void CServer::slotError(QAbstractSocket::SocketError socketError)
 {
     m_nConnectors--;
 }

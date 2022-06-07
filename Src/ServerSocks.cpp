@@ -1,6 +1,6 @@
 //! @author Kang Lin <kl222@126.com>
 
-#include "ProxyServerSocks.h"
+#include "ServerSocks.h"
 #include "ProxySocks5.h"
 #include "ParameterSocks.h"
 
@@ -19,28 +19,28 @@
 
 #include "RabbitCommonLog.h"
 
-CProxyServerSocks::CProxyServerSocks(QObject *parent) : CProxyServer(parent)
+CServerSocks::CServerSocks(QObject *parent) : CServer(parent)
 {
     m_pParameter.reset(new CParameterSocks(this));
 }
 
-CProxyServerSocks::~CProxyServerSocks()
+CServerSocks::~CServerSocks()
 {
-    qDebug() << "CProxyServerSocks::~CProxyServerSocks()";
+    qDebug() << "CServerSocks::~CServerSocks()";
 }
 
 #ifdef HAVE_ICE
-QSharedPointer<CIceSignal> CProxyServerSocks::GetSignal()
+QSharedPointer<CIceSignal> CServerSocks::GetSignal()
 {
     return m_Signal;
 }
 #ifndef WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL
-QSharedPointer<CIceManager> CProxyServerSocks::GetIceManager()
+QSharedPointer<CIceManager> CServerSocks::GetIceManager()
 {
     return m_IceManager;
 }
 #endif
-int CProxyServerSocks::Start()
+int CServerSocks::Start()
 {
     int nRet = 0;
     try {
@@ -113,19 +113,19 @@ int CProxyServerSocks::Start()
             // Client
             if((int)p->GetIceServerClient()
                     & (int)CParameterSocks::emIceServerClient::Client)
-                nRet = CProxyServer::Start();
+                nRet = CServer::Start();
             
         } else
-            nRet = CProxyServer::Start();
+            nRet = CServer::Start();
     } catch(std::exception &e) {
-        LOG_MODEL_ERROR("CProxyServerSocks", e.what());
+        LOG_MODEL_ERROR("CServerSocks", e.what());
         nRet = -1;
     }
     
     return nRet;
 }
 
-int CProxyServerSocks::Stop()
+int CServerSocks::Stop()
 {
 #ifndef WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL
     m_IceManager.reset();
@@ -140,10 +140,10 @@ int CProxyServerSocks::Stop()
     m_ConnectServer.clear();
     
     
-    return CProxyServer::Stop();
+    return CServer::Stop();
 }
 
-void CProxyServerSocks::slotOffer(const QString& fromUser,
+void CServerSocks::slotOffer(const QString& fromUser,
                                   const QString &toUser,
                                   const QString &channelId,
                                   const QString &type,
@@ -195,14 +195,14 @@ void CProxyServerSocks::slotOffer(const QString& fromUser,
     m_ConnectServer[fromUser][channelId] = ice;
 }
 
-void CProxyServerSocks::slotError(int err, const QString& szErr)
+void CServerSocks::slotError(int err, const QString& szErr)
 {
-    LOG_MODEL_ERROR("CProxyServerSocks", "CProxyServerSocks::slotError: %d;%s",
+    LOG_MODEL_ERROR("CServerSocks", "CServerSocks::slotError: %d;%s",
                     err, szErr.toStdString().c_str());
     slotRemotePeerDisconnectServer();
 }
 
-void CProxyServerSocks::slotRemotePeerDisconnectServer()
+void CServerSocks::slotRemotePeerDisconnectServer()
 {
     try{
         CPeerConnectorIceServer* pServer
@@ -214,15 +214,15 @@ void CProxyServerSocks::slotRemotePeerDisconnectServer()
         }
         CloseConnectServer(pServer);        
     }catch(std::exception &e) {
-        LOG_MODEL_ERROR("CProxyServerSocks", e.what());
+        LOG_MODEL_ERROR("CServerSocks", e.what());
     }
 }
 
-void CProxyServerSocks::CloseConnectServer(CPeerConnectorIceServer* pServer)
+void CServerSocks::CloseConnectServer(CPeerConnectorIceServer* pServer)
 {
     try{
-        LOG_MODEL_DEBUG("CProxyServerSocks",
-                        "CProxyServerSocks::slotRemotePeerConnectServer(), peer:%s;id:%s",
+        LOG_MODEL_DEBUG("CServerSocks",
+                        "CServerSocks::slotRemotePeerConnectServer(), peer:%s;id:%s",
                         pServer->GetPeerUser().toStdString().c_str(),
                         pServer->GetId().toStdString().c_str());
         QMutexLocker lock(&m_ConnectServerMutex);
@@ -234,12 +234,12 @@ void CProxyServerSocks::CloseConnectServer(CPeerConnectorIceServer* pServer)
             svr->Close();
         }
     }catch(std::exception &e) {
-        LOG_MODEL_ERROR("CProxyServerSocks", e.what());
+        LOG_MODEL_ERROR("CServerSocks", e.what());
     }
 }
 #endif
 
-int CProxyServerSocks::onAccecpt(QTcpSocket* pSocket)
+int CServerSocks::onAccecpt(QTcpSocket* pSocket)
 {
     bool check = connect(pSocket, SIGNAL(readyRead()),
                          this, SLOT(slotRead()));
@@ -247,7 +247,7 @@ int CProxyServerSocks::onAccecpt(QTcpSocket* pSocket)
     return 0;
 }
 
-void CProxyServerSocks::slotRead()
+void CServerSocks::slotRead()
 {
     QTcpSocket* pSocket = qobject_cast<QTcpSocket*>(sender());
     if(!pSocket)

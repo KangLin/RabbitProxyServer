@@ -4,8 +4,8 @@ project(RabbitProxy)
 
 set(INSTALL_HEAD_FILES
     ${INSTALL_HEAD_FILES}
-    ProxyServer.h
-    ProxyServerSocks.h
+    Server.h
+    ServerSocks.h
     Proxy.h
     ProxySocks4.h
     ProxySocks5.h
@@ -18,8 +18,8 @@ set(HEADER_FILES
     ${INSTALL_HEAD_FILES}
     )
 set(SOURCE_FILES
-    ProxyServer.cpp
-    ProxyServerSocks.cpp
+    Server.cpp
+    ServerSocks.cpp
     Proxy.cpp
     ProxySocks4.cpp
     ProxySocks5.cpp

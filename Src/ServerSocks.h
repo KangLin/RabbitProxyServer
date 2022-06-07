@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "ProxyServer.h"
+#include "Server.h"
 
 #ifdef HAVE_ICE
     #include <QMutex>
@@ -19,13 +19,13 @@
  /*!
  * \brief The socks proxy implement server class
  */
-class RABBITPROXY_EXPORT CProxyServerSocks : public CProxyServer
+class RABBITPROXY_EXPORT CServerSocks : public CServer
 {
     Q_OBJECT
     
 public:
-    CProxyServerSocks(QObject *parent = nullptr);
-    virtual ~CProxyServerSocks();
+    CServerSocks(QObject *parent = nullptr);
+    virtual ~CServerSocks();
 
 #ifdef HAVE_ICE
     QSharedPointer<CIceSignal> GetSignal();

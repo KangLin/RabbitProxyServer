@@ -71,28 +71,28 @@
     </message>
 </context>
 <context>
-    <name>CProxyServer</name>
-    <message>
-        <location filename="../../ProxyServer.cpp" line="71"/>
-        <source>Server listen at: %s:%d: %s</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../ProxyServer.cpp" line="79"/>
-        <source>Server listen at: %s:%d</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../ProxyServer.cpp" line="106"/>
-        <source>New connect from: %s:%d</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
     <name>CProxySocks5</name>
     <message>
         <location filename="../../ProxySocks5.cpp" line="111"/>
         <source>Select authenticator: 0x%x</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>CServer</name>
+    <message>
+        <location filename="../../Server.cpp" line="71"/>
+        <source>Server listen at: %s:%d: %s</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../Server.cpp" line="79"/>
+        <source>Server listen at: %s:%d</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../Server.cpp" line="106"/>
+        <source>New connect from: %s:%d</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

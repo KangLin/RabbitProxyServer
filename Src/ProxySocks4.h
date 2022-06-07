@@ -20,7 +20,7 @@ class CProxySocks4 : public CProxy
     Q_OBJECT
 
 public:
-    CProxySocks4(QTcpSocket* pSocket, CProxyServer *server, QObject* parent = nullptr);
+    CProxySocks4(QTcpSocket* pSocket, CServer *server, QObject* parent = nullptr);
     virtual ~CProxySocks4();
 
 public Q_SLOTS:

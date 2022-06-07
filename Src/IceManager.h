@@ -8,7 +8,7 @@
 #include <QMutex>
 
 #include "DataChannelIceChannel.h"
-#include "ProxyServerSocks.h"
+#include "ServerSocks.h"
 #include "PeerConnectorIceServer.h"
 
 /*!
@@ -20,7 +20,7 @@ class CIceManager : public QObject
     Q_OBJECT
     
 public:
-    explicit CIceManager(CProxyServerSocks* pServer);
+    explicit CIceManager(CServerSocks* pServer);
     std::shared_ptr<rtc::PeerConnection> GetPeerConnect(
             QSharedPointer<CIceSignal> signal,
             rtc::Configuration conf,
@@ -77,7 +77,7 @@ private:
     };
     QMap<QString, strPeerConnection> m_PeerConnections;
     
-    CProxyServerSocks* m_pServer;
+    CServerSocks* m_pServer;
 };
 
 #endif // CICEMANGER_H

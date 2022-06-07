@@ -1,7 +1,7 @@
 //! @author Kang Lin <kl222@126.com>
 
 #include "ProxySocks4.h"
-#include "ProxyServerSocks.h"
+#include "ServerSocks.h"
 #include "ParameterSocks.h"
 #ifdef HAVE_ICE
     #include "PeerConnectorIceClient.h"
@@ -10,7 +10,7 @@
 
 #include <QtEndian>
 
-CProxySocks4::CProxySocks4(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
+CProxySocks4::CProxySocks4(QTcpSocket *pSocket, CServer *server, QObject *parent)
     : CProxy(pSocket, server, parent),
       m_Status(emStatus::ClientRequest),
       m_nPort(0)
@@ -304,7 +304,7 @@ int CProxySocks4::CreatePeer()
     CParameterSocks* pPara = dynamic_cast<CParameterSocks*>(m_pServer->Getparameter());
     if(pPara->GetIce())
     {
-        CProxyServerSocks* pServer = qobject_cast<CProxyServerSocks*>(m_pServer);
+        CServerSocks* pServer = qobject_cast<CServerSocks*>(m_pServer);
         m_pPeer = QSharedPointer<CPeerConnectorIceClient>(
                     new CPeerConnectorIceClient(pServer, this),
                     &QObject::deleteLater);

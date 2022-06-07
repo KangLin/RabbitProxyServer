@@ -3,7 +3,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "ProxyServer.h"
+#include "Server.h"
 #include <memory>
 #include <list>
 
@@ -43,7 +43,7 @@ private slots:
     
 private:
     Ui::MainWindow *ui;
-    std::list<QSharedPointer<CProxyServer> > m_Server;
+    std::list<QSharedPointer<CServer> > m_Server;
     QTabWidget* m_pTabWidget;
 };
 #endif // MAINWINDOW_H

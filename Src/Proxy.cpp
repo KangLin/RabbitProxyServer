@@ -3,7 +3,7 @@
 #include "Proxy.h"
 #include "RabbitCommonLog.h"
 
-CProxy::CProxy(QTcpSocket* pSocket, CProxyServer* server, QObject *parent)
+CProxy::CProxy(QTcpSocket* pSocket, CServer* server, QObject *parent)
     : QObject(parent),
     m_pServer(server),
     m_pSocket(pSocket)

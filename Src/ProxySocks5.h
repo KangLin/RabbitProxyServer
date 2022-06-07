@@ -23,7 +23,7 @@ class CProxySocks5 : public CProxySocks4
     Q_OBJECT
 
 public:
-    explicit CProxySocks5(QTcpSocket* pSocket, CProxyServer *server, QObject *parent = nullptr);
+    explicit CProxySocks5(QTcpSocket* pSocket, CServer *server, QObject *parent = nullptr);
     virtual ~CProxySocks5();
 
 public Q_SLOTS:

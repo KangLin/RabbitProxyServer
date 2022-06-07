@@ -119,19 +119,16 @@
 <context>
     <name>CProxyServer</name>
     <message>
-        <location filename="../../ProxyServer.cpp" line="71"/>
         <source>Server listen at: %s:%d: %s</source>
-        <translation>服務器監聽在：%s:%d: %s</translation>
+        <translation type="vanished">服務器監聽在：%s:%d: %s</translation>
     </message>
     <message>
-        <location filename="../../ProxyServer.cpp" line="79"/>
         <source>Server listen at: %s:%d</source>
-        <translation>服務器監聽在：%s:%d</translation>
+        <translation type="vanished">服務器監聽在：%s:%d</translation>
     </message>
     <message>
-        <location filename="../../ProxyServer.cpp" line="106"/>
         <source>New connect from: %s:%d</source>
-        <translation>新連接：%s:%d</translation>
+        <translation type="vanished">新連接：%s:%d</translation>
     </message>
 </context>
 <context>
@@ -140,6 +137,24 @@
         <location filename="../../ProxySocks5.cpp" line="111"/>
         <source>Select authenticator: 0x%x</source>
         <translation>選擇驗證： 0x％x</translation>
+    </message>
+</context>
+<context>
+    <name>CServer</name>
+    <message>
+        <location filename="../../Server.cpp" line="71"/>
+        <source>Server listen at: %s:%d: %s</source>
+        <translation type="unfinished">服務器監聽在：%s:%d: %s</translation>
+    </message>
+    <message>
+        <location filename="../../Server.cpp" line="79"/>
+        <source>Server listen at: %s:%d</source>
+        <translation type="unfinished">服務器監聽在：%s:%d</translation>
+    </message>
+    <message>
+        <location filename="../../Server.cpp" line="106"/>
+        <source>New connect from: %s:%d</source>
+        <translation type="unfinished">新連接：%s:%d</translation>
     </message>
 </context>
 </TS>

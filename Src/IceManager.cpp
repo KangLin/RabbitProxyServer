@@ -6,7 +6,7 @@
 
 #include <QThread>
 
-CIceManager::CIceManager(CProxyServerSocks *pServer)
+CIceManager::CIceManager(CServerSocks *pServer)
     : QObject(pServer),
       m_pServer(pServer)
 {

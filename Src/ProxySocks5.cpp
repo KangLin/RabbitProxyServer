@@ -2,7 +2,7 @@
 
 #include "ProxySocks5.h"
 #include "ParameterSocks.h"
-#include "ProxyServerSocks.h"
+#include "ServerSocks.h"
 
 #ifdef HAVE_ICE
     #include "PeerConnectorIceClient.h"
@@ -13,7 +13,7 @@
 #include <QtEndian>
 #include <memory>
 
-CProxySocks5::CProxySocks5(QTcpSocket *pSocket, CProxyServer *server, QObject *parent)
+CProxySocks5::CProxySocks5(QTcpSocket *pSocket, CServer *server, QObject *parent)
     : CProxySocks4(pSocket, server, parent),
       m_Status(emStatus::Negotiate),
       m_currentVersion(VERSION_SOCK5)

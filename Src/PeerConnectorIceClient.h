@@ -9,13 +9,13 @@
 #include "DataChannelIce.h"
 #include <QSharedPointer>
 
-class CProxyServerSocks;
+class CServerSocks;
 class CPeerConnectorIceClient : public CPeerConnector
 {
     Q_OBJECT
 
 public:
-    explicit CPeerConnectorIceClient(CProxyServerSocks* pServer, QObject *parent = nullptr);
+    explicit CPeerConnectorIceClient(CServerSocks* pServer, QObject *parent = nullptr);
     virtual ~CPeerConnectorIceClient();
 
 public:
@@ -44,7 +44,7 @@ private Q_SLOTS:
     virtual void slotDataChannelReadyRead();
 
 protected:
-    CProxyServerSocks* m_pServer;
+    CServerSocks* m_pServer;
     QSharedPointer<CDataChannelIce> m_DataChannel;
     QString m_peerAddress, m_bindAddress;
     quint16 m_nPeerPort, m_nBindPort;

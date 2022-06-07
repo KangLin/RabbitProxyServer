@@ -9,16 +9,16 @@
 #include <QTcpSocket>
 #include <QSharedPointer>
 #include "PeerConnector.h"
-#include "ProxyServer.h"
+#include "Server.h"
 
 /*!
- * \brief The CProxy interface class
+ * \brief The proxy interface class
  */
 class CProxy : public QObject
 {
     Q_OBJECT
 public:
-    explicit CProxy(QTcpSocket* pSocket, CProxyServer* server, QObject* parent = nullptr);
+    explicit CProxy(QTcpSocket* pSocket, CServer* server, QObject* parent = nullptr);
     virtual ~CProxy();
 
 public Q_SLOTS:
@@ -49,7 +49,7 @@ protected:
 
     QByteArray m_cmdBuf;
 
-    CProxyServer* m_pServer;
+    CServer* m_pServer;
     QTcpSocket* m_pSocket;
     QSharedPointer<CPeerConnector> m_pPeer;
 };

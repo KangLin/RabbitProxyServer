@@ -3,7 +3,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 
-#include "ProxyServerSocks.h"
+#include "ServerSocks.h"
 #include "FrmSocket.h"
 #include "RabbitCommonDir.h"
 #include "RabbitCommonLog.h"
@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     CFrmUpdater updater;
     ui->actionUpdate->setIcon(updater.windowIcon());
 
-    auto server = QSharedPointer<CProxyServerSocks>(new CProxyServerSocks(this),
+    auto server = QSharedPointer<CServerSocks>(new CServerSocks(this),
                                                     &QObject::deleteLater);
     m_Server.push_back(server);
     

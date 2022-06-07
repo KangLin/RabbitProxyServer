@@ -13,12 +13,12 @@
 /*!
  * \brief The proxy server interface class
  */
-class RABBITPROXY_EXPORT CProxyServer : public QObject
+class RABBITPROXY_EXPORT CServer : public QObject
 {
     Q_OBJECT
 public:
-    explicit CProxyServer(QObject *parent = nullptr);
-    virtual ~CProxyServer();
+    explicit CServer(QObject *parent = nullptr);
+    virtual ~CServer();
 
     virtual int Start();
     virtual int Stop();

@@ -1,11 +1,11 @@
 #include "Service.h"
-#include "ProxyServerSocks.h"
+#include "ServerSocks.h"
 #include "RabbitCommonLog.h"
 
 CService::CService(int argc, char **argv)
     : QtService<QCoreApplication>(argc, argv, "RabbitProxyServer")
 {
-    auto server = QSharedPointer<CProxyServerSocks>(new CProxyServerSocks(),
+    auto server = QSharedPointer<CServerSocks>(new CServerSocks(),
                                                     &QObject::deleteLater);
     m_Server.push_back(server);
 }

@@ -6,11 +6,11 @@
 #include "RabbitCommonLog.h"
 #include <QJsonDocument>
 #include <QtEndian>
-#include "ProxyServerSocks.h"
+#include "ServerSocks.h"
 #include <QThread>
 #include "DataChannelIceChannel.h"
 
-CPeerConnectorIceClient::CPeerConnectorIceClient(CProxyServerSocks *pServer, QObject *parent)
+CPeerConnectorIceClient::CPeerConnectorIceClient(CServerSocks *pServer, QObject *parent)
     : CPeerConnector(parent),
       m_pServer(pServer),
       m_nPeerPort(0),

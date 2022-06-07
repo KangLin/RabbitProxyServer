@@ -6,7 +6,7 @@
 #pragma once
 
 #include "PeerConnectorIceClient.h"
-#include "ProxyServerSocks.h"
+#include "ServerSocks.h"
 #include "DataChannelIce.h"
 
 class CPeerConnectorIceServer : public CPeerConnectorIceClient
@@ -15,13 +15,13 @@ class CPeerConnectorIceServer : public CPeerConnectorIceClient
 
 public:
     // 多个 DataChannel 复用一个 PeerConnection
-    explicit CPeerConnectorIceServer(CProxyServerSocks* pServer,
+    explicit CPeerConnectorIceServer(CServerSocks* pServer,
                                      const QString& fromUser,
                                      const QString& toUser,
                                      const QString& channelId,
                                      std::shared_ptr<rtc::DataChannel> dc);
     // 一个 PeerConnection 对应一个 DataChannel
-    explicit CPeerConnectorIceServer(CProxyServerSocks* pServer,
+    explicit CPeerConnectorIceServer(CServerSocks* pServer,
                                      const QString& fromUser,
                                      const QString& toUser,
                                      const QString& channelId,

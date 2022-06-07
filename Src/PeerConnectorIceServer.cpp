@@ -8,7 +8,7 @@
 #include <QtEndian>
 #include <QThread>
 
-CPeerConnectorIceServer::CPeerConnectorIceServer(CProxyServerSocks* pServer,
+CPeerConnectorIceServer::CPeerConnectorIceServer(CServerSocks* pServer,
         const QString& fromUser,
         const QString& toUser,
         const QString& channelId, std::shared_ptr<rtc::DataChannel> dc)
@@ -18,7 +18,7 @@ CPeerConnectorIceServer::CPeerConnectorIceServer(CProxyServerSocks* pServer,
     m_DataChannel->SetDataChannel(dc);
 }
 
-CPeerConnectorIceServer::CPeerConnectorIceServer(CProxyServerSocks *pServer,
+CPeerConnectorIceServer::CPeerConnectorIceServer(CServerSocks *pServer,
                                                  const QString& fromUser,
                                                  const QString &toUser,
                                                  const QString &channelId,
