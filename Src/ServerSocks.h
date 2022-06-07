@@ -25,16 +25,18 @@ class RABBITPROXY_EXPORT CServerSocks : public CServer
     
 public:
     CServerSocks(QObject *parent = nullptr);
-    virtual ~CServerSocks();
+    virtual ~CServerSocks() override;
 
 #ifdef HAVE_ICE
+
     QSharedPointer<CIceSignal> GetSignal();
 #ifndef WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL
     QSharedPointer<CIceManager> GetIceManager();
 #endif
+
 public Q_SLOTS:
-    virtual int Start();
-    virtual int Stop();
+    virtual int Start() override;
+    virtual int Stop() override;
 
 private:
     void CloseConnectServer(CPeerConnectorIceServer *pServer);
@@ -46,6 +48,7 @@ private Q_SLOTS:
                            const QString& sdp);
     void slotRemotePeerDisconnectServer();
     void slotError(int nErr, const QString& szErr = QString());
+
 private:
     QSharedPointer<CIceSignal> m_Signal;
 #ifndef WITH_ONE_PEERCONNECTION_ONE_DATACHANNEL
@@ -53,13 +56,14 @@ private:
 #endif
     QMutex m_ConnectServerMutex;
     QMap<QString, QMap<QString, QSharedPointer<CPeerConnectorIceServer> > > m_ConnectServer;
-#endif
+    
+#endif //HAVE_ICE
 
 protected Q_SLOTS:
     virtual void slotRead();
 
 protected:
-    virtual int onAccecpt(QTcpSocket* pSocket);
+    virtual int onAccecpt(QTcpSocket* pSocket) override;
 };
 
 #endif // CPROXYSERVERSOCKS_H
