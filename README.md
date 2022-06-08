@@ -8,6 +8,7 @@ Author: Kang Lin <kl222@126.com>
     - Mirror:
       + sourceforge: https://sourceforge.net/projects/rabbitproxyserver/
       + gitlab: https://gitlab.com/kl222/RabbitProxyServer
+      + launchpad: https://launchpad.net/rabbitproxyserver
   + [Mailing list](https://sourceforge.net/p/rabbitproxyserver/mailman/): <rabbitproxyserver-discuss@lists.sourceforge.net>
 
 - Language:
@@ -28,8 +29,12 @@ So I wrote [Rabbit Remote Control](https://github.com/KangLin/RabbitRemoteContro
 In the process of writing, I encountered a problem of mutual access between two intranets.
 For details, please see: https://github.com/KangLin/RabbitRemoteControl/issues/7.
 
-Searching for related proxy software on the Internet, there are only proxy servers with public IPs, and no proxy servers without public IPs. So I wrote this software,
-In order to solve the problem of mutual access between two internal networks without public IP. And this software implements [multiple protocols](#Supported-protocols) proxy service function.
+This software solves the problem of mutual access between two isolated intranets.
+And this software implements [multiple protocols](#Supported-protocols) proxy service function.
+
+**Note:** This software has not been optimized for security.
+Users need to assess for themselves whether it is suitable for their operating environment.
+Friends who are capable and interested are welcome to participate in the development.
 
 ### Donation
 If this software is useful to you, or you like it, please donate and support the author. Thank you!
@@ -111,3 +116,7 @@ Semantic Versioning: https://semver.org/lang/zh-CN/
 ##### libraries
 
 - [Optional] libdatachannel: https://github.com/paullouisageneau/libdatachannel
+
+###### Class diagram
+
+![Class diagram](Documents/Image/Class.svg)

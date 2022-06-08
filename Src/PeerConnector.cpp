@@ -12,7 +12,7 @@ CPeerConnector::~CPeerConnector()
     qDebug() << "CPeerConnector::~CPeerConnector()";
 }
 
-int CPeerConnector::InitSignals()
+int CPeerConnector::InitConnect()
 {
     bool check = connect(&m_Socket, SIGNAL(connected()),
             this, SIGNAL(sigConnected()));
@@ -31,14 +31,14 @@ int CPeerConnector::InitSignals()
 
 int CPeerConnector::Connect(const QString &address, quint16 nPort)
 {
-    InitSignals();
+    InitConnect();
     m_Socket.connectToHost(address, nPort);
     return 0;
 }
 
 int CPeerConnector::Bind(const QHostAddress &address, quint16 nPort)
 {
-    InitSignals();
+    InitConnect();
     bool bBind = false;
     bBind = m_Socket.bind(address, nPort);
     if(bBind)

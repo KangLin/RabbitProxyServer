@@ -28,7 +28,7 @@ public:
     virtual int open(const rtc::Configuration &config,
                      const QString& user,
                      const QString& peer, const QString& id, bool bData);
-    virtual void close();
+    virtual void close() override;
 
     QString GetUser();
     QString GetPeerUser();
@@ -76,9 +76,9 @@ protected:
 
     // QIODevice interface
 protected:
-    bool isSequential() const;
-    qint64 writeData(const char *data, qint64 len);
-    qint64 readData(char *data, qint64 maxlen);
+    bool isSequential() const override;
+    qint64 writeData(const char *data, qint64 len) override;
+    qint64 readData(char *data, qint64 maxlen) override;
 public:
     virtual qint64 bytesAvailable() const override;
 };

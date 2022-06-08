@@ -17,17 +17,18 @@
 class CProxy : public QObject
 {
     Q_OBJECT
+
 public:
     explicit CProxy(QTcpSocket* pSocket, CServer* server, QObject* parent = nullptr);
     virtual ~CProxy();
 
 public Q_SLOTS:
     virtual void slotRead();
-    
+
 protected Q_SLOTS:
     virtual void slotClose();
     virtual void slotError(QAbstractSocket::SocketError socketError);
-    
+
     virtual void slotPeerConnected() = 0;
     virtual void slotPeerDisconnectd() = 0;
     virtual void slotPeerError(int err, const QString &szErr) = 0;

@@ -7,6 +7,7 @@
     - 镜像：
       + sourceforge: https://sourceforge.net/projects/rabbitproxyserver/
       + gitlab: https://gitlab.com/kl222/RabbitProxyServer
+      + launchpad: https://launchpad.net/rabbitproxyserver
   + [邮件列表](https://sourceforge.net/p/rabbitproxyserver/mailman/)：<rabbitproxyserver-discuss@lists.sourceforge.net>
     
 - 语言
@@ -25,8 +26,10 @@
 所以着手写了[玉兔远程控制](https://github.com/KangLin/RabbitProxyServer)。在写的过
 程遇到了两个内网互相访问的问题，详见：https://github.com/KangLin/RabbitProxyServer/issues/7 。
 
-在网上查找相关的代理软件，只有有公网IP的代理服务器，并没有无公网IP的代理服务器。所以写了本软件，
-以解决两个无公网IP的内网互相访问的问题。并且本软件实现[多种协议](#支持的协议)代理服务功能。
+本软件解决两个相互隔离的内网互相访问的问题。并且本软件实现[多种协议](#支持的协议)代理服务功能。
+
+**注意:**本软件暂时没有做安全方面的优化。使用者需要自己评估是否适合其运营环境。
+欢迎有能力、有兴趣的朋友参与开发。
 
 ### 捐赠
 本软件如果对你有用，或者你喜欢它，请你捐赠，支持作者。谢谢！
@@ -114,3 +117,7 @@ https://gitee.com/kl222/RabbitCommon/raw/master/Src/Resource/image/Contribute.pn
 ##### 库
 
 - [可选] libdatachannel: https://github.com/paullouisageneau/libdatachannel
+
+###### 类关系图
+
+![类关系图](Documents/Image/Class.svg)

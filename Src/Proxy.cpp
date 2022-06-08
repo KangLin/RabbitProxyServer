@@ -9,12 +9,10 @@ CProxy::CProxy(QTcpSocket* pSocket, CServer* server, QObject *parent)
     m_pSocket(pSocket)
 {
     bool check = false;
-    if(m_pSocket)
-    {
-        check = connect(m_pSocket, SIGNAL(readyRead()),
-                        this, SLOT(slotRead()));
+    if(m_pSocket) {
+        check = connect(m_pSocket, SIGNAL(readyRead()), this, SLOT(slotRead()));
         Q_ASSERT(check);
-        check = connect(m_pSocket, SIGNAL(disconnected()),
+        check = connect(m_pSocket, SIGNAL(disconnected()), 
                         this, SLOT(slotClose()));
         Q_ASSERT(check);
 //        check = connect(m_pSocket, SIGNAL(destroyed()),
@@ -23,8 +21,7 @@ CProxy::CProxy(QTcpSocket* pSocket, CServer* server, QObject *parent)
         check = connect(m_pSocket, SIGNAL(error(QAbstractSocket::SocketError)),
                 this, SLOT(slotError(QAbstractSocket::SocketError)));
         Q_ASSERT(check);
-        check = connect(server, SIGNAL(sigStop()),
-                        this, SLOT(slotClose()));
+        check = connect(server, SIGNAL(sigStop()), this, SLOT(slotClose()));
         Q_ASSERT(check);
     }
 }

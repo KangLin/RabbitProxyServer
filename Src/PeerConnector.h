@@ -50,7 +50,7 @@ private Q_SLOTS:
     virtual void slotError(QAbstractSocket::SocketError error);
     
 private:
-    int InitSignals();
+    int InitConnect();
     
 private:
     QTcpSocket m_Socket;

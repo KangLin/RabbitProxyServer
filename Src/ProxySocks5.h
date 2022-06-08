@@ -119,9 +119,8 @@ private:
         char addressType; // enum emAddressType
     };
 #pragma pack(pop)
-    
-    enum emStatus m_Status;
 
+    enum emStatus m_Status;
     char m_currentVersion;
     char m_currentAuthenticator;
     strClientRequst m_Client;
