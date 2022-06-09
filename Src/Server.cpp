@@ -112,9 +112,11 @@ void CServer::slotAccept()
     bool check = connect(s, SIGNAL(disconnected()),
                          this, SLOT(slotDisconnected()));
     Q_ASSERT(check);
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
     check = connect(s, SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
                     this, SLOT(slotError(QAbstractSocket::SocketError)));
     Q_ASSERT(check);
+#endif
     m_nConnectors++;
 }
 
