@@ -41,6 +41,8 @@ private slots:
     void on_actionOpen_log_file_triggered();
     void on_actionOpen_log_folder_triggered();
     
+    void on_actionOpen_log_configure_file_triggered();
+    
 private:
     Ui::MainWindow *ui;
     std::list<QSharedPointer<CServer> > m_Server;

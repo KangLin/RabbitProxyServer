@@ -252,14 +252,14 @@ int CDataChannelIce::CreateDataChannel(const rtc::Configuration &config, bool bD
 
         SetDataChannel(dc);
 
-        // 因为dc已打开，所以必须在此打开设备 
-        if(QIODevice::open(QIODevice::ReadWrite))
-            emit sigConnected();
-        else
-            LOG_MODEL_ERROR("DataChannel", "Open Device fail:user:%s;peer:%s;channelId:%d",
-                            GetUser().toStdString().c_str(),
-                            GetPeerUser().toStdString().c_str(),
-                            GetChannelId().toStdString().c_str());
+//        // 因为dc已打开，所以必须在此打开设备 
+//        if(QIODevice::open(QIODevice::ReadWrite))
+//            emit sigConnected();
+//        else
+//            LOG_MODEL_ERROR("DataChannel", "Open Device fail:user:%s;peer:%s;channelId:%d",
+//                            GetUser().toStdString().c_str(),
+//                            GetPeerUser().toStdString().c_str(),
+//                            GetChannelId().toStdString().c_str());
 
     });
 

@@ -176,5 +176,10 @@ void MainWindow::on_actionOpen_log_file_triggered()
 
 void MainWindow::on_actionOpen_log_folder_triggered()
 {
-    RabbitCommon::OpenLogDirectory();
+    RabbitCommon::OpenLogFolder();
+}
+
+void MainWindow::on_actionOpen_log_configure_file_triggered()
+{
+    RabbitCommon::OpenLogConfigureFile();
 }
