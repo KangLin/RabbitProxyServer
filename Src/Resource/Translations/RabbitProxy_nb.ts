@@ -4,12 +4,12 @@
 <context>
     <name>CDataChannelIce</name>
     <message>
-        <location filename="../../DataChannelIce.cpp" line="361"/>
+        <location filename="../../DataChannelIce.cpp" line="404"/>
         <source>Signal disconnected</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../DataChannelIce.cpp" line="414"/>
+        <location filename="../../DataChannelIce.cpp" line="457"/>
         <source>Signal error: %1</source>
         <translation type="unfinished"></translation>
     </message>

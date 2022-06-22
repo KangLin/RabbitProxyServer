@@ -10,9 +10,9 @@
     </message>
     <message>
         <location filename="../../FrmSocket.ui" line="22"/>
-        <location filename="../../FrmSocket.ui" line="188"/>
-        <location filename="../../FrmSocket.ui" line="247"/>
-        <location filename="../../FrmSocket.ui" line="302"/>
+        <location filename="../../FrmSocket.ui" line="241"/>
+        <location filename="../../FrmSocket.ui" line="300"/>
+        <location filename="../../FrmSocket.ui" line="335"/>
         <source>Port:</source>
         <translation>端口</translation>
     </message>
@@ -43,8 +43,8 @@
     </message>
     <message>
         <location filename="../../FrmSocket.ui" line="93"/>
-        <location filename="../../FrmSocket.ui" line="216"/>
-        <location filename="../../FrmSocket.ui" line="330"/>
+        <location filename="../../FrmSocket.ui" line="269"/>
+        <location filename="../../FrmSocket.ui" line="363"/>
         <source>Password:</source>
         <translation>密碼：</translation>
     </message>
@@ -70,8 +70,8 @@
     </message>
     <message>
         <location filename="../../FrmSocket.ui" line="135"/>
-        <location filename="../../FrmSocket.ui" line="206"/>
-        <location filename="../../FrmSocket.ui" line="320"/>
+        <location filename="../../FrmSocket.ui" line="259"/>
+        <location filename="../../FrmSocket.ui" line="353"/>
         <source>User:</source>
         <translation>用戶：</translation>
     </message>
@@ -81,83 +81,88 @@
         <translation></translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="170"/>
+        <location filename="../../FrmSocket.ui" line="179"/>
+        <source>Enable ICE debug</source>
+        <translation>允許 ICE 調試</translation>
+    </message>
+    <message>
+        <location filename="../../FrmSocket.ui" line="223"/>
         <source>Signal server</source>
         <translation>信號服務器</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="178"/>
+        <location filename="../../FrmSocket.ui" line="231"/>
         <source>Signal server:</source>
         <translation>信號服務器：</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="231"/>
+        <location filename="../../FrmSocket.ui" line="284"/>
         <source>Stun server</source>
         <translation>Stun 服務器</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="237"/>
+        <location filename="../../FrmSocket.ui" line="290"/>
         <source>Ip:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="264"/>
+        <location filename="../../FrmSocket.ui" line="172"/>
         <source>Enable ice, need restart if changed</source>
         <translation>允許 ICE。如果改變，需要重啟服務器。</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="284"/>
+        <location filename="../../FrmSocket.ui" line="317"/>
         <source>Turn server</source>
         <translation>Turn 服務器</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="292"/>
+        <location filename="../../FrmSocket.ui" line="325"/>
         <source>IP:</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="347"/>
+        <location filename="../../FrmSocket.ui" line="190"/>
         <source>Peer user:</source>
         <translation>對端用戶：</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="357"/>
+        <location filename="../../FrmSocket.ui" line="200"/>
         <source>Is server</source>
         <translation>服務端</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="364"/>
+        <location filename="../../FrmSocket.ui" line="207"/>
         <source>Is client</source>
         <translation>客戶端</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.ui" line="373"/>
+        <location filename="../../FrmSocket.ui" line="216"/>
         <source>One peer connection to one data channel</source>
         <translation>一個對等連對應一個數據通道</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.cpp" line="50"/>
-        <location filename="../../FrmSocket.cpp" line="54"/>
+        <location filename="../../FrmSocket.cpp" line="51"/>
+        <location filename="../../FrmSocket.cpp" line="55"/>
         <source>Format: user@domain/resource</source>
         <translation>格式：user@domain/resource</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.cpp" line="121"/>
-        <location filename="../../FrmSocket.cpp" line="128"/>
-        <location filename="../../FrmSocket.cpp" line="151"/>
-        <location filename="../../FrmSocket.cpp" line="164"/>
+        <location filename="../../FrmSocket.cpp" line="123"/>
+        <location filename="../../FrmSocket.cpp" line="130"/>
+        <location filename="../../FrmSocket.cpp" line="153"/>
+        <location filename="../../FrmSocket.cpp" line="166"/>
         <source>Error</source>
         <translation>錯誤</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.cpp" line="121"/>
-        <location filename="../../FrmSocket.cpp" line="151"/>
+        <location filename="../../FrmSocket.cpp" line="123"/>
+        <location filename="../../FrmSocket.cpp" line="153"/>
         <source>The peer user format error. please user@domain/resource</source>
         <translation>對端用戶格式錯誤。請用：user@domain/resource</translation>
     </message>
     <message>
-        <location filename="../../FrmSocket.cpp" line="128"/>
-        <location filename="../../FrmSocket.cpp" line="164"/>
+        <location filename="../../FrmSocket.cpp" line="130"/>
+        <location filename="../../FrmSocket.cpp" line="166"/>
         <source>The user format error. please user@domain/resource</source>
         <translation>用戶格式錯誤。請用：user@domain/resource</translation>
     </message>
@@ -185,95 +190,101 @@
         <translation>打開日誌</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="71"/>
+        <location filename="../../mainwindow.ui" line="72"/>
         <source>Help</source>
         <translation>幫助</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="85"/>
+        <location filename="../../mainwindow.ui" line="86"/>
         <source>toolBar</source>
         <translation>工具欄</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="109"/>
+        <location filename="../../mainwindow.ui" line="110"/>
         <source>Start</source>
         <translation>開始</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="121"/>
+        <location filename="../../mainwindow.ui" line="122"/>
         <source>Stop</source>
         <translation>停止</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="130"/>
-        <location filename="../../mainwindow.ui" line="133"/>
-        <location filename="../../mainwindow.ui" line="136"/>
+        <location filename="../../mainwindow.ui" line="131"/>
+        <location filename="../../mainwindow.ui" line="134"/>
+        <location filename="../../mainwindow.ui" line="137"/>
         <source>Save parameters</source>
         <translation>保存參數</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="145"/>
-        <location filename="../../mainwindow.ui" line="148"/>
-        <location filename="../../mainwindow.ui" line="151"/>
+        <location filename="../../mainwindow.ui" line="146"/>
+        <location filename="../../mainwindow.ui" line="149"/>
+        <location filename="../../mainwindow.ui" line="152"/>
         <source>Load parameters</source>
         <translation>加載參數</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="163"/>
+        <location filename="../../mainwindow.ui" line="164"/>
         <source>Restart</source>
         <translation>重啟</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="172"/>
+        <location filename="../../mainwindow.ui" line="173"/>
         <source>Exit</source>
         <translation>退出</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="181"/>
-        <location filename="../../mainwindow.ui" line="184"/>
-        <location filename="../../mainwindow.ui" line="187"/>
+        <location filename="../../mainwindow.ui" line="182"/>
+        <location filename="../../mainwindow.ui" line="185"/>
+        <location filename="../../mainwindow.ui" line="188"/>
         <source>Apply parameters</source>
         <translation>應用參數</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="196"/>
-        <location filename="../../mainwindow.ui" line="199"/>
-        <location filename="../../mainwindow.ui" line="202"/>
+        <location filename="../../mainwindow.ui" line="197"/>
+        <location filename="../../mainwindow.ui" line="200"/>
+        <location filename="../../mainwindow.ui" line="203"/>
         <source>About</source>
         <translation>關於</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="207"/>
-        <location filename="../../mainwindow.ui" line="210"/>
-        <location filename="../../mainwindow.ui" line="213"/>
+        <location filename="../../mainwindow.ui" line="208"/>
+        <location filename="../../mainwindow.ui" line="211"/>
+        <location filename="../../mainwindow.ui" line="214"/>
         <source>Update</source>
         <translation>更新</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="218"/>
-        <location filename="../../mainwindow.ui" line="221"/>
-        <location filename="../../mainwindow.ui" line="224"/>
-        <location filename="../../mainwindow.ui" line="227"/>
-        <location filename="../../mainwindow.ui" line="230"/>
+        <location filename="../../mainwindow.ui" line="219"/>
+        <location filename="../../mainwindow.ui" line="222"/>
+        <location filename="../../mainwindow.ui" line="225"/>
+        <location filename="../../mainwindow.ui" line="228"/>
+        <location filename="../../mainwindow.ui" line="231"/>
         <source>Default style</source>
         <translation>默認樣式</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="239"/>
-        <location filename="../../mainwindow.ui" line="242"/>
-        <location filename="../../mainwindow.ui" line="245"/>
+        <location filename="../../mainwindow.ui" line="240"/>
+        <location filename="../../mainwindow.ui" line="243"/>
+        <location filename="../../mainwindow.ui" line="246"/>
         <source>Load Style</source>
         <translation>加載樣式</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="254"/>
+        <location filename="../../mainwindow.ui" line="255"/>
         <source>Open log file</source>
         <translation>打開日誌文件</translation>
     </message>
     <message>
-        <location filename="../../mainwindow.ui" line="263"/>
+        <location filename="../../mainwindow.ui" line="264"/>
         <source>Open log folder</source>
         <translation>打開日誌文件夾</translation>
+    </message>
+    <message>
+        <location filename="../../mainwindow.ui" line="269"/>
+        <location filename="../../mainwindow.ui" line="272"/>
+        <source>Open log configure file</source>
+        <translation>打開日誌配置文件</translation>
     </message>
     <message>
         <location filename="../../mainwindow.cpp" line="44"/>
