@@ -59,6 +59,13 @@ public:
     void SetTurnPassword(const QString& password);
         
     QString GenerateChannelId();
+    
+    bool GetIceDebug() const;
+    void SetIceDebug(bool newIceDebug);
+Q_SIGNALS:
+    void sigIceDebug(bool enable);
+private:
+    bool m_bIceDebug;
 
 private:
     // ICE

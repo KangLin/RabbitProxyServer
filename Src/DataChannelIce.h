@@ -83,4 +83,21 @@ public:
     virtual qint64 bytesAvailable() const override;
 };
 
+// NOTE: Don't use it!!!
+class CLibDataChannelLogCallback: public QObject
+{
+    Q_OBJECT
+public:
+    explicit CLibDataChannelLogCallback(QObject *parent = nullptr);
+    
+public Q_SLOTS:
+    void slotEnable(bool enable);
+
+private:
+    static bool m_bEnable;
+    static void logCallback(rtc::LogLevel level, std::string message);
+};
+
+extern CLibDataChannelLogCallback g_LogCallback;
+
 #endif // CDATACHANNELICE_H

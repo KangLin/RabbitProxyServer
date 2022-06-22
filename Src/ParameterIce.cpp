@@ -6,6 +6,7 @@
 #include "RabbitCommonLog.h"
 
 CParameterIce::CParameterIce(QObject *parent) : CParameter(parent),
+    m_bIceDebug(false),
     m_eIceServerClient(emIceServerClient::ServerClient),
     #ifdef HAVE_QXMPP
     m_nSignalPort(5222),
@@ -26,6 +27,7 @@ int CParameterIce::Save(QSettings &set)
 {
     CParameter::Save(set);
 
+    set.setValue(Name() + "Ice/Debug", m_bIceDebug);
     set.setValue(Name() + "Ice/IceServerClient", (int)m_eIceServerClient);
     set.setValue(Name() + "Ice/Signal/Peer/User", m_szPeerUser);
     set.setValue(Name() + "Ice/Signal/Server", m_szSignalServer);
@@ -46,6 +48,7 @@ int CParameterIce::Load(QSettings &set)
 {
     CParameter::Load(set);
 
+    m_bIceDebug = set.value(Name() + "Ice/Debug", m_bIceDebug).toBool();
     m_eIceServerClient = (emIceServerClient)set.value(Name() + "Ice/IceServerClient", (int)m_eIceServerClient).toInt();
     m_szPeerUser = set.value(Name() + "Ice/Signal/Peer/User", m_szPeerUser).toString();
     m_szSignalServer = set.value(Name() + "Ice/Signal/Server", m_szSignalServer).toString();
@@ -191,5 +194,17 @@ QString CParameterIce::GenerateChannelId()
     //LOG_MODEL_DEBUG("CParameterIce", "channel id:%s", r.c_str());
     m.unlock();
     return QString("c_") + r.c_str();
+}
+
+bool CParameterIce::GetIceDebug() const
+{
+    return m_bIceDebug;
+}
+
+void CParameterIce::SetIceDebug(bool newIceDebug)
+{
+    if(m_bIceDebug == newIceDebug) return;
+    m_bIceDebug = newIceDebug;
+    emit sigIceDebug(m_bIceDebug);
 }
 

@@ -47,6 +47,12 @@ int CServerSocks::Start()
         CParameterSocks* p = dynamic_cast<CParameterSocks*>(Getparameter());
         if(p->GetIce())
         {
+            g_LogCallback.slotEnable(p->GetIceDebug());
+            bool check = false;
+            check = connect(p, SIGNAL(sigIceDebug(bool)),
+                            &g_LogCallback, SLOT(slotEnable(bool)));
+            Q_ASSERT(check);
+            
             // Signal
 #ifdef HAVE_QXMPP
             m_Signal = QSharedPointer<CIceSignal>(
@@ -237,7 +243,7 @@ void CServerSocks::CloseConnectServer(CPeerConnectorIceServer* pServer)
         LOG_MODEL_ERROR("CServerSocks", e.what());
     }
 }
-#endif
+#endif // HAVE_ICE
 
 int CServerSocks::onAccecpt(QTcpSocket* pSocket)
 {

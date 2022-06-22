@@ -163,7 +163,60 @@
       <attribute name="title">
        <string>Ice</string>
       </attribute>
-      <layout class="QGridLayout" name="gridLayout_6">
+      <layout class="QGridLayout" name="gridLayout_8">
+       <item row="0" column="0">
+        <layout class="QGridLayout" name="gridLayout_6">
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="cbIce">
+           <property name="text">
+            <string>Enable ice, need restart if changed</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="cbEnableIceDebug">
+           <property name="text">
+            <string>Enable ICE debug</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_8">
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Peer user:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="lePeerUser"/>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="cbIceServer">
+           <property name="text">
+            <string>Is server</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="cbIceClient">
+           <property name="text">
+            <string>Is client</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="cbOnePeerConnectionToOneDataChannel">
+         <property name="text">
+          <string>One peer connection to one data channel</string>
+         </property>
+        </widget>
+       </item>
        <item row="3" column="0">
         <widget class="QGroupBox" name="groupBox_2">
          <property name="title">
@@ -258,26 +311,6 @@
          </layout>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="cbIce">
-         <property name="text">
-          <string>Enable ice, need restart if changed</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
        <item row="5" column="0">
         <widget class="QGroupBox" name="groupBox_4">
          <property name="title">
@@ -339,40 +372,18 @@
          </layout>
         </widget>
        </item>
-       <item row="1" column="0">
-        <layout class="QHBoxLayout" name="horizontalLayout_8">
-         <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Peer user:</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLineEdit" name="lePeerUser"/>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="cbIceServer">
-           <property name="text">
-            <string>Is server</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="cbIceClient">
-           <property name="text">
-            <string>Is client</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="cbOnePeerConnectionToOneDataChannel">
-         <property name="text">
-          <string>One peer connection to one data channel</string>
+       <item row="6" column="0">
+        <spacer name="verticalSpacer_2">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-        </widget>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>

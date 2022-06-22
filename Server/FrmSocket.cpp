@@ -42,6 +42,7 @@ CFrmSocket::CFrmSocket(CParameter *pPara, QWidget *parent) :
 
     ui->cbOnePeerConnectionToOneDataChannel->setVisible(false);
 
+    ui->cbEnableIceDebug->setChecked(m_pPara->GetIceDebug());
     ui->cbIceServer->setChecked((int)m_pPara->GetIceServerClient()
                                 & (int)CParameterSocks::emIceServerClient::Server);
     ui->cbIceClient->setChecked((int)m_pPara->GetIceServerClient()
@@ -99,6 +100,7 @@ void CFrmSocket::slotAccept()
     m_pPara->SetAuthentPassword(ui->leAuthentPasswrod->text());
 
     quint16 serverClient = 0;
+    m_pPara->SetIceDebug(ui->cbEnableIceDebug->isChecked());
     if(ui->cbIceClient->isChecked()) serverClient |= (quint16)CParameterSocks::emIceServerClient::Client;
     if(ui->cbIceServer->isChecked()) serverClient |= (qint16)CParameterSocks::emIceServerClient::Server;
     m_pPara->SetIceServerClient((CParameterSocks::emIceServerClient)serverClient);
