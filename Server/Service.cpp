@@ -1,6 +1,7 @@
 #include "Service.h"
 #include "ServerSocks.h"
-#include "RabbitCommonLog.h"
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(logService, "Service")
 
 CService::CService(int argc, char **argv)
     : QtService<QCoreApplication>(argc, argv, "RabbitProxyServer")
@@ -12,7 +13,7 @@ CService::CService(int argc, char **argv)
 
 void CService::start()
 {
-    LOG_MODEL_INFO("Service", "Start server");
+    qInfo(logService) << "Start server";
     foreach(auto s, m_Server)
     {
         s->Start();
@@ -21,7 +22,7 @@ void CService::start()
 
 void CService::stop()
 {
-    LOG_MODEL_INFO("Service", "Stop server");
+    qInfo(logService) << "Stop server";
     foreach(auto s, m_Server)
     {
         s->Stop();

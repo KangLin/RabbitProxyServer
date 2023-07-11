@@ -6,15 +6,17 @@
 #include "ServerSocks.h"
 #include "FrmSocket.h"
 #include "RabbitCommonDir.h"
-#include "RabbitCommonLog.h"
 #include "FrmUpdater/FrmUpdater.h"
-#include "RabbitCommonStyle.h"
 #include "DlgAbout/DlgAbout.h"
+#include "RabbitCommonTools.h"
 #ifdef BUILD_QUIWidget
     #include "QUIWidget/QUIWidget.h"
 #endif
 
 #include <QFile>
+
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(logMain, "Main")
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,6 +27,10 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle(qApp->applicationDisplayName());
 
     ui->setupUi(this);
+    
+    RabbitCommon::CTools::InsertStyleMenu(ui->menuOperate, ui->actionExit, this);
+    ui->menuOperate->insertMenu(ui->actionExit, RabbitCommon::CTools::GetLogMenu());
+    ui->menuOperate->insertSeparator(ui->actionExit);
 
     CFrmUpdater updater;
     ui->actionUpdate->setIcon(updater.windowIcon());
@@ -55,7 +61,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionStart_triggered()
 {
     on_actionStop_triggered();
-    LOG_MODEL_INFO("main", "Start server");
+    qInfo(logMain) << "Start server";
     foreach (auto s, m_Server) {
         if(s->Start())
         {
@@ -70,7 +76,7 @@ void MainWindow::on_actionStart_triggered()
 
 void MainWindow::on_actionStop_triggered()
 {
-    LOG_MODEL_INFO("main", "Stop server");
+    qInfo(logMain) << "Stop server";
     foreach (auto s, m_Server) {
         s->Stop();
     }
@@ -159,27 +165,3 @@ void MainWindow::on_actionUpdate_triggered()
 #endif
 }
 
-void MainWindow::on_actionDefault_triggered()
-{
-    RabbitCommon::CStyle::Instance()->slotSetDefaultStyle();
-}
-
-void MainWindow::on_actionLoadStyle_triggered()
-{
-    RabbitCommon::CStyle::Instance()->slotStyle();
-}
-
-void MainWindow::on_actionOpen_log_file_triggered()
-{
-    RabbitCommon::OpenLogFile();
-}
-
-void MainWindow::on_actionOpen_log_folder_triggered()
-{
-    RabbitCommon::OpenLogFolder();
-}
-
-void MainWindow::on_actionOpen_log_configure_file_triggered()
-{
-    RabbitCommon::OpenLogConfigureFile();
-}

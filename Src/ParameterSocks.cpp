@@ -2,7 +2,6 @@
 
 #include "ParameterSocks.h"
 #include <QDebug>
-#include "RabbitCommonLog.h"
 
 CParameterSocks::CParameterSocks(QObject *parent) : CParameterIce(parent),
     m_bIce(false),

@@ -6,9 +6,11 @@
 #ifdef HAVE_ICE
     #include "PeerConnectorIceClient.h"
 #endif
-#include "RabbitCommonLog.h"
 
 #include <QtEndian>
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(logSocks4, "Socks4")
 
 CProxySocks4::CProxySocks4(QTcpSocket *pSocket, CServer *server, QObject *parent)
     : CProxy(pSocket, server, parent),
@@ -19,7 +21,7 @@ CProxySocks4::CProxySocks4(QTcpSocket *pSocket, CServer *server, QObject *parent
 
 CProxySocks4::~CProxySocks4()
 {
-    qDebug() << "CProxySocks4::~CProxySocks4()";
+    qDebug(logSocks4) << "CProxySocks4::~CProxySocks4()";
 }
 
 void CProxySocks4::slotRead()
@@ -38,13 +40,12 @@ void CProxySocks4::slotRead()
             {
                 int nWrite = m_pPeer->Write(d.data(), d.length());
                 if(-1 == nWrite)
-                    LOG_MODEL_ERROR("Socks4",
-                                    "Forword client to peer fail[%d]: %s",
-                                    m_pPeer->Error(),
-                                    m_pPeer->ErrorString().toStdString().c_str());
+                    qCritical(logSocks4) << "Forword client to peer fail:"
+                                         << m_pPeer->Error()
+                                         << m_pPeer->ErrorString();
             }
             else
-                LOG_MODEL_DEBUG("Socks4", "From client readAll is empty");
+                qDebug(logSocks4) << "From client readAll is empty";
         }
         break;
     }
@@ -67,14 +68,14 @@ int CProxySocks4::reply(emErrorCode code)
 
 int CProxySocks4::processClientRequest()
 {
-    LOG_MODEL_DEBUG("Socks4", "processClientRequest()");
+    qDebug(logSocks4) << "processClientRequest()";
     //NOTE: Removed version
     //See   CProxyServerSocket::slotRead()
     m_cmdBuf += m_pSocket->readAll();
     if(CheckBufferLength(7))
     {
-        LOG_MODEL_DEBUG("Socks4", "Be continuing read from socket: %s:%d",
-                 m_pSocket->peerAddress().toString().toStdString().c_str());
+        qDebug(logSocks4) << "Be continuing read from socket:"
+                          << m_pSocket->peerAddress();
         return ERROR_CONTINUE_READ;
     }
 
@@ -83,7 +84,7 @@ int CProxySocks4::processClientRequest()
     m_nPort = qFromBigEndian<quint16>(pReq->dstPort);
     m_szUser = pReq->user;
 
-    LOG_MODEL_DEBUG("Socks4",
+    qDebug(logSocks4,
                     "Client request: command:%d; ip:%s; port:%d; user: %s",
                     pReq->cmd,
                     QHostAddress(add).toString().toStdString().c_str(),
@@ -96,12 +97,12 @@ int CProxySocks4::processClientRequest()
         int nLen = 8 + szUser.size() + 1;
         if(m_cmdBuf.size() <= nLen)
         {
-            LOG_MODEL_ERROR("Socks4", "The format is error");
+            qCritical(logSocks4) << "The format is error";
             return reply(emErrorCode::Rejected);
         }
         if(m_cmdBuf.at(m_cmdBuf.size() - 1) != 0)
         {
-            LOG_MODEL_ERROR("Socks4", "The domain format is error");
+            qCritical(logSocks4) << "The domain format is error";
             return reply(emErrorCode::Rejected);
         }
         char *pDomain = m_cmdBuf.data() + nLen;
@@ -134,7 +135,7 @@ int CProxySocks4::onExecClientRequest()
         nRet = processBind();
         break;
     default:
-        LOG_MODEL_ERROR("Socks4", "Don't support the command: 0x%x", pReq->cmd);
+        qCritical(logSocks4) << "Don't support the command:" << pReq->cmd;
     }
     return nRet;
 }
@@ -142,8 +143,7 @@ int CProxySocks4::onExecClientRequest()
 void CProxySocks4::slotLookup(QHostInfo info)
 {
     if (info.error() != QHostInfo::NoError) {
-        LOG_MODEL_ERROR("Socks4", "Lookup failed: %s",
-                        info.errorString().toStdString().c_str());
+        qCritical(logSocks4) << "Lookup failed:" << info.errorString();
         reply(emErrorCode::Rejected);
         return;
     }
@@ -151,7 +151,7 @@ void CProxySocks4::slotLookup(QHostInfo info)
     const auto addresses = info.addresses();
     for (const QHostAddress &address : addresses)
     {   
-        qDebug() << "Found address:" << address.toString();
+        qDebug(logSocks4) << "Found address:" << address.toString();
         m_HostAddress = address.toString();
         break;
     }
@@ -163,7 +163,7 @@ int CProxySocks4::processConnect()
 {
     if(m_HostAddress.isEmpty())
     {
-        LOG_MODEL_ERROR("Socks4", "The host is empty");
+        qCritical(logSocks4) << "The host is empty";
         return reply(emErrorCode::Rejected);
     }
 
@@ -177,9 +177,7 @@ int CProxySocks4::processConnect()
     SetPeerConnect();
     
     m_pPeer->Connect(m_HostAddress, m_nPort);
-    LOG_MODEL_DEBUG("Socks4", "Connect to: %s:%d",
-                    m_HostAddress.toStdString().c_str(),
-                    m_nPort);
+    qDebug(logSocks4) << "Connect to:" << m_HostAddress << ":" << m_nPort;
     
     return 0;
 }
@@ -223,13 +221,11 @@ int CProxySocks4::processBind()
 
 void CProxySocks4::slotPeerConnected()
 {
-    LOG_MODEL_DEBUG("Socks4", "slotPeerConnected()");
+    qDebug(logSocks4) << "slotPeerConnected()";
     if(emStatus::ClientRequest != m_Status)
         return;
-
-    LOG_MODEL_INFO("Socks4", "Peer connected to: %s:%d",
-                   m_HostAddress.toStdString().c_str(),
-                   m_nPort);
+    
+    qInfo(logSocks4) << "Peer connected to:" << m_HostAddress << ":" << m_nPort;
     reply(emErrorCode::Ok);
     m_Status = emStatus::Forward;
     RemoveCommandBuffer();
@@ -238,9 +234,7 @@ void CProxySocks4::slotPeerConnected()
 
 void CProxySocks4::slotPeerDisconnectd()
 {
-    LOG_MODEL_INFO("Socks4", "Peer disconnected to: %s:%d",
-                   m_HostAddress.toStdString().c_str(),
-                   m_nPort);
+    qInfo(logSocks4) << "Peer disconnected to:" << m_HostAddress << ":" << m_nPort;
     if(emStatus::ClientRequest == m_Status)
         reply(emErrorCode::DoNotConnect);
 
@@ -249,7 +243,7 @@ void CProxySocks4::slotPeerDisconnectd()
 
 void CProxySocks4::slotPeerError(int err, const QString &szErr)
 {
-    LOG_MODEL_ERROR("Socks4", "Peer: %s:%d. Error:%d %s",
+    qCritical(logSocks4, "Peer: %s:%d. Error:%d %s",
                     m_HostAddress.toStdString().c_str(),
                     m_nPort,
                     err,
@@ -293,7 +287,7 @@ void CProxySocks4::slotPeerRead()
 
     int nRet = m_pSocket->write(d.data(), d.length());
     if(-1 == nRet)
-        LOG_MODEL_ERROR("Socks4", "Forword peer to client fail[%d]: %s",
+        qCritical(logSocks4, "Forword peer to client fail[%d]: %s",
                         m_pSocket->error(),
                         m_pSocket->errorString().toStdString().c_str());
 }
@@ -314,6 +308,6 @@ int CProxySocks4::CreatePeer()
                                                  &QObject::deleteLater);
     if(m_pPeer)
         return 0;
-    LOG_MODEL_ERROR("Socks4", "Make peer connect fail");
+    qCritical(logSocks4, "Make peer connect fail");
     return -1;
 }

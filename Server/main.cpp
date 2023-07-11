@@ -9,7 +9,7 @@
     #include <QtAndroid>
 #endif
 #include "mainwindow.h"
-#include "RabbitCommonLog.h"
+
 #include "RabbitCommonTools.h"
 #include "RabbitCommonDir.h"
 

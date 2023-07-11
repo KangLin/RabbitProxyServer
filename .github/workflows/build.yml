@@ -66,8 +66,8 @@ jobs:
 
       - name: Make note file
         run: |
-          echo "[:cn: 修改日志](https://github.com/KangLin/RabbitRemoteControl/blob/${{env.RabbitRemoteControl_VERSION}}/ChangeLog_zh_CN.md)" > Release.md
-          echo "[:en: Change log](https://github.com/KangLin/RabbitRemoteControl/blob/${{env.RabbitRemoteControl_VERSION}}/ChangeLog.md)" >> Release.md
+          echo "[:cn: 修改日志](https://github.com/KangLin/RabbitProxyServer/blob/${{env.RabbitProxyServer_VERSION}}/ChangeLog_zh_CN.md)" > Release.md
+          echo "[:en: Change log](https://github.com/KangLin/RabbitProxyServer/blob/${{env.RabbitProxyServer_VERSION}}/ChangeLog.md)" >> Release.md
           echo "" >> Release.md
           echo "文件签名:" >> Release.md
           cd ${{ env.artifact_path }}

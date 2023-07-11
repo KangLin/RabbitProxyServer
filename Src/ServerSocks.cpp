@@ -17,7 +17,9 @@
 
 #endif
 
-#include "RabbitCommonLog.h"
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(logSocks, "Socks")
 
 CServerSocks::CServerSocks(QObject *parent) : CServer(parent)
 {
@@ -26,7 +28,7 @@ CServerSocks::CServerSocks(QObject *parent) : CServer(parent)
 
 CServerSocks::~CServerSocks()
 {
-    qDebug() << "CServerSocks::~CServerSocks()";
+    qDebug(logSocks) << "CServerSocks::~CServerSocks()";
 }
 
 #ifdef HAVE_ICE
@@ -70,7 +72,7 @@ int CServerSocks::Start()
                                   p->GetSignalPassword().toStdString());
             if(nRet)
             {
-                LOG_MODEL_ERROR("ProxyServerSocks", "Open signal fail");
+                qCritical(logSocks) << "Open signal fail";
                 return -1;
             }
             
@@ -124,7 +126,7 @@ int CServerSocks::Start()
         } else
             nRet = CServer::Start();
     } catch(std::exception &e) {
-        LOG_MODEL_ERROR("CServerSocks", e.what());
+        qCritical(logSocks) << e.what();
         nRet = -1;
     }
     
@@ -160,7 +162,7 @@ void CServerSocks::slotOffer(const QString& fromUser,
     if(!p->GetPeerUser().isEmpty() && p->GetPeerUser() != fromUser
             && p->GetSignalUser() != toUser)
     {
-        LOG_MODEL_ERROR("ProxyServerSocks", "User is empty or signal user is not toUser. fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+        qCritical(logSocks, "User is empty or signal user is not toUser. fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
                         fromUser.toStdString().c_str(),
                         toUser.toStdString().c_str(),
                         channelId.toStdString().c_str(),
@@ -172,7 +174,7 @@ void CServerSocks::slotOffer(const QString& fromUser,
     QMutexLocker lock(&m_ConnectServerMutex);
     if(m_ConnectServer[fromUser][channelId])
     {
-        LOG_MODEL_WARNING("ProxyServerSocks", "channel Is existed. fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+        qWarning(logSocks, "channel Is existed. fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
                         fromUser.toStdString().c_str(),
                         toUser.toStdString().c_str(),
                         channelId.toStdString().c_str(),
@@ -182,7 +184,7 @@ void CServerSocks::slotOffer(const QString& fromUser,
         //return;
     }
     
-    LOG_MODEL_DEBUG("ProxyServerSocks", "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+    qDebug(logSocks, "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
                     fromUser.toStdString().c_str(),
                     toUser.toStdString().c_str(),
                     channelId.toStdString().c_str(),
@@ -203,7 +205,7 @@ void CServerSocks::slotOffer(const QString& fromUser,
 
 void CServerSocks::slotError(int err, const QString& szErr)
 {
-    LOG_MODEL_ERROR("CServerSocks", "CServerSocks::slotError: %d;%s",
+    qCritical(logSocks, "CServerSocks::slotError: %d;%s",
                     err, szErr.toStdString().c_str());
     slotRemotePeerDisconnectServer();
 }
@@ -220,14 +222,14 @@ void CServerSocks::slotRemotePeerDisconnectServer()
         }
         CloseConnectServer(pServer);        
     }catch(std::exception &e) {
-        LOG_MODEL_ERROR("CServerSocks", e.what());
+        qCritical(logSocks) << e.what();
     }
 }
 
 void CServerSocks::CloseConnectServer(CPeerConnectorIceServer* pServer)
 {
     try{
-        LOG_MODEL_DEBUG("CServerSocks",
+        qDebug(logSocks,
                         "CServerSocks::slotRemotePeerConnectServer(), peer:%s;id:%s",
                         pServer->GetPeerUser().toStdString().c_str(),
                         pServer->GetId().toStdString().c_str());
@@ -240,7 +242,7 @@ void CServerSocks::CloseConnectServer(CPeerConnectorIceServer* pServer)
             svr->Close();
         }
     }catch(std::exception &e) {
-        LOG_MODEL_ERROR("CServerSocks", e.what());
+        qCritical(logSocks) << e.what();
     }
 }
 #endif // HAVE_ICE
@@ -258,7 +260,7 @@ void CServerSocks::slotRead()
     QTcpSocket* pSocket = qobject_cast<QTcpSocket*>(sender());
     if(!pSocket)
     {
-        LOG_MODEL_ERROR("ServerSocks", "CProxyServerSocket::slotRead(): socket is null");
+        qCritical(logSocks) << "CProxyServerSocket::slotRead(): socket is null";
         return;
     }
     
@@ -266,7 +268,7 @@ void CServerSocks::slotRead()
     pSocket->disconnect(this);
     if(d.isEmpty())
     {
-        LOG_MODEL_DEBUG("ServerSocks", "readAll fail");
+        qDebug(logSocks) << "readAll fail";
         pSocket->close();
         pSocket->deleteLater();
         return;
@@ -274,7 +276,7 @@ void CServerSocks::slotRead()
     
     CParameterSocks* pPara = qobject_cast<CParameterSocks*>(Getparameter());
     
-    LOG_MODEL_INFO("ServerSocks", "Version is 0x%X", d.at(0));
+    qInfo(logSocks) << "Version is" << d.at(0);
     switch (d.at(0)) {
     case 0x05:
     {
@@ -297,7 +299,7 @@ void CServerSocks::slotRead()
         break;
     }
     default:
-        LOG_MODEL_WARNING("ServerSocks", "Isn't support version: 0x%X", d.at(0));
+        qWarning(logSocks) << "Isn't support version:" << d.at(0);
         pSocket->close();
         pSocket->deleteLater();
         break;

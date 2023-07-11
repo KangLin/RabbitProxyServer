@@ -1,7 +1,10 @@
 //! @author Kang Lin <kl222@126.com>
 
 #include "PeerConnector.h"
-#include "RabbitCommonLog.h"
+
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(logConnector, "Connector")
 
 CPeerConnector::CPeerConnector(QObject *parent) : QObject(parent)
 {
@@ -59,7 +62,7 @@ qint64 CPeerConnector::Read(char *buf, qint64 nLen)
 {
     if(!m_Socket.isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnector", "Socket isn't open");
+        qCritical(logConnector) << "Socket isn't open";
         emit sigError(-1, "Socket isn't open");
         return -1;
     }
@@ -70,7 +73,7 @@ QByteArray CPeerConnector::ReadAll()
 {
     if(!m_Socket.isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnector", "Socket isn't open");
+        qCritical(logConnector) << "Socket isn't open";
         emit sigError(-1, "Socket isn't open");
         return QByteArray();
     }
@@ -81,7 +84,7 @@ int CPeerConnector::Write(const char *buf, qint64 nLen)
 {
     if(!m_Socket.isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnector", "Socket isn't open");
+        qCritical(logConnector) << "Socket isn't open";
         emit sigError(-1, "Socket isn't open");
         return -1;
     }
@@ -117,8 +120,8 @@ quint16 CPeerConnector::LocalPort()
 
 void CPeerConnector::slotError(QAbstractSocket::SocketError error)
 {
-    LOG_MODEL_ERROR("CPeerConnector", "CPeerConnector::slotError: %d: %s",
-                    error, ErrorString().toStdString().c_str());
+    qCritical(logConnector) << "CPeerConnector::slotError:"
+                << error << ErrorString();
     emERROR e = Success;
     QString szErr = ErrorString();
     switch (error) {

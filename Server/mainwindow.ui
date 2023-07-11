@@ -24,36 +24,13 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>27</height>
+     <height>20</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuOperate">
     <property name="title">
      <string>Operate</string>
     </property>
-    <widget class="QMenu" name="menuStyle">
-     <property name="title">
-      <string>Style</string>
-     </property>
-     <property name="icon">
-      <iconset resource="Resource/Resource.qrc">
-       <normaloff>:/image/Style</normaloff>:/image/Style</iconset>
-     </property>
-     <addaction name="actionDefault"/>
-     <addaction name="actionLoadStyle"/>
-    </widget>
-    <widget class="QMenu" name="menuOpen_log">
-     <property name="title">
-      <string>Open log</string>
-     </property>
-     <property name="icon">
-      <iconset resource="Resource/Resource.qrc">
-       <normaloff>:/image/Log</normaloff>:/image/Log</iconset>
-     </property>
-     <addaction name="actionOpen_log_file"/>
-     <addaction name="actionOpen_log_folder"/>
-     <addaction name="actionOpen_log_configure_file"/>
-    </widget>
     <addaction name="actionStart"/>
     <addaction name="actionStop"/>
     <addaction name="actionRestart"/>
@@ -61,9 +38,6 @@
     <addaction name="actionApply"/>
     <addaction name="actionSave"/>
     <addaction name="actionLoad"/>
-    <addaction name="separator"/>
-    <addaction name="menuOpen_log"/>
-    <addaction name="menuStyle"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -212,64 +186,6 @@
    </property>
    <property name="whatsThis">
     <string>Update</string>
-   </property>
-  </action>
-  <action name="actionDefault">
-   <property name="text">
-    <string>Default style</string>
-   </property>
-   <property name="iconText">
-    <string>Default style</string>
-   </property>
-   <property name="toolTip">
-    <string>Default style</string>
-   </property>
-   <property name="statusTip">
-    <string>Default style</string>
-   </property>
-   <property name="whatsThis">
-    <string>Default style</string>
-   </property>
-  </action>
-  <action name="actionLoadStyle">
-   <property name="icon">
-    <iconset resource="Resource/Resource.qrc">
-     <normaloff>:/image/Style</normaloff>:/image/Style</iconset>
-   </property>
-   <property name="text">
-    <string>Load Style</string>
-   </property>
-   <property name="statusTip">
-    <string>Load Style</string>
-   </property>
-   <property name="whatsThis">
-    <string>Load Style</string>
-   </property>
-  </action>
-  <action name="actionOpen_log_file">
-   <property name="icon">
-    <iconset resource="Resource/Resource.qrc">
-     <normaloff>:/image/Log</normaloff>:/image/Log</iconset>
-   </property>
-   <property name="text">
-    <string>Open log file</string>
-   </property>
-  </action>
-  <action name="actionOpen_log_folder">
-   <property name="icon">
-    <iconset resource="Resource/Resource.qrc">
-     <normaloff>:/image/Open</normaloff>:/image/Open</iconset>
-   </property>
-   <property name="text">
-    <string>Open log folder</string>
-   </property>
-  </action>
-  <action name="actionOpen_log_configure_file">
-   <property name="text">
-    <string>Open log configure file</string>
-   </property>
-   <property name="statusTip">
-    <string>Open log configure file</string>
    </property>
   </action>
  </widget>

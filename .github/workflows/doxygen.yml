@@ -13,7 +13,7 @@ jobs:
       SOURCE_DIR:  ${{github.workspace}}/.cache/source
       TOOSL_DIR:   ${{github.workspace}}/.cache/tools
       INSTALL_DIR: ${{github.workspace}}/.cache/install_ubuntu
-      RabbitRemoteControl_VERSION: v0.0.27
+      RabbitProxyServer_VERSION: v0.0.27
       DOXYGEN_VERSION: 1.9.5
 
     steps:
@@ -83,7 +83,7 @@ jobs:
     - name: update 
       uses: actions/upload-artifact@v2
       with:
-          name: rabbitremotecontrol_doxygen
+          name: doxygen
           path: |
             build/Doxygen
       

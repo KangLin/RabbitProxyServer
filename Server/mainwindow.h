@@ -36,12 +36,6 @@ private slots:
     void on_actionApply_triggered();
     void on_actionAbout_triggered();
     void on_actionUpdate_triggered();
-    void on_actionDefault_triggered();
-    void on_actionLoadStyle_triggered();
-    void on_actionOpen_log_file_triggered();
-    void on_actionOpen_log_folder_triggered();
-    
-    void on_actionOpen_log_configure_file_triggered();
     
 private:
     Ui::MainWindow *ui;

@@ -3,10 +3,11 @@
 #include "PeerConnectorIceServer.h"
 #include "ParameterSocks.h"
 #include "IceSignalWebSocket.h"
-#include "RabbitCommonLog.h"
 #include <QJsonDocument>
 #include <QtEndian>
 #include <QThread>
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(logPeerConnectorIceServer, "PeerConnectorIceServer")
 
 CPeerConnectorIceServer::CPeerConnectorIceServer(CServerSocks* pServer,
         const QString& fromUser,
@@ -33,7 +34,7 @@ CPeerConnectorIceServer::CPeerConnectorIceServer(CServerSocks *pServer,
 
 CPeerConnectorIceServer::~CPeerConnectorIceServer()
 {
-    qDebug() << "CPeerConnectorIceServer::~CPeerConnectorIceServer()";
+    qDebug(logPeerConnectorIceServer) << "CPeerConnectorIceServer::~CPeerConnectorIceServer()";
 }
 
 void CPeerConnectorIceServer::slotDataChannelConnected()
@@ -94,7 +95,7 @@ int CPeerConnectorIceServer::Write(const char *buf, qint64 nLen)
 
 int CPeerConnectorIceServer::Close()
 {
-    LOG_MODEL_DEBUG("CPeerConnectorIceServer",
+    qDebug(logPeerConnectorIceServer,
                     "Close: peer:%s;id:%s",
                     GetPeerUser().toStdString().c_str(),
                     GetId().toStdString().c_str());
@@ -129,7 +130,7 @@ int CPeerConnectorIceServer::OnReciveConnectRequst()
     strClientRequst* pRequst;
     if(!m_DataChannel)
     {
-        LOG_MODEL_ERROR("PeerConnecterIce", "Data channel is null");
+        qCritical(logPeerConnectorIceServer, "Data channel is null");
         return -1;
     }
 
@@ -141,14 +142,14 @@ int CPeerConnectorIceServer::OnReciveConnectRequst()
 
     if(pRequst->version != 0)
     {
-        LOG_MODEL_ERROR("PeerConnecterIce", "The version [0x%x] is not support",
+        qCritical(logPeerConnectorIceServer, "The version [0x%x] is not support",
                         pRequst->version);
         return -1;
     }
 
     if(0x01 != pRequst->command)
     {
-        LOG_MODEL_ERROR("PeerConnecterIce", "The command [0x%x] is not support",
+        qCritical(logPeerConnectorIceServer, "The command [0x%x] is not support",
                         pRequst->command);
         return -1;
     }
@@ -167,7 +168,7 @@ int CPeerConnectorIceServer::OnReciveConnectRequst()
 
     if(!m_Peer)
     {
-        LOG_MODEL_ERROR("PeerConnecterIce", "The peer is null");
+        qCritical(logPeerConnectorIceServer) << "The peer is null";
         return -1;
     }
 
@@ -184,7 +185,7 @@ int CPeerConnectorIceServer::OnReciveConnectRequst()
                     this, SLOT(slotPeerRead()));
     Q_ASSERT(check);
 
-    LOG_MODEL_DEBUG("CPeerConnectorIceServer", "Connect to peer: ip:%s; port:%d",
+    qDebug(logPeerConnectorIceServer, "Connect to peer: ip:%s; port:%d",
                     m_peerAddress.toStdString().c_str(),
                     m_nPeerPort);
     nRet = m_Peer->Connect(m_peerAddress, m_nPeerPort);
@@ -207,7 +208,7 @@ int CPeerConnectorIceServer::Reply(int nError, const QString& szError)
         if(!m_bindAddress.isEmpty())
             memcpy(pReply->host, m_bindAddress.toStdString().c_str(),
                    m_bindAddress.toStdString().size());
-        LOG_MODEL_DEBUG("CPeerConnectorIceServer", "Reply bind[%d]: %s:%d",
+        qDebug(logPeerConnectorIceServer, "Reply bind[%d]: %s:%d",
                        pReply->len, pReply->host, qFromBigEndian(pReply->port));
     }
     m_DataChannel->write(reinterpret_cast<char*>(pReply), nLen);
@@ -218,7 +219,7 @@ void CPeerConnectorIceServer::slotPeerConnected()
 {
     if(!m_Peer)
     {
-        LOG_MODEL_ERROR("CPeerConnectorIceServer", "Peer is null");
+        qCritical(logPeerConnectorIceServer) << "Peer is null";
         Reply(emERROR::Unkown, "Peer is null");
         return;
     }
@@ -226,7 +227,7 @@ void CPeerConnectorIceServer::slotPeerConnected()
     m_bindAddress = m_Peer->LocalAddress().toString();
     m_Status = FORWORD;
     Reply(emERROR::Success);
-    LOG_MODEL_DEBUG("CPeerConnectorIceServer",
+    qDebug(logPeerConnectorIceServer,
                     "Peer connected success: binIP:%s;bindPort:%d",
                     m_bindAddress.toStdString().c_str(), m_nBindPort);
 }
@@ -235,7 +236,7 @@ void CPeerConnectorIceServer::slotPeerDisconnectd()
 {
     if(CONNECT == m_Status)
     {
-        LOG_MODEL_ERROR("CPeerConnectorIceServer", "Peer disconnect");
+        qCritical(logPeerConnectorIceServer) << "Peer disconnect";
         Reply(emERROR::NotAllowdConnection, "Peer disconnect");
     }
     emit sigDisconnected();
@@ -243,7 +244,7 @@ void CPeerConnectorIceServer::slotPeerDisconnectd()
 
 void CPeerConnectorIceServer::slotPeerError(int nError, const QString &szErr)
 {
-    LOG_MODEL_DEBUG("CPeerConnectorIceServer", "slotPeerError:%d; %s; peer:%s;channelId:%s",
+    qDebug(logPeerConnectorIceServer, "slotPeerError:%d; %s; peer:%s;channelId:%s",
                     nError, szErr.toStdString().c_str(),
                     GetPeerUser().toStdString().c_str(),
                     GetId().toStdString().c_str());
@@ -262,7 +263,7 @@ void CPeerConnectorIceServer::slotPeerRead()
     QByteArray d;
     d = m_Peer->ReadAll();
     /*
-    LOG_MODEL_DEBUG("CPeerConnectorIceServer",
+    qDebug(logPeerConnectorIceServer,
                     "CPeerConnectorIceServer::slotPeerRead(): size:%d;threadId:0x%X",
                     d.size(), QThread::currentThread());//*/
     m_DataChannel->write(d.data(), d.size());

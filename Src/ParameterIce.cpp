@@ -3,7 +3,6 @@
 #include "ParameterIce.h"
 #include <QDebug>
 #include <QMutex>
-#include "RabbitCommonLog.h"
 
 CParameterIce::CParameterIce(QObject *parent) : CParameter(parent),
     m_bIceDebug(false),

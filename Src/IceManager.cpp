@@ -2,9 +2,10 @@
 
 #include "IceManager.h"
 #include "ParameterSocks.h"
-#include "RabbitCommonLog.h"
 
 #include <QThread>
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(logIceManger, "IceManger")
 
 CIceManager::CIceManager(CServerSocks *pServer)
     : QObject(pServer),
@@ -21,24 +22,24 @@ int CIceManager::SetPeerConnection(QSharedPointer<CIceSignal> signal,
                                    CDataChannelIceChannel *channel)
 {
     pc->onStateChange([](rtc::PeerConnection::State state) {
-        LOG_MODEL_DEBUG("CIceManger", "PeerConnection State: %d", state);
+        qDebug(logIceManger) << "PeerConnection State:" << (int)state;
     });
     pc->onGatheringStateChange(
                 [](rtc::PeerConnection::GatheringState state) {
         Q_UNUSED(state)
-        //LOG_MODEL_DEBUG("CIceManger", "Gathering status: %d", state);
+        //qDebug(logIceManger) << "Gathering status:" << state;
     });
     pc->onLocalDescription(
                 [=](rtc::Description description) {
         /*
-        LOG_MODEL_DEBUG("CIceManger", "onLocalDescription: user:%s; peer:%s; channel:%s; sdp: %s",
+        qDebug(logIceManger, "onLocalDescription: user:%s; peer:%s; channel:%s; sdp: %s",
                         user.toStdString().c_str(),
                         peer.toStdString().c_str(),
                         channelId.toStdString().c_str(),
                         std::string(description).c_str());//*/
         // Send to the peer through the signal channel
         if(peer.isEmpty())
-            LOG_MODEL_DEBUG("CIceManger", "Please set peer user and channel id");
+            qDebug(logIceManger) << "Please set peer user and channel id";
         signal->SendDescription(peer,
                                 channelId,
                                 description,
@@ -47,7 +48,7 @@ int CIceManager::SetPeerConnection(QSharedPointer<CIceSignal> signal,
     pc->onLocalCandidate(
                 [=](rtc::Candidate candidate){
         /*
-        LOG_MODEL_DEBUG("CIceManger", "onLocalCandidate: user:%s; peer:%s; channel:%s; candidate: %s, mid: %s",
+        qDebug(logIceManger, "onLocalCandidate: user:%s; peer:%s; channel:%s; candidate: %s, mid: %s",
                         user.toStdString().c_str(),
                         peer.toStdString().c_str(),
                         channelId.toStdString().c_str(),
@@ -55,13 +56,13 @@ int CIceManager::SetPeerConnection(QSharedPointer<CIceSignal> signal,
                         candidate.mid().c_str());//*/
         // Send to the peer through the signal channel
         if(peer.isEmpty())
-            LOG_MODEL_DEBUG("CIceManger", "Please set peer user and channel id");
+            qDebug(logIceManger, "Please set peer user and channel id");
         signal->SendCandiate(peer,
                              channelId,
                              candidate);
     });
     pc->onDataChannel([=](std::shared_ptr<rtc::DataChannel> dc) {
-        LOG_MODEL_DEBUG("CIceManger", "onDataChannel: From %s revice data channel: %s",
+        qDebug(logIceManger, "onDataChannel: From %s revice data channel: %s",
                         peer.toStdString().c_str(),
                         dc->label().c_str());
         auto it = m_PeerConnections.find(peer);
@@ -98,11 +99,11 @@ std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
         pc = std::make_shared<rtc::PeerConnection>(conf);
         if(!pc)
         {
-            LOG_MODEL_ERROR("CIceManger", "Peer connect don't open");
+            qCritical(logIceManger) << "Peer connect don't open";
             return nullptr;
         }
 
-        LOG_MODEL_DEBUG("CIceManger",
+        qDebug(logIceManger,
                         "New rtc::PeerConnection: user:%s;peer:%s;id:%s",
                         channel->GetUser().toStdString().c_str(),
                         channel->GetPeerUser().toStdString().c_str(),
@@ -122,7 +123,7 @@ std::shared_ptr<rtc::PeerConnection> CIceManager::GetPeerConnect(
 
 int CIceManager::CloseDataChannel(CDataChannelIceChannel *dc, bool bServer)
 {
-    LOG_MODEL_DEBUG("CIceManger",
+    qDebug(logIceManger,
                     "CloseDataChannel: user:%s;peer:%s;id:%s",
                     dc->GetUser().toStdString().c_str(),
                     dc->GetPeerUser().toStdString().c_str(),
@@ -195,7 +196,7 @@ void CIceManager::slotSignalReceiverCandiate(const QString& fromUser,
                                             const QString& sdp)
 {
     /*
-    LOG_MODEL_DEBUG("CIceManger",
+    qDebug(logIceManger,
                     "slotSignalReceiverCandiate fromUser:%s; toUser:%s; channelId:%s; mid:%s; sdp:%s",
                     fromUser.toStdString().c_str(),
                     toUser.toStdString().c_str(),
@@ -220,7 +221,7 @@ void CIceManager::slotSignalReceiverDescription(const QString& fromUser,
                                                 const QString& sdp)
 {
     /*
-    LOG_MODEL_DEBUG("CIceManger",
+    qDebug(logIceManger,
                     "slotSignalReceiverDescription fromUser:%s; toUser:%s; channelId:%s; type:%s; sdp:%s",
                     fromUser.toStdString().c_str(),
                     toUser.toStdString().c_str(),
@@ -249,7 +250,7 @@ void CIceManager::slotOffer(const QString& fromUser,
     if(!p->GetPeerUser().isEmpty() && p->GetPeerUser() != fromUser
             && p->GetSignalUser() != toUser)
     {
-        LOG_MODEL_ERROR("ProxyServerSocks", "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+        qCritical(logIceManger, "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
                         fromUser.toStdString().c_str(),
                         toUser.toStdString().c_str(),
                         channelId.toStdString().c_str(),
@@ -258,7 +259,7 @@ void CIceManager::slotOffer(const QString& fromUser,
         return;
     }
 
-    LOG_MODEL_DEBUG("ProxyServerSocks", "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+    qDebug(logIceManger, "fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
                     fromUser.toStdString().c_str(),
                     toUser.toStdString().c_str(),
                     channelId.toStdString().c_str(),
@@ -268,7 +269,7 @@ void CIceManager::slotOffer(const QString& fromUser,
     auto it = m_PeerConnections.find(fromUser);
     if(m_PeerConnections.end() != it)
     {
-        LOG_MODEL_DEBUG("ProxyServerSocks", "clean old peer connection: fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
+        qDebug(logIceManger, "clean old peer connection: fromUser:%s; toUser:%s; channelId:%s; signalUser:%s; peerUser:%s",
                         fromUser.toStdString().c_str(),
                         toUser.toStdString().c_str(),
                         channelId.toStdString().c_str(),
@@ -299,7 +300,7 @@ void CIceManager::slotOffer(const QString& fromUser,
     auto pc = std::make_shared<rtc::PeerConnection>(config);
     if(!pc)
     {
-        LOG_MODEL_ERROR("CIceManger", "Peer connect don't open");
+        qCritical(logIceManger) << "Peer connect don't open";
         return;
     }
 
@@ -319,7 +320,7 @@ void CIceManager::slotOffer(const QString& fromUser,
 
 void CIceManager::slotReceiverDataChannel(const QString &peer, const QString &user, const QString& channleId)
 {
-    LOG_MODEL_DEBUG("CIceManger",
+    qDebug(logIceManger,
                     "CIceManager::slotReceiverDataChannel: peer:%s;channel:%s",
                     peer.toStdString().c_str(), channleId.toStdString().c_str());
     auto it = m_PeerConnections.find(peer);

@@ -19,7 +19,7 @@ jobs:
       SOURCE_DIR:  ${{github.workspace}}/source
       TOOSL_DIR:   ${{github.workspace}}/tools
       INSTALL_DIR: ${{github.workspace}}/install
-      RABBITPROXYSERVER_VERSION: '0.0.1'
+      RabbitProxyServer_VERSION: '0.0.1'
       
     steps:
     - uses: actions/checkout@v2
@@ -76,7 +76,7 @@ jobs:
         QtService_DIR: ${{env.INSTALL_DIR}}/lib/cmake/QtService
       run: |
         ./build_debpackage.sh /usr/lib/`uname -m`-linux-gnu/qt5
-        cp ../rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64.deb ${{github.workspace}}/rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64_${{matrix.os}}.deb
+        cp ../rabbitproxyserver_${{env.RabbitProxyServer_VERSION}}_amd64.deb ${{github.workspace}}/rabbitproxyserver_${{env.RabbitProxyServer_VERSION}}_amd64_${{matrix.os}}.deb
         
 #    - name: Update xml file
 #      working-directory: ${{github.workspace}}
@@ -84,8 +84,8 @@ jobs:
 #        sudo apt-get install -y -qq xvfb xpra
 #        sudo Xvfb :99 -ac &
 #        export DISPLAY=:99.0
-#        sudo dpkg -i ../rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64.deb
-#        /opt/RabbitProxyServer/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64_${{matrix.os}}.deb -m "v${{env.RABBITPROXYSERVER_VERSION}}"
+#        sudo dpkg -i ../rabbitproxyserver_${{env.RabbitProxyServer_VERSION}}_amd64.deb
+#        /opt/RabbitProxyServer/bin/RabbitProxyServer -f "`pwd`/update_linux.xml" --pf rabbitproxyserver_${{env.RabbitProxyServer_VERSION}}_amd64_${{matrix.os}}.deb -m "v${{env.RabbitProxyServer_VERSION}}"
 
     - name: update 
       uses: actions/upload-artifact@v2
@@ -112,4 +112,4 @@ jobs:
         body: |
           [:cn: 修改日志](ChangeLog_zh_CN.md) [:us: Change log](ChangeLog.md)
         files: |
-          ${{github.workspace}}/rabbitproxyserver_${{env.RABBITPROXYSERVER_VERSION}}_amd64_${{matrix.os}}.deb
+          ${{github.workspace}}/rabbitproxyserver_${{env.RabbitProxyServer_VERSION}}_amd64_${{matrix.os}}.deb

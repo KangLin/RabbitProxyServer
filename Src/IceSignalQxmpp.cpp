@@ -1,8 +1,10 @@
 //! @author Kang Lin <kl222@126.com>
 
 #include "IceSignalQxmpp.h"
-#include "RabbitCommonLog.h"
 #include "QXmppUtils.h"
+
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(logQxmpp, "QXMPP")
 
 int g_CIceSignalQXmppIq = qRegisterMetaType<CIceSignalQXmppIq>("CIceSignalQXmppIq");
 
@@ -35,7 +37,7 @@ int CIceSignalQxmpp::Open(const std::string &szServer, quint16 nPort, const std:
     if(QXmppUtils::jidToDomain(user.c_str()).isEmpty()
             || QXmppUtils::jidToResource(user.c_str()).isEmpty())
     {
-        LOG_MODEL_ERROR("CIceSignalQxmpp", "The user name format error. please user@domain/resource");
+        qCritical(logQxmpp) << "The user name format error. please user@domain/resource";
         return -1;
     }
     QXmppConfiguration conf;
@@ -66,14 +68,14 @@ bool CIceSignalQxmpp::IsOpen()
 bool CIceSignalQxmpp::proecssIq(CIceSignalQXmppIq iq)
 {
     /*
-    LOG_MODEL_DEBUG("CIceSignalQxmpp", "from:%s;to:%s;type:%s",
+    qDebug(logQxmpp, "from:%s;to:%s;type:%s",
                     iq.from().toStdString().c_str(),
                     iq.to().toStdString().c_str(),
                     iq.SignalType().toStdString().c_str());//*/
     if(iq.SignalType() == "offer")
     {
         /*
-        LOG_MODEL_DEBUG("CIceSignalQxmpp", "type:%s; sdp:%s",
+        qDebug(logQxmpp, "type:%s; sdp:%s",
                         iq.SignalType().toStdString().c_str(),
                         iq.Description().toStdString().c_str());//*/
         emit sigOffer(iq.from(),
@@ -83,7 +85,7 @@ bool CIceSignalQxmpp::proecssIq(CIceSignalQXmppIq iq)
                       iq.Description());
     } else if(iq.SignalType() == "answer") {
         /*
-        LOG_MODEL_DEBUG("CIceSignalQxmpp", "type:%s; sdp:%s",
+        qDebug(logQxmpp, "type:%s; sdp:%s",
                         iq.SignalType().toStdString().c_str(),
                         iq.Description().toStdString().c_str());//*/
         emit sigDescription(iq.from(),
@@ -93,7 +95,7 @@ bool CIceSignalQxmpp::proecssIq(CIceSignalQXmppIq iq)
                             iq.Description());
     } else if (iq.SignalType()  == "candidate") {
         /*
-        LOG_MODEL_DEBUG("CIceSignalQxmpp", "type:%s; mid:%s, candiate:%s",
+        qDebug(logQxmpp, "type:%s; mid:%s, candiate:%s",
                         iq.SignalType().toStdString().c_str(),
                         iq.mid().toStdString().c_str(),
                         iq.Candiate().toStdString().c_str());//*/
@@ -103,7 +105,7 @@ bool CIceSignalQxmpp::proecssIq(CIceSignalQXmppIq iq)
                          iq.mid(),
                          iq.Candiate());
     } else {
-        LOG_MODEL_ERROR("CIceSignalQxmpp", "iq signal type error: %s",
+        qCritical(logQxmpp, "iq signal type error: %s",
                         iq.SignalType().toStdString().c_str());
         return false;
     }
@@ -118,7 +120,7 @@ int CIceSignalQxmpp::SendDescription(const QString &toUser,
     if(QXmppUtils::jidToDomain(toUser.toStdString().c_str()).isEmpty()
             || QXmppUtils::jidToResource(toUser.toStdString().c_str()).isEmpty())
     {
-        LOG_MODEL_ERROR("CIceSignalQxmpp", "The toUser name format error. please user@domain/resource");
+        qCritical(logQxmpp) << "The toUser name format error. please user@domain/resource";
         return -1;
     }
     CIceSignalQXmppIq iq;
@@ -140,7 +142,7 @@ int CIceSignalQxmpp::SendCandiate(const QString &toUser,
     if(QXmppUtils::jidToDomain(toUser.toStdString().c_str()).isEmpty()
             || QXmppUtils::jidToResource(toUser.toStdString().c_str()).isEmpty())
     {
-        LOG_MODEL_ERROR("CIceSignalQxmpp", "The toUser name format error. please user@domain/resource");
+        qCritical(logQxmpp) << "The toUser name format error. please user@domain/resource";
         return -1;
     }
     CIceSignalQXmppIq iq;
@@ -173,7 +175,7 @@ int CIceSignalQxmpp::Read(char *buf, int nLen)
 void CIceSignalQxmpp::slotConnected()
 {
     QXmppConfiguration& configure = m_Client.configuration();
-    LOG_MODEL_INFO("CIceSignalQxmpp", "User [%s] connected to signal server: %s:%d",
+    qInfo(logQxmpp, "User [%s] connected to signal server: %s:%d",
                     configure.jid().toStdString().c_str(),
                     configure.host().toStdString().c_str(),
                     configure.port());
@@ -183,7 +185,7 @@ void CIceSignalQxmpp::slotConnected()
 void CIceSignalQxmpp::slotDisconnected()
 {
     QXmppConfiguration& configure = m_Client.configuration();
-    LOG_MODEL_INFO("CIceSignalQxmpp", "User [%s] disconnected to signal server: %s:%d",
+    qInfo(logQxmpp, "User [%s] disconnected to signal server: %s:%d",
                     configure.jid().toStdString().c_str(),
                     configure.host().toStdString().c_str(),
                     configure.port());
@@ -192,6 +194,6 @@ void CIceSignalQxmpp::slotDisconnected()
 
 void CIceSignalQxmpp::slotError(QXmppClient::Error e)
 {
-    LOG_MODEL_ERROR("CIceSignalQxmpp", "Error:%d", e);
+    qCritical(logQxmpp, "Error:%d", e);
     emit sigError(e, "");
 }

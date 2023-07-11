@@ -1,9 +1,13 @@
 //! @author Kang Lin <kl222@126.com>
 
 #include "Server.h"
-#include "RabbitCommonLog.h"
+
 #include <QHostAddress>
 #include <QTcpSocket>
+
+#include <QLoggingCategory>
+
+Q_LOGGING_CATEGORY(logServer, "Server")
 
 CServer::CServer(QObject *parent) : QObject(parent),
     m_pParameter(nullptr),
@@ -56,7 +60,7 @@ int CServer::Start()
     int nRet = 0;
     if(!m_pParameter)
     {
-        LOG_MODEL_ERROR("ProxyServer", "Parameter pointer is null");
+        qCritical(logServer) << "Parameter pointer is null";
         return -1;
     }
     
@@ -67,7 +71,7 @@ int CServer::Start()
     bool bCheck = m_Acceptor.listen(address, m_pParameter->GetPort());
     if(!bCheck)
     {
-        LOG_MODEL_ERROR("Server",
+        qCritical(logServer,
                        tr("Server listen at: %s:%d: %s").toStdString().c_str(),
                        address.toString().toStdString().c_str(),
                        m_pParameter->GetPort(),
@@ -75,7 +79,7 @@ int CServer::Start()
         return -1;
     }
     else
-        LOG_MODEL_INFO("Server",
+        qInfo(logServer,
                        tr("Server listen at: %s:%d").toStdString().c_str(),
                        address.toString().toStdString().c_str(),
                        m_pParameter->GetPort());
@@ -102,7 +106,7 @@ void CServer::slotAccept()
 {
     QTcpSocket* s = m_Acceptor.nextPendingConnection();
     if(!s) return;
-    LOG_MODEL_INFO("Server",
+    qInfo(logServer,
                    tr("New connect from: %s:%d").toStdString().c_str(),
                    s->peerAddress().toString().toStdString().c_str(),
                    s->peerPort());

@@ -9,13 +9,15 @@
     #include <QtAndroid>
 #endif
 #include "mainwindow.h"
-#include "RabbitCommonLog.h"
 #include "RabbitCommonTools.h"
 #include "RabbitCommonDir.h"
 #include "FrmUpdater/FrmUpdater.h"
 #ifdef BUILD_QUIWidget
     #include "QUIWidget/QUIWidget.h"
 #endif
+
+#include <QLoggingCategory>
+Q_DECLARE_LOGGING_CATEGORY(logMain)
 
 int main(int argc, char *argv[])
 {
@@ -38,8 +40,7 @@ int main(int argc, char *argv[])
             + QLocale::system().name() + ".qm";
     tApp.load(szTranslatorFile);
     a.installTranslator(&tApp);
-    LOG_MODEL_INFO("Main", "Translator file: %s",
-                   szTranslatorFile.toStdString().c_str());
+    qInfo(logMain) << "Translator file:" << szTranslatorFile;
 
     a.setApplicationDisplayName(QObject::tr("Rabbit proxy server configure"));
     a.setOrganizationName(QObject::tr("Kang Lin studio"));
@@ -48,11 +49,11 @@ int main(int argc, char *argv[])
     QSharedPointer<CFrmUpdater> pUpdate(new CFrmUpdater());
     pUpdate->SetTitle(QImage(":/image/App"));
     if(pUpdate->GenerateUpdateXml())
-        LOG_MODEL_ERROR("main", "GenerateUpdateXml fail");
+        qCritical(logMain) << "GenerateUpdateXml fail";
     else
         return 0;
 
-    LOG_MODEL_DEBUG("main", "The thread id: 0x%X", QThread::currentThreadId());
+    qDebug(logMain) << "The thread id:" << QThread::currentThreadId();
 
     MainWindow* win = new MainWindow();
 #ifdef BUILD_QUIWidget
@@ -68,11 +69,11 @@ int main(int argc, char *argv[])
     try {
         nRet = a.exec();
     }  catch (QException &e) {
-        LOG_MODEL_ERROR("main", "application exception: %s", e.what());
+        qCritical(logMain) << "application exception:" << e.what();
     } catch (std::exception &e) {
-        LOG_MODEL_ERROR("main", "application std::exception: %s", e.what());
+        qCritical(logMain) << "application std::exception:" << e.what();
     } catch(...) {
-        LOG_MODEL_ERROR("main", "application exception");
+        qCritical(logMain) << "application exception";
     }
 
 #ifndef BUILD_QUIWidget

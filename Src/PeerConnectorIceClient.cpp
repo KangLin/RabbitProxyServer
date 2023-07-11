@@ -3,12 +3,15 @@
 #include "PeerConnectorIceClient.h"
 #include "ParameterSocks.h"
 #include "IceSignalWebSocket.h"
-#include "RabbitCommonLog.h"
+
 #include <QJsonDocument>
 #include <QtEndian>
 #include "ServerSocks.h"
 #include <QThread>
 #include "DataChannelIceChannel.h"
+
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(logICE, "PeerConnecterIce")
 
 CPeerConnectorIceClient::CPeerConnectorIceClient(CServerSocks *pServer, QObject *parent)
     : CPeerConnector(parent),
@@ -21,7 +24,7 @@ CPeerConnectorIceClient::CPeerConnectorIceClient(CServerSocks *pServer, QObject 
 
 CPeerConnectorIceClient::~CPeerConnectorIceClient()
 {
-    qDebug() << "CPeerConnectorIceClient::~CPeerConnectorIceClient()";
+    qDebug(logICE) << "CPeerConnectorIceClient::~CPeerConnectorIceClient()";
 }
 
 int CPeerConnectorIceClient::CreateDataChannel(const QString &peer,
@@ -76,7 +79,7 @@ int CPeerConnectorIceClient::CreateDataChannel(const QString &peer,
     if(m_DataChannel->open(config, user, peer, channelId, bData))
     {
         m_szError = tr("Data channel open fail");
-        LOG_MODEL_ERROR("PeerConnecterIce", m_szError.toStdString().c_str());
+        qCritical(logICE) << m_szError;
         emit sigError(emERROR::NetWorkUnreachable, m_szError);
     }
 
@@ -96,7 +99,7 @@ void CPeerConnectorIceClient::slotDataChannelConnected()
     memcpy(requst->host, m_peerAddress.toStdString().c_str(), m_peerAddress.toStdString().size());
     if(m_DataChannel)
     {
-        LOG_MODEL_INFO("CPeerConnectorIceClient",
+        qInfo(logICE,
                         "Data channel connected: peer:%s;channel:%s;ip:%s;port:%d",
                         m_DataChannel->GetPeerUser().toStdString().c_str(),
                         m_DataChannel->GetChannelId().toStdString().c_str(),
@@ -108,7 +111,7 @@ void CPeerConnectorIceClient::slotDataChannelConnected()
 
 void CPeerConnectorIceClient::slotDataChannelDisconnected()
 {
-    LOG_MODEL_INFO("CPeerConnectorIceClient",
+    qInfo(logICE,
                     "Data channel disconnected: peer:%s;channel:%s;ip:%s;port:%d",
                     m_DataChannel->GetPeerUser().toStdString().c_str(),
                     m_DataChannel->GetChannelId().toStdString().c_str(),
@@ -119,7 +122,7 @@ void CPeerConnectorIceClient::slotDataChannelDisconnected()
 
 void CPeerConnectorIceClient::slotDataChannelError(int nErr, const QString& szErr)
 {
-    LOG_MODEL_ERROR("CPeerConnectorIceClient",
+    qCritical(logICE,
                     "Data channel error: %d %s; peer:%s;channel:%s;ip:%s;port:%d",
                     nErr, szErr.toStdString().c_str(),
                     m_DataChannel->GetPeerUser().toStdString().c_str(),
@@ -131,7 +134,7 @@ void CPeerConnectorIceClient::slotDataChannelError(int nErr, const QString& szEr
 
 void CPeerConnectorIceClient::slotDataChannelReadyRead()
 {
-    //LOG_MODEL_DEBUG("CPeerConnectorIceClient", "slotDataChannelReadyRead");
+    //qDebug(logICE) << "slotDataChannelReadyRead";
     if(!m_DataChannel) return;
 
     if(CONNECT == m_Status)
@@ -163,7 +166,7 @@ int CPeerConnectorIceClient::OnConnectionReply()
         m_nBindPort = qFromBigEndian(pReply->port);
         std::string add(pReply->host, pReply->len);
         m_bindAddress = add.c_str();
-        LOG_MODEL_DEBUG("CPeerConnectorIceClient",
+        qDebug(logICE,
                         "CPeerConnectorIceClient::OnConnectionReply(): ip:%s;port:%d",
                         m_bindAddress.toStdString().c_str(), m_nBindPort);
         m_Status = FORWORD;
@@ -182,7 +185,7 @@ int CPeerConnectorIceClient::Connect(const QString &address, quint16 nPort)
     if(!m_pServer->GetSignal()->IsOpen())
     {
         m_szError = tr("Signal don't open");
-        LOG_MODEL_ERROR("PeerConnecterIce", m_szError.toStdString().c_str());
+        qCritical(logICE) << m_szError;
         emit sigError(emERROR::Unkown, m_szError);
         return -1;
     }
@@ -194,7 +197,7 @@ int CPeerConnectorIceClient::Connect(const QString &address, quint16 nPort)
     if(pPara->GetPeerUser().isEmpty())
     {
         m_szError = tr("Please set peer user");
-        LOG_MODEL_ERROR("PeerConnecterIce", m_szError.toStdString().c_str());
+        qCritical(logICE) << m_szError;
         emit sigError(emERROR::NetWorkUnreachable, m_szError.toStdString().c_str());
         return -2;
     }
@@ -216,7 +219,7 @@ QByteArray CPeerConnectorIceClient::ReadAll()
 {
     if(!m_DataChannel || !m_DataChannel->isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnectorIceClient", "CPeerConnectorIceClient::ReadAll(): Data channel is not open");
+        qCritical(logICE) << "CPeerConnectorIceClient::ReadAll(): Data channel is not open";
         return QByteArray();
     }
     return m_DataChannel->readAll();
@@ -226,7 +229,7 @@ int CPeerConnectorIceClient::Write(const char *buf, qint64 nLen)
 {
     if(!m_DataChannel || !m_DataChannel->isOpen())
     {
-        LOG_MODEL_ERROR("CPeerConnectorIceClient", "CPeerConnectorIceClient::Write: Data channel is not open");
+        qCritical(logICE) << "CPeerConnectorIceClient::Write: Data channel is not open";
         return -1;
     }
     return m_DataChannel->write(buf, nLen);
@@ -268,7 +271,7 @@ int CPeerConnectorIceClient::CheckBufferLength(int nLength)
     int nRet = nLength - m_Buffer.size();
     if(nRet > 0)
     {
-        LOG_MODEL_DEBUG("CPeerConnectorIceClient",
+        qDebug(logICE,
             "CheckBufferLength %d < %d", m_Buffer.size(), nLength);
         return nRet;
     }

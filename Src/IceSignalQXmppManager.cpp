@@ -5,7 +5,9 @@
 #include "IceSignalQxmpp.h"
 #include "QXmppClient.h"
 #include <QDomElement>
-#include "RabbitCommonLog.h"
+#include <QLoggingCategory>
+
+Q_DECLARE_LOGGING_CATEGORY(logQxmpp)
 
 CIceSignalQXmppManager::CIceSignalQXmppManager(CIceSignalQxmpp *pSignal)
     : m_pSignal(pSignal)
@@ -16,7 +18,7 @@ int CIceSignalQXmppManager::sendPacket(CIceSignalQXmppIq &iq)
 {
     if(this->client()->sendPacket(iq))
         return 0;
-    LOG_MODEL_ERROR("CIceSignalQXmppManager", "QXmppCallWebrtcManager::sendPacket");
+    qCritical(logQxmpp) << "QXmppCallWebrtcManager::sendPacket";
     return -1;
 }
 
@@ -36,7 +38,7 @@ bool CIceSignalQXmppManager::handleStanza(const QDomElement &element)
     iq.parse(element);
     if(iq.type() != QXmppIq::Set)
     {
-        LOG_MODEL_ERROR("CIceSignalQXmppManager", "The package is error: type: %d; id: %s; from: %s; to: %s",
+        qCritical(logQxmpp, "The package is error: type: %d; id: %s; from: %s; to: %s",
                         iq.type(),
                         iq.id().toStdString().c_str(),
                         iq.from().toStdString().c_str(),

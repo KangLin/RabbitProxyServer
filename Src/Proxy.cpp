@@ -1,7 +1,6 @@
 //! @author Kang Lin <kl222@126.com>
 
 #include "Proxy.h"
-#include "RabbitCommonLog.h"
 
 CProxy::CProxy(QTcpSocket* pSocket, CServer* server, QObject *parent)
     : QObject(parent),
@@ -68,7 +67,7 @@ int CProxy::CheckBufferLength(int nLength)
     int nRet = nLength - m_cmdBuf.size();
     if(nRet > 0)
     {
-        LOG_MODEL_DEBUG("CProxy",
+        qDebug(
             "Be continuing read [%d] bytes from socket: %s:%d",
             nRet,
             m_pSocket->peerAddress().toString().toStdString().c_str());
@@ -101,7 +100,7 @@ int CProxy::CreatePeer()
                                              &QObject::deleteLater);
     if(m_pPeer)
         return 0;
-    LOG_MODEL_ERROR("Socks5", "Make peer connect fail");
+    qCritical() << "Make peer connect fail";
     return -1;
 }
 

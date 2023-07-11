@@ -8,10 +8,11 @@
     #include "PeerConnectorIceClient.h"
 #endif
 
-#include "RabbitCommonLog.h"
-
 #include <QtEndian>
 #include <memory>
+
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(logSocks5, "Socks5")
 
 CProxySocks5::CProxySocks5(QTcpSocket *pSocket, CServer *server, QObject *parent)
     : CProxySocks4(pSocket, server, parent),
@@ -22,7 +23,7 @@ CProxySocks5::CProxySocks5(QTcpSocket *pSocket, CServer *server, QObject *parent
 
 CProxySocks5::~CProxySocks5()
 {
-    qDebug() << "CProxySocks5::~CProxySocks5()";
+    qDebug(logSocks5) << "CProxySocks5::~CProxySocks5()";
 }
 
 void CProxySocks5::slotRead()
@@ -50,13 +51,13 @@ void CProxySocks5::slotRead()
                 //LOG_MODEL_DEBUG("Socks5", "Write %d length to peer", d.length());
                 int nWrite = m_pPeer->Write(d.data(), d.length());
                 if(-1 == nWrite)
-                    LOG_MODEL_ERROR("Socks5",
+                    qCritical(logSocks5,
                                     "Forword client to peer fail[%d]: %s",
                                     m_pPeer->Error(),
                                     m_pPeer->ErrorString().toStdString().c_str());
             }
             else
-                LOG_MODEL_DEBUG("Socks5", "From client readAll is empty");
+                qCritical(logSocks5, "From client readAll is empty");
         }
         break;
     }
@@ -67,10 +68,10 @@ int CProxySocks5::processNegotiate()
     int nRet = 0;
     int nLen = 0;
     m_cmdBuf += m_pSocket->readAll();
-    LOG_MODEL_DEBUG("Socks5", "CProxySocks::processNegotiate()");
+    qDebug(logSocks5) << "CProxySocks::processNegotiate()";
     if(m_cmdBuf.isEmpty())
     {
-        LOG_MODEL_ERROR("Socks5", "m_pSocket->readAll() fail");
+        qCritical(logSocks5) << "m_pSocket->readAll() fail";
         return -1;
     }
 
@@ -79,10 +80,10 @@ int CProxySocks5::processNegotiate()
     if(m_cmdBuf.size() >= 1)
     {
         nLen = 1 + m_cmdBuf.at(0);
-        LOG_MODEL_DEBUG("Socks5", "support %d methos", nLen - 1);
+        qDebug(logSocks5) << "support" << nLen - 1 << "methos";
         if(CheckBufferLength(nLen))
         {
-            LOG_MODEL_DEBUG("Socks5", "Be continuing read from socket: %s:%d",
+            qDebug(logSocks5, "Be continuing read from socket: %s:%d",
                      m_pSocket->peerAddress().toString().toStdString().c_str());
             return ERROR_CONTINUE_READ;
         }
@@ -108,7 +109,7 @@ int CProxySocks5::processNegotiateReply(const QByteArray& data)
         if(pPara->GetV5Method().contains(c))
         {
             method = c;
-            LOG_MODEL_INFO("Socks5", tr("Select authenticator: 0x%x").toStdString().c_str(), c);
+            qInfo(logSocks5, tr("Select authenticator: 0x%x").toStdString().c_str(), c);
             break;
         }
         continue;
@@ -118,8 +119,8 @@ int CProxySocks5::processNegotiateReply(const QByteArray& data)
     strNegotiate buf = {m_currentVersion, method};
     if(-1 == m_pSocket->write((char*)&buf, sizeof(strNegotiate)))
     {
-        LOG_MODEL_ERROR("Socks5", "Reply authennticator fail: %s",
-                        m_pSocket->errorString().toStdString().c_str());
+        qCritical(logSocks5) << "Reply authennticator fail:"
+                             << m_pSocket->errorString();
         return -1;
     }
     
@@ -132,7 +133,7 @@ int CProxySocks5::processAuthenticator()
     
     m_cmdBuf += m_pSocket->readAll();
     
-    LOG_MODEL_DEBUG("Socks5", "m_currentAuthenticator:%d", m_currentAuthenticator);
+    qDebug(logSocks5) << "m_currentAuthenticator:" << m_currentAuthenticator;
     switch(m_currentAuthenticator)
     {
     case CParameterSocks::AUTHENTICATOR_NO:
@@ -145,7 +146,7 @@ int CProxySocks5::processAuthenticator()
             return ERROR_CONTINUE_READ;
         if(m_cmdBuf.at(0) != 0x01)
         {
-            LOG_MODEL_ERROR("Socks5",
+            qCritical(logSocks5,
                             "Authenticator user/password, the version isn't supported: 0x%X",
                             m_cmdBuf.at(0));
             replyAuthenticatorUserPassword(1);
@@ -176,7 +177,7 @@ int CProxySocks5::processAuthenticator()
         if(!nRet)
         {
             //TODO: test it!
-            LOG_MODEL_ERROR("Socks5", "Authenticator User Password fail");
+            qCritical(logSocks5) << "Authenticator User Password fail";
             slotClose();
             return nRet;
         }
@@ -229,19 +230,19 @@ int CProxySocks5::processAuthenticatorUserPassword(QString szUser, QString szPas
 int CProxySocks5::processClientRequest()
 {
     int nRet = 0;
-    LOG_MODEL_DEBUG("Socks5", "CProxySocks::processClientRequest()");
+    qDebug(logSocks5) << "CProxySocks::processClientRequest()";
     m_cmdBuf += m_pSocket->readAll();
     if(CheckBufferLength(4))
     {
-        LOG_MODEL_DEBUG("Socks5", "Be continuing read from socket: %s:%d",
-                 m_pSocket->peerAddress().toString().toStdString().c_str());        
+        qDebug(logSocks5) << "Be continuing read from socket:"
+                          << m_pSocket->peerAddress();
         return ERROR_CONTINUE_READ;
     }
     
     strClientRequstHead* pHead = (strClientRequstHead*)(m_cmdBuf.data());
     if(pHead->version != m_currentVersion)
     {
-        LOG_MODEL_ERROR("Socks5", "The version is not same");
+        qCritical(logSocks5) << "The version is not same";
         return -1;
     }
     
@@ -255,8 +256,7 @@ int CProxySocks5::processClientRequest()
         QHostAddress add(qFromBigEndian<quint32>(m_cmdBuf.data() + 4));
         m_Client.szHost = add.toString();
         m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 8);
-        LOG_MODEL_DEBUG("Socks5", "IPV4: %s:%d", add.toString().toStdString().c_str(),
-                        m_Client.nPort);
+        qDebug(logSocks5) << "IPV4:" << add << m_Client.nPort;
         break;
     }
     case AddressTypeDomain: //Domain
@@ -273,7 +273,7 @@ int CProxySocks5::processClientRequest()
         std::string szAddress(pAdd, nLen);
         m_Client.szHost = szAddress.c_str();
         
-        LOG_MODEL_DEBUG("Socks5", "Domain: %s", szAddress.c_str());
+        qDebug(logSocks5) << "Domain:" << szAddress.c_str();
 //        QHostInfo::lookupHost(szAddress.c_str(), this, SLOT(slotLookup(QHostInfo)));
 //        m_Status = emStatus::LookUp;
         break;
@@ -286,8 +286,7 @@ int CProxySocks5::processClientRequest()
         QHostAddress add((quint8*)(m_cmdBuf.data() + 4));
         m_Client.szHost = add.toString();
         m_Client.nPort = qFromBigEndian<quint16>(m_cmdBuf.data() + 20);
-        LOG_MODEL_DEBUG("Socks5", "IPV6: %s:%d", add.toString().toStdString().c_str(),
-                        m_Client.nPort);
+        qDebug(logSocks5) << "IPV6:" << add << m_Client.nPort;
     }
     default:
         return processClientReply(REPLY_AddressTypeNotSupported);
@@ -357,8 +356,7 @@ int CProxySocks5::processClientReply(char rep)
         switch (reply.addressType) {
         case AddressTypeIpv4:
         {
-            LOG_MODEL_DEBUG("Socks5", "Reply IP: %s:%d",
-                            add.toString().toStdString().c_str(), nPort);
+            qDebug(logSocks5) << "Reply IP:" << add.toString() << nPort;
             quint32 d = qToBigEndian(add.toIPv4Address());
             memcpy(buf.get() + sizeof(strClientRequstReplyHead), &d, 4);
             quint16 port = qToBigEndian(nPort);
@@ -385,7 +383,7 @@ int CProxySocks5::processClientReply(char rep)
 int CProxySocks5::processExecClientRequest()
 {
     int nRet = 0;
-    LOG_MODEL_DEBUG("Socks5", "processExecClientRequest: 0x%X", m_Client.pHead->command);
+    qDebug(logSocks5) << "processExecClientRequest:" << m_Client.pHead->command;
     switch (m_Client.pHead->command) {
     case ClientRequstCommandConnect:
     {
@@ -429,8 +427,8 @@ int CProxySocks5::processConnect()
 
 void CProxySocks5::slotPeerConnected()
 {
-    LOG_MODEL_INFO("Socks5", "Peer connected: %s:%d",
-                   m_Client.szHost.toStdString().c_str(), m_Client.nPort);
+    qInfo(logSocks5) << "Peer connected:"
+                     << m_Client.szHost << ":" << m_Client.nPort;
     processClientReply(REPLY_Succeeded);
     m_Status = emStatus::Forward;
     RemoveCommandBuffer(m_Client.nLen);
@@ -439,14 +437,14 @@ void CProxySocks5::slotPeerConnected()
 
 void CProxySocks5::slotPeerDisconnectd()
 {
-    LOG_MODEL_INFO("Socks5", "Peer disconnected: %s:%d",
-                   m_Client.szHost.toStdString().c_str(), m_Client.nPort);
+    qInfo(logSocks5) << "Peer disconnected:"
+                     << m_Client.szHost << ":" << m_Client.nPort;
     slotClose();
 }
 
 void CProxySocks5::slotPeerError(int err, const QString &szErr)
 {
-    LOG_MODEL_ERROR("Socks5", "Peer: %s:%d; error: %d %s",
+    qCritical(logSocks5, "Peer: %s:%d; error: %d %s",
                    m_Client.szHost.toStdString().c_str(), m_Client.nPort,
                    err, szErr.toStdString().c_str());
     if(emStatus::Forward == m_Status)
@@ -500,8 +498,7 @@ int CProxySocks5::processBind()
         return nRet;
     }
 
-    LOG_MODEL_INFO("Socks5", "Bind:%s:%d",
-                   m_Client.szHost.toStdString().c_str(), m_Client.nPort);
+    qInfo(logSocks5) << "Bind:" << m_Client.szHost << ":" << m_Client.nPort;
 
     SetPeerConnect();
 

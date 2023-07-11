@@ -2,9 +2,10 @@
 
 #include "DataChannelIce.h"
 #include "rtc/rtc.hpp"
-#include "RabbitCommonLog.h"
-#include <QDebug>
+
 #include <QThread>
+#include <QLoggingCategory>
+Q_LOGGING_CATEGORY(logLibdatachannel, "Libdatachannel")
 
 #define DEFAULT_MAX_MESSAGE_SIZE 0xFFFF
 
@@ -27,17 +28,17 @@ void CLibDataChannelLogCallback::logCallback(rtc::LogLevel level, std::string me
     switch (level) {
     case rtc::LogLevel::Verbose:
     case rtc::LogLevel::Debug:
-        LOG_MODEL_DEBUG("Libdatachannel", message.c_str());
+        qDebug(logLibdatachannel) << message.c_str();
         break;
     case rtc::LogLevel::Info:
-        LOG_MODEL_INFO("Libdatachannel", message.c_str());
+        qInfo(logLibdatachannel) << message.c_str();
         break;
     case rtc::LogLevel::Warning:
-        LOG_MODEL_WARNING("Libdatachannel", message.c_str());
+        qWarning(logLibdatachannel) << message.c_str();
         break;
     case rtc::LogLevel::Error:
     case rtc::LogLevel::Fatal:
-        LOG_MODEL_ERROR("Libdatachannel", message.c_str());
+        qCritical(logLibdatachannel) << message.c_str();
         break;
     case rtc::LogLevel::None:
         break;
@@ -63,7 +64,7 @@ CDataChannelIce::CDataChannelIce(QSharedPointer<CIceSignal> signal, QObject *par
 
 CDataChannelIce::~CDataChannelIce()
 {
-    qDebug() << "CDataChannel::~CDataChannel()";
+    qDebug(logLibdatachannel) << "CDataChannel::~CDataChannel()";
 }
 
 int CDataChannelIce::SetSignal(QSharedPointer<CIceSignal> signal)
@@ -142,7 +143,7 @@ int CDataChannelIce::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
     m_dataChannel = dc;
 
     dc->onOpen([this]() {
-        LOG_MODEL_DEBUG("DataChannel", "Open data channel user:%s;peer:%s;channelId:%s:lable:%s",
+        qDebug(logLibdatachannel, "Open data channel user:%s;peer:%s;channelId:%s:lable:%s",
                         GetUser().toStdString().c_str(),
                         GetPeerUser().toStdString().c_str(),
                         GetChannelId().toStdString().c_str(),
@@ -150,14 +151,14 @@ int CDataChannelIce::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
         if(QIODevice::open(QIODevice::ReadWrite))
             emit sigConnected();
         else
-            LOG_MODEL_ERROR("DataChannel", "Open Device fail:user:%s;peer:%s;channelId:%d",
+            qCritical(logLibdatachannel, "Open Device fail:user:%s;peer:%s;channelId:%d",
                             GetUser().toStdString().c_str(),
                             GetPeerUser().toStdString().c_str(),
                             GetChannelId().toStdString().c_str());
     });
 
     dc->onClosed([this]() {
-        LOG_MODEL_DEBUG("DataChannel", "Close data channel: user:%s;peer:%s;channelId:%s:lable:%s",
+        qDebug(logLibdatachannel, "Close data channel: user:%s;peer:%s;channelId:%s:lable:%s",
                         GetUser().toStdString().c_str(),
                         GetPeerUser().toStdString().c_str(),
                         GetChannelId().toStdString().c_str(),
@@ -166,22 +167,22 @@ int CDataChannelIce::SetDataChannel(std::shared_ptr<rtc::DataChannel> dc)
     });
 
     dc->onError([this](std::string error){
-        LOG_MODEL_ERROR("DataChannel", "Data channel error:%s", error.c_str());
+        qCritical(logLibdatachannel) << "Data channel error:" << error.c_str();
         emit sigError(-1, error.c_str());
     });
 
     dc->onMessage([dc, this](std::variant<rtc::binary, std::string> data) {
 //        if (std::holds_alternative<std::string>(data))
-//            LOG_MODEL_DEBUG("DataChannel", "From remote data: %s",
+//            qDebug(logLibdatachannel, "From remote data: %s",
 //                            std::get<std::string>(data).c_str());
 //        else
-//            LOG_MODEL_DEBUG("DataChannel", "From remote Received, size=%d",
+//            qDebug(logLibdatachannel, "From remote Received, size=%d",
 //                            std::get<rtc::binary>(data).size());
         
         rtc::binary d = std::get<rtc::binary>(data);
         if(d.size() <= 0)
         {
-            LOG_MODEL_DEBUG("DataChannel", "onMessage size is zero");
+            qDebug(logLibdatachannel, "onMessage size is zero");
             return;
         }
         m_MutexData.lock();
@@ -198,22 +199,22 @@ int CDataChannelIce::CreateDataChannel(const rtc::Configuration &config, bool bD
     m_peerConnection = std::make_shared<rtc::PeerConnection>(config);
     if(!m_peerConnection)
     {
-        LOG_MODEL_ERROR("DataChannel", "Peer connect don't open");
+        qCritical(logLibdatachannel, "Peer connect don't open");
         return -1;
     }
     m_peerConnection->onStateChange([](rtc::PeerConnection::State state) {
-        LOG_MODEL_DEBUG("DataChannel", "PeerConnection State: %d", state);
+        qDebug(logLibdatachannel, "PeerConnection State: %d", state);
     });
     m_peerConnection->onGatheringStateChange(
                 [](rtc::PeerConnection::GatheringState state) {
         Q_UNUSED(state)
-        //LOG_MODEL_DEBUG("DataChannel", "Gathering status: %d", state);
+        //qDebug(logLibdatachannel, "Gathering status: %d", state);
     });
     m_peerConnection->onLocalDescription(
                 [this](rtc::Description description) {
-        //LOG_MODEL_DEBUG("CDataChannelIce", "The thread id: 0x%X", QThread::currentThreadId());
+        //qDebug(logLibdatachannel, "The thread id: 0x%X", QThread::currentThreadId());
         /*
-        LOG_MODEL_DEBUG("DataChannel", "user:%s; peer:%s; channel:%s; onLocalDescription: %s",
+        qDebug(logLibdatachannel, "user:%s; peer:%s; channel:%s; onLocalDescription: %s",
                         GetUser().toStdString().c_str(),
                         GetPeerUser().toStdString().c_str(),
                         GetChannelId().toStdString().c_str(),
@@ -221,16 +222,16 @@ int CDataChannelIce::CreateDataChannel(const rtc::Configuration &config, bool bD
         // Send to the peer through the signal channel
         if(GetPeerUser().isEmpty() || GetChannelId().isEmpty())
         {
-            LOG_MODEL_ERROR("DataChannel", "Please set peer user and channel id");
+            qCritical(logLibdatachannel) << "Please set peer user and channel id";
             return;
         }
         m_Signal->SendDescription(GetPeerUser(), GetChannelId(), description, GetUser());
     });
     m_peerConnection->onLocalCandidate(
                 [this](rtc::Candidate candidate){
-        //LOG_MODEL_DEBUG("CDataChannelIce", "The thread id: 0x%X", QThread::currentThreadId());
+        //qDebug(logLibdatachannel) << "The thread id:" << QThread::currentThreadId();
         /*
-        LOG_MODEL_DEBUG("DataChannel", "user:%s; peer:%s; channel:%s; onLocalCandidate: %s, mid: %s",
+        qDebug(logLibdatachannel, "user:%s; peer:%s; channel:%s; onLocalCandidate: %s, mid: %s",
                         GetUser().toStdString().c_str(),
                         GetPeerUser().toStdString().c_str(),
                         GetChannelId().toStdString().c_str(),
@@ -239,20 +240,20 @@ int CDataChannelIce::CreateDataChannel(const rtc::Configuration &config, bool bD
         // Send to the peer through the signal channel
         if(GetPeerUser().isEmpty() || GetChannelId().isEmpty())
         {
-            LOG_MODEL_ERROR("DataChannel", "Please set peer user and channel id");
+            qCritical(logLibdatachannel) << "Please set peer user and channel id";
             return;
         }
         m_Signal->SendCandiate(m_szPeerUser, m_szChannelId, candidate, GetUser());
     });
     m_peerConnection->onDataChannel([this](std::shared_ptr<rtc::DataChannel> dc) {
-        LOG_MODEL_INFO("DataChannel", "Open data channel: user:%s; peer:%s; channel:%s; lable:%s",
+        qInfo(logLibdatachannel, "Open data channel: user:%s; peer:%s; channel:%s; lable:%s",
                        GetUser().toStdString().c_str(),
                        GetPeerUser().toStdString().c_str(),
                        GetChannelId().toStdString().c_str(),
                        dc->label().c_str());
         if(dc->label().c_str() != GetChannelId())
         {
-            LOG_MODEL_ERROR("DataChannel", "Channel label diffent: %s; %s",
+            qCritical(logLibdatachannel, "Channel label diffent: %s; %s",
                             GetChannelId().toStdString().c_str(),
                             dc->label().c_str());
             return;
@@ -264,7 +265,7 @@ int CDataChannelIce::CreateDataChannel(const rtc::Configuration &config, bool bD
 //        if(QIODevice::open(QIODevice::ReadWrite))
 //            emit sigConnected();
 //        else
-//            LOG_MODEL_ERROR("DataChannel", "Open Device fail:user:%s;peer:%s;channelId:%d",
+//            qCritical(logLibdatachannel, "Open Device fail:user:%s;peer:%s;channelId:%d",
 //                            GetUser().toStdString().c_str(),
 //                            GetPeerUser().toStdString().c_str(),
 //                            GetChannelId().toStdString().c_str());
@@ -274,7 +275,7 @@ int CDataChannelIce::CreateDataChannel(const rtc::Configuration &config, bool bD
     if(bData)
     {
         auto dc = m_peerConnection->createDataChannel(GetChannelId().toStdString());
-        LOG_MODEL_INFO("DataChannel", "Create data channel: user:%s; peer:%s; channel:%s",
+        qInfo(logLibdatachannel, "Create data channel: user:%s; peer:%s; channel:%s",
                        GetUser().toStdString().c_str(),
                        GetPeerUser().toStdString().c_str(),
                        GetChannelId().toStdString().c_str()
@@ -295,7 +296,7 @@ int CDataChannelIce::open(const rtc::Configuration &config, const QString &user,
 
 void CDataChannelIce::close()
 {
-    LOG_MODEL_DEBUG("CDataChannelIce", "CDataChannelIce::Close()");
+    qDebug(logLibdatachannel) << "CDataChannelIce::Close()";
 
     m_Signal->disconnect(this);
 
@@ -318,13 +319,13 @@ qint64 CDataChannelIce::writeData(const char *data, qint64 len)
 {
     if(!m_dataChannel)
     {
-        LOG_MODEL_ERROR("CDataChannelIce", "m_dataChannel is nullptr");
+        qCritical(logLibdatachannel) << "m_dataChannel is nullptr";
         return -1;
     }
 
     if(m_dataChannel->isClosed())
     {
-        LOG_MODEL_ERROR("CDataChannelIce",
+        qCritical(logLibdatachannel,
                         "m_dataChannel->isClosed():peer:%s;channel:%s",
                         GetPeerUser().toStdString().c_str(),
                         GetChannelId().toStdString().c_str());
@@ -333,14 +334,14 @@ qint64 CDataChannelIce::writeData(const char *data, qint64 len)
     
     if(!isOpen())
     {
-        LOG_MODEL_ERROR("CDataChannelIce", "The data channel isn't open");
+        qCritical(logLibdatachannel) << "The data channel isn't open";
         return -1;
     }
     
     bool bSend = false;
 
     if(0 == len)
-        LOG_MODEL_WARNING("CDataChannelIce", "WriteData len is zero");
+        qWarning(logLibdatachannel) << "WriteData len is zero";
 
     quint64 n = len;
     while(n > DEFAULT_MAX_MESSAGE_SIZE)
@@ -373,7 +374,7 @@ qint64 CDataChannelIce::readData(char *data, qint64 maxlen)
     else
     {
         m_data.remove(0, n);
-        LOG_MODEL_WARNING("DataChannelIce", "maxlen: %d, Remain data:%d",
+        qWarning(logLibdatachannel, "maxlen: %d, Remain data:%d",
                           maxlen, m_data.size());
         //因为有 bytesAvailable，所以这里不要触发信号，由调用者自己判断是否继续读
         //emit readyRead(); 
@@ -393,7 +394,7 @@ bool CDataChannelIce::isSequential() const
 
 void CDataChannelIce::slotSignalConnected()
 {
-//    LOG_MODEL_INFO("Signal", "Signal connected: user: %s; peer: %s; channelId: %s",
+//    qInfo(logLibdatachannel, "Signal connected: user: %s; peer: %s; channelId: %s",
 //                   GetUser().toStdString().c_str(),
 //                   GetPeerUser().toStdString().c_str(),
 //                   GetChannelId().toStdString().c_str());
@@ -411,7 +412,7 @@ void CDataChannelIce::slotSignalReceiverCandiate(const QString& fromUser,
                                                  const QString& sdp)
 {
     /*
-    LOG_MODEL_DEBUG("CDataChannelIce",
+    qDebug(logLibdatachannel,
                     "slotSignalReceiverCandiate fromUser:%s; toUser:%s; channelId:%s; mid:%s; sdp:%s",
                     fromUser.toStdString().c_str(),
                     toUser.toStdString().c_str(),
@@ -434,7 +435,7 @@ void CDataChannelIce::slotSignalReceiverDescription(const QString& fromUser,
                                                     const QString &sdp)
 {
     /*
-    LOG_MODEL_DEBUG("CDataChannelIce",
+    qDebug(logLibdatachannel,
                     "slotSignalReceiverDescription fromUser:%s; toUser:%s; channelId:%s; type:%s; sdp:%s",
                     fromUser.toStdString().c_str(),
                     toUser.toStdString().c_str(),
