@@ -1,0 +1,221 @@
+name: mingw
+
+on:
+  workflow_call:
+    outputs:
+      name:
+        description: "The artifact name"
+        value: ${{ jobs.build_mingw.outputs.name }}
+
+jobs:
+  build_mingw:
+
+    strategy:
+      matrix:
+        BUILD_TYPE: [Release, Debug]
+
+    defaults:
+      run:
+        shell: cmd
+        
+    runs-on: windows-latest
+
+    env:
+      BUILD_TYPE:  ${{ matrix.BUILD_TYPE }}
+      SOURCE_DIR:  ${{github.workspace}}\.cache\source
+      TOOSL_DIR:   ${{github.workspace}}\.cache\tools
+      INSTALL_DIR: ${{github.workspace}}\.cache\install_mingw_${{matrix.BUILD_TYPE}}
+      RabbitRemoteControl_VERSION: v0.0.27
+      artifact_name: build_mingw
+
+    # Map the job outputs to step outputs
+    outputs:
+      name: ${{ env.artifact_name }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+            
+      - name: pacman
+        env:
+          PATH: C:\msys64\usr\bin
+        run: | 
+          C:\msys64\usr\bin\pacman.exe -S --noconfirm ^
+            mingw-w64-x86_64-cmake ^
+            mingw-w64-x86_64-make ^
+            mingw-w64-x86_64-nsis ^
+            mingw-w64-x86_64-gcc ^
+            mingw-w64-x86_64-qt5 ^
+            mingw-w64-x86_64-qtwebkit ^
+            mingw-w64-x86_64-zlib ^
+            mingw-w64-x86_64-openssl ^
+            mingw-w64-x86_64-libvncserver ^
+            mingw-w64-x86_64-cyrus-sasl ^
+            mingw-w64-x86_64-pixman ^
+            mingw-w64-x86_64-libjpeg-turbo ^
+            mingw-w64-x86_64-libpng ^
+            mingw-w64-x86_64-yasm ^
+            mingw-w64-x86_64-openh264 ^
+            mingw-w64-x86_64-qxmpp ^
+            mingw-w64-x86_64-freerdp ^
+            git base-devel
+
+      - name: make_directory
+        run: |
+          cmake -E make_directory ${{env.SOURCE_DIR}}
+          cmake -E make_directory ${{env.TOOSL_DIR}}
+          cmake -E make_directory ${{env.INSTALL_DIR}}
+    
+      - name: Cache installed
+        uses: actions/cache@v3
+        id: cache-installed
+        with:
+          path: |
+            ${{env.INSTALL_DIR}}
+          key: cache-installed-mingw
+        
+      - name: git clone RabbitCommon
+        working-directory: ${{env.SOURCE_DIR}}
+        run: git clone https://github.com/KangLin/RabbitCommon.git
+
+#    - name: Build FreeRDP
+#      working-directory: ${{env.SOURCE_DIR}}
+#      env:
+#        MSYSTEM: MINGW64
+#        PATH: C:\msys64\mingw64\bin;C:\msys64\usr\bin
+#      run: |
+#       IF NOT EXIST ${{env.INSTALL_DIR}}\lib\cmake\FreeRDP3 (
+#            git clone https://github.com/FreeRDP/FreeRDP.git
+#            ;git clone https://github.com/KangLin/FreeRDP.git
+#            cd FreeRDP
+#            ;git checkout -b 0b16fcef18c9ec0f5ffb14c3d9357fe8acdf7658 0b16fcef18c9ec0f5ffb14c3d9357fe8acdf7658
+#            git submodule update --init --recursive
+#            cmake -E make_directory build
+#            cd build
+#            cmake .. ^
+#                -DCMAKE_BUILD_TYPE=${{matrix.BUILD_TYPE}} ^
+#                -DCMAKE_INSTALL_PREFIX="${{env.INSTALL_DIR}}" ^
+#                -DWITH_SERVER=ON ^
+#                -DCHANNEL_URBDRC=OFF ^
+#                -DUSE_UNWIND=OFF
+#            cmake --build . --config ${{matrix.BUILD_TYPE}}
+#            cmake --build . --config ${{matrix.BUILD_TYPE}} --target install
+#        )
+
+      - name: build RabbitVNC
+        working-directory: ${{env.SOURCE_DIR}}
+        env:
+          MSYSTEM: MINGW64
+          PATH: C:\msys64\mingw64\bin;C:\msys64\usr\bin
+        run: |
+          IF NOT EXIST ${{env.INSTALL_DIR}}\lib\cmake\RabbitVNC (
+            git clone https://github.com/KangLin/RabbitVNC.git 
+            cd RabbitVNC
+            cmake -E make_directory build
+            cd build
+            cmake .. -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{matrix.BUILD_TYPE}} ^
+                  -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}} ^
+                  -DBUILD_TESTS=OFF -DBUILD_VIEWER=OFF
+            cmake --build . --config ${{matrix.BUILD_TYPE}}
+            cmake --build . --config ${{matrix.BUILD_TYPE}} --target install
+          )
+        
+      - name: build tigervnc
+        working-directory: ${{env.SOURCE_DIR}}
+        env:
+          MSYSTEM: MINGW64
+          PATH: C:\msys64\mingw64\bin;C:\msys64\usr\bin
+        run: |
+          IF NOT EXIST ${{env.INSTALL_DIR}}\lib\cmake\tigervnc (
+            git clone https://github.com/KangLin/tigervnc.git 
+            cd tigervnc
+            cmake -E make_directory build
+            cd build
+            cmake .. -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{matrix.BUILD_TYPE}} ^
+                  -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}} ^
+                  -DBUILD_TESTS=OFF -DBUILD_VIEWER=OFF
+            cmake --build . --config ${{matrix.BUILD_TYPE}}
+            cmake --build . --config ${{matrix.BUILD_TYPE}} --target install
+          )
+
+      - name: build libdatachannel
+        working-directory: ${{env.SOURCE_DIR}}
+        env:
+          MSYSTEM: MINGW64
+          PATH: C:\msys64\mingw64\bin;C:\msys64\usr\bin
+        run: |
+          IF NOT EXIST ${{env.INSTALL_DIR}}\lib\cmake\LibDataChannel (
+            git clone -b v0.15.5 https://github.com/paullouisageneau/libdatachannel.git
+            cd libdatachannel
+            git submodule update --init --recursive
+            cmake -E make_directory build
+            cd build
+            cmake .. -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{matrix.BUILD_TYPE}} ^
+                -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}} ^
+                -DNO_EXAMPLES=ON -DNO_TESTS=ON -DNO_WEBSOCKET=ON
+            cmake --build . --config ${{matrix.BUILD_TYPE}}
+            cmake --build . --config ${{matrix.BUILD_TYPE}} --target install
+          )
+        
+      - name: build QtService
+        working-directory: ${{env.SOURCE_DIR}}
+        env:
+          MSYSTEM: MINGW64
+          PATH: C:\msys64\mingw64\bin;C:\msys64\usr\bin
+        run: |
+          IF NOT EXIST ${{env.INSTALL_DIR}}/lib/cmake/QtService (
+            git clone "https://github.com/KangLin/qt-solutions.git"
+            cd qt-solutions/qtservice
+            cmake -E make_directory build
+            cd build
+            cmake .. -G"MinGW Makefiles" -DCMAKE_BUILD_TYPE=${{matrix.BUILD_TYPE}} ^
+                -DCMAKE_INSTALL_PREFIX=${{env.INSTALL_DIR}}
+            cmake --build . --config ${{matrix.BUILD_TYPE}}
+            cmake --build . --config ${{matrix.BUILD_TYPE}} --target install
+          )
+
+      - name: build RabbitRemoteControl
+        working-directory: ${{github.workspace}}
+        env:
+          RabbitCommon_DIR: ${{env.SOURCE_DIR}}/RabbitCommon
+          MSYSTEM: MINGW64
+          PATH: C:\msys64\mingw64\bin;C:\msys64\usr\bin
+        run: |
+          cmake -E make_directory build
+          cd build
+          cmake .. -G"MinGW Makefiles" ^
+            -DCMARK_SHARED=OFF ^
+            -DCMARK_TESTS=OFF ^
+            -DCMARK_STATIC=ON ^
+            -DCMAKE_BUILD_TYPE=${{matrix.BUILD_TYPE}} ^
+            -DCMAKE_INSTALL_PREFIX=${{github.workspace}}/build/install ^
+            -DBUILD_FREERDP=ON ^
+            -DBUILD_LibVNCServer=OFF ^
+            -Dtigervnc_DIR=${{env.INSTALL_DIR}}/lib/cmake ^
+            -Dlibdatachannel_DIR=${{env.INSTALL_DIR}}/share/cmake/libdatachannel ^
+            -DQtService_DIR=${{env.INSTALL_DIR}}/lib/cmake/QtService ^
+            -DCMAKE_PREFIX_PATH=${{env.INSTALL_DIR}}
+          cmake --build . --config ${{ matrix.BUILD_TYPE }}
+          cmake --build . --config ${{ matrix.BUILD_TYPE }} --target install
+
+      - name: Package
+        if: ${{ matrix.BUILD_TYPE == 'Release' }}
+        working-directory: ${{github.workspace}}/build
+        run: |
+          move /Y install\plugins\*crypto*.dll install\bin
+          move /Y install\plugins\*ssl*.dll install\bin
+          copy /Y C:\msys64\mingw64\bin\*.dll install\bin
+          copy /Y ${{env.INSTALL_DIR}}\bin\*.dll install\bin
+          copy /Y ${{env.INSTALL_DIR}}\lib\*.dll install\bin
+          makensis ${{github.workspace}}/build/Install.nsi
+          md5sum RabbitRemoteControl_setup_${{env.RabbitRemoteControl_VERSION}}.exe > RabbitRemoteControl_setup_${{env.RabbitRemoteControl_VERSION}}.exe.md5
+
+#      - name: Update artifact
+#        if: ${{ matrix.BUILD_TYPE == 'Release' }}
+#        uses: actions/upload-artifact@v2
+#        with:
+#          name: ${{ env.artifact_name }}
+#          path: |
+#            ${{github.workspace}}/build/RabbitRemoteControl_Setup_${{env.RabbitRemoteControl_VERSION}}.exe
