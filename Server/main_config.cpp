@@ -48,10 +48,11 @@ int main(int argc, char *argv[])
     // Check update version
     QSharedPointer<CFrmUpdater> pUpdate(new CFrmUpdater());
     pUpdate->SetTitle(QImage(":/image/App"));
-    if(pUpdate->GenerateUpdateXml())
-        qCritical(logMain) << "GenerateUpdateXml fail";
-    else
+    if(a.arguments().length() > 1) {
+        pUpdate->GenerateUpdateJson();
+        pUpdate->GenerateUpdateXml();
         return 0;
+    }
 
     qDebug(logMain) << "The thread id:" << QThread::currentThreadId();
 

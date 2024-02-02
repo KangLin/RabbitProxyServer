@@ -238,6 +238,7 @@ jobs:
           if "5.12.12" == "${{matrix.qt_version}}" (
             ${{github.workspace}}\build\install\bin\RabbitProxyServer.exe ^
                 -f "update_windows.xml" ^
+                --foc 1 ^
                 --pf ${{github.workspace}}\build\RabbitProxyServer_Setup_${{env.RabbitProxyServer_VERSION}}.exe ^
                 -m "${{env.RabbitProxyServer_VERSION}}"
           )
