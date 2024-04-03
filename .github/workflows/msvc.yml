@@ -217,6 +217,9 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=${{env.VCPKG_ROOT}}\scripts\buildsystems\vcpkg.cmake ^
             -DVCPKG_VERBOSE=ON ^
             -DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON ^
+            -DRABBIT_ENABLE_INSTALL_DEPENDENT=ON ^
+            -DRABBIT_ENABLE_INSTALL_QT=ON ^
+            -DRABBIT_ENABLE_INSTALL_TO_BUILD_PATH=OFF ^
             -DLog4Qt_DIR=${{env.INSTALL_DIR}}/lib/cmake/Log4Qt ^
             -DQXmpp_DIR=${{env.INSTALL_DIR}}/lib/cmake/qxmpp ^
             -DQtService_DIR=${{env.INSTALL_DIR}}/lib/cmake/QtService ^
