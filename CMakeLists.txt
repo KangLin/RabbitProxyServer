@@ -202,15 +202,12 @@ set(OTHER_FILES
     ChangeLog.md
     Authors_zh_CN.md
     ChangeLog_zh_CN.md)
-if(ANDROID)
-    INSTALL(FILES ${OTHER_FILES} DESTINATION "assets" COMPONENT Runtime)
-else()
-    INSTALL(FILES ${OTHER_FILES} DESTINATION "." COMPONENT Runtime)
-endif()
+INSTALL_FILE(${OTHER_FILES} DESTINATION "assets" COMPONENT Runtime)
 
 iF(WIN32)
-    CONFIGURE_FILE(${CMAKE_SOURCE_DIR}/Install/Install.nsi "${CMAKE_BINARY_DIR}"
-        IMMEDIATE @ONLY)
+    # 替换 Install.nsi 中的 CMAKE_INSTALL_PREFIX 等
+    configure_file(${CMAKE_SOURCE_DIR}/Install/Install.nsi
+        ${CMAKE_BINARY_DIR}/Install.nsi @ONLY)
 endif()
 
 # CPack
