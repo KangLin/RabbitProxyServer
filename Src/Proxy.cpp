@@ -17,7 +17,12 @@ CProxy::CProxy(QTcpSocket* pSocket, CServer* server, QObject *parent)
 //        check = connect(m_pSocket, SIGNAL(destroyed()),
 //                       this, SLOT(slotClose()));
 //        Q_ASSERT(check);
-        check = connect(m_pSocket, SIGNAL(error(QAbstractSocket::SocketError)),
+        check = connect(m_pSocket,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+                        SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+#else
+                        SIGNAL(error(QAbstractSocket::SocketError)),
+#endif
                 this, SLOT(slotError(QAbstractSocket::SocketError)));
         Q_ASSERT(check);
         check = connect(server, SIGNAL(sigStop()), this, SLOT(slotClose()));

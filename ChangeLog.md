@@ -2,7 +2,7 @@
 - Versioin: v0.0.２
    + refactored interface
    + complete ICE
-   + Use RabbitCommon V2
+   + Use RabbitCommon V2.3.2
 
 - Versioin: v0.0.1
   + Proxy server

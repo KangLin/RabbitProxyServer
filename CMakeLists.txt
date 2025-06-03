@@ -195,15 +195,6 @@ ADD_CUSTOM_TARGET(uninstall
     "${CMAKE_COMMAND}" -P "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake"
     DEPENDS uninstall-runtime)
 
-# Install other files
-set(OTHER_FILES
-    License.md
-    Authors.md
-    ChangeLog.md
-    Authors_zh_CN.md
-    ChangeLog_zh_CN.md)
-INSTALL_FILE(${OTHER_FILES} DESTINATION "assets" COMPONENT Runtime)
-
 iF(WIN32)
     # 替换 Install.nsi 中的 CMAKE_INSTALL_PREFIX 等
     configure_file(${CMAKE_SOURCE_DIR}/Install/Install.nsi

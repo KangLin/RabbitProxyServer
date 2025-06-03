@@ -23,7 +23,12 @@ int CPeerConnector::InitConnect()
     check = connect(&m_Socket, SIGNAL(disconnected()),
                     this, SIGNAL(sigDisconnected()));
     Q_ASSERT(check);
-    check = connect(&m_Socket, SIGNAL(error(QAbstractSocket::SocketError)),
+    check = connect(&m_Socket,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+                    SIGNAL(errorOccurred(QAbstractSocket::SocketError)),
+#else
+                    SIGNAL(error(QAbstractSocket::SocketError)),
+#endif
                     this, SLOT(slotError(QAbstractSocket::SocketError)));
     Q_ASSERT(check);
     check = connect(&m_Socket, SIGNAL(readyRead()),
