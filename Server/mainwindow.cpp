@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     
     RabbitCommon::CTools::InsertStyleMenu(ui->menuOperate, ui->actionExit, this);
-    ui->menuOperate->insertMenu(ui->actionExit, RabbitCommon::CTools::GetLogMenu());
+    ui->menuOperate->insertMenu(ui->actionExit, RabbitCommon::CTools::GetLogMenu(this));
     ui->menuOperate->insertSeparator(ui->actionExit);
 
     CFrmUpdater updater;
